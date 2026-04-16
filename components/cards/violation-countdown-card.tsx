@@ -35,13 +35,13 @@ export function ViolationCountdownCard({
   const pillTone = tone === "critical" ? "red" : tone === "safe" ? "green" : "yellow";
 
   return (
-    <Card className="bg-slate-950 text-white">
+    <Card className="text-[#003E51]" style={{ background: "linear-gradient(180deg,#ffffff 0%, #f6fbf8 100%)" }}>
       <div className="flex items-start justify-between gap-4">
         <CardTitle title={title} subtitle={helper} />
         <StatPill label="Countdown" value={formatRemaining(remaining)} tone={pillTone} />
       </div>
-      <div className="mt-4 text-4xl font-semibold tracking-tight">{formatRemaining(remaining)}</div>
-      <p className="mt-3 text-sm text-slate-300">Alarm-ready UI state for browser or mobile app push workflows.</p>
+      <div className="mt-4 text-4xl font-semibold tracking-tight" style={{ color: "var(--category-primary)" }}>{formatRemaining(remaining)}</div>
+      <p className="mt-3 text-sm text-[#557072]">Alarm-ready UI state for browser or mobile app push workflows.</p>
     </Card>
   );
 }

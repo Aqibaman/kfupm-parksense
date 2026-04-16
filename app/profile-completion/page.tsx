@@ -1,24 +1,24 @@
+"use client";
+
 import Link from "next/link";
-import { categoryMeta } from "@/lib/constants";
+import { PermitSelector } from "@/components/forms/permit-selector";
+import { useStudentProfile } from "@/components/providers/student-profile-provider";
 
 export default function ProfileCompletionPage() {
+  const { user, selectCategory } = useStudentProfile();
+
   return (
     <main className="min-h-screen bg-slate-50 px-4 py-10">
       <div className="mx-auto max-w-5xl space-y-6">
-        <div className="rounded-[32px] bg-slate-950 p-8 text-white">
-          <p className="text-sm uppercase tracking-[0.28em] text-sky-200">Profile Completion</p>
-          <h1 className="mt-3 text-4xl font-semibold">Mapped permit category preview</h1>
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-300">This step confirms the parking category generated from gender and residency, then lets the student add favorites and alert preferences.</p>
+        <div className="rounded-[32px] border border-[#003E51]/10 bg-white p-8 text-[#003E51] shadow-[0_18px_60px_rgba(0,62,81,0.08)]">
+          <p className="text-sm uppercase tracking-[0.28em] text-[#008540]">Profile Completion</p>
+          <h1 className="mt-3 text-4xl font-semibold">Confirm your permit category</h1>
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-600">This step lets the student confirm the exact permit directly from the four full category buttons used across the app.</p>
         </div>
-        <div className="grid gap-4 md:grid-cols-2">
-          {Object.entries(categoryMeta).map(([key, meta]) => (
-            <div key={key} className="rounded-3xl border border-slate-200 bg-white p-5">
-              <span className={`inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${meta.color}`}>{meta.label}</span>
-              <p className="mt-3 text-sm text-slate-500">Generated from the registration profile and editable from account settings.</p>
-            </div>
-          ))}
+        <div className="surface p-5">
+          <PermitSelector value={user.userCategory} onChange={selectCategory} />
         </div>
-        <Link href="/dashboard" className="inline-flex rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white">Open dashboard</Link>
+        <Link href="/dashboard" className="inline-flex rounded-full bg-[#008540] px-5 py-3 text-sm font-semibold text-white">Open dashboard</Link>
       </div>
     </main>
   );

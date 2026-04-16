@@ -1,15 +1,19 @@
+"use client";
+
 import { NotificationBellPanel } from "@/components/cards/notification-bell-panel";
 import { RecommendationPanel } from "@/components/cards/recommendation-panel";
 import { ViolationCountdownCard } from "@/components/cards/violation-countdown-card";
 import { CategoryBadge } from "@/components/cards/category-badge";
 import { AppShell } from "@/components/layout/app-shell";
 import { InfoPanel, MetricCard, SectionGrid } from "@/components/layout/sections";
+import { useStudentProfile } from "@/components/providers/student-profile-provider";
 import { parkingLots } from "@/lib/data/kfupm-data";
 import { getPermissionWindow } from "@/lib/engines/rules";
-import { getDashboardSnapshot } from "@/lib/services/query";
+import { buildDashboardSnapshot } from "@/lib/services/query";
 
 export default function DashboardPage() {
-  const snapshot = getDashboardSnapshot();
+  const { user } = useStudentProfile();
+  const snapshot = buildDashboardSnapshot(user);
   const permissionWindow = getPermissionWindow(snapshot.user);
   const allowedLots = snapshot.allowedLots.slice(0, 4);
 
@@ -17,16 +21,18 @@ export default function DashboardPage() {
     <AppShell
       title="Student Mobility Dashboard"
       eyebrow="Student Experience"
-      description="Today’s permit summary, lot access, session safety window, nearby buses, and AI guidance are surfaced in one responsive control center."
+      description="Today's permit summary, lot access, session safety window, nearby buses, and AI guidance are surfaced in one responsive control center."
     >
       <div className="flex flex-wrap items-center gap-3">
         <CategoryBadge category={snapshot.user.userCategory} />
-        <span className="rounded-full bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm">Preferred buildings: {snapshot.user.favoriteBuildings.join(", ")}</span>
+        <span className="rounded-full border border-[#008540]/10 bg-[#f4faf6] px-4 py-2 text-sm font-medium text-[#003E51] shadow-sm">
+          Preferred buildings: {snapshot.user.favoriteBuildings.join(", ")}
+        </span>
       </div>
       <SectionGrid cols="md:grid-cols-2 xl:grid-cols-4">
         <MetricCard label="Allowed lots now" value={String(snapshot.allowedLots.length)} helper="Filtered by your user category and special lot rules." />
         <MetricCard label="Current commuter rule" value={snapshot.user.residencyStatus === "non-resident" ? "10:00 PM" : "Category-based"} helper={permissionWindow.summary} />
-        <MetricCard label="Nearby bus routes" value={String(snapshot.routes.filter((route) => route.networkType === snapshot.user.gender).length)} helper="Matched to male or female transport network." />
+        <MetricCard label="Nearby bus routes" value={String(snapshot.routes.filter((route) => route.networkType === snapshot.user.gender).length)} helper="Matched to the correct transport network." />
         <MetricCard label="Active notifications" value={String(snapshot.notifications.filter((notification) => !notification.readAt).length)} helper="Unread alerts needing action." />
       </SectionGrid>
       <SectionGrid cols="xl:grid-cols-[1.1fr_0.9fr]">
@@ -38,7 +44,7 @@ export default function DashboardPage() {
           title="Nearby allowed lots"
           subtitle="Best-fit options for the selected demo user."
           items={allowedLots.map((lot) => ({
-            label: `${lot.lotCode} · ${lot.lotName}`,
+            label: `${lot.lotCode} - ${lot.lotName}`,
             value: `${Math.round(lot.totalSlots * (1 - lot.occupancyRate))} free`
           }))}
         />

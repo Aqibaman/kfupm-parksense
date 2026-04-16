@@ -8,10 +8,10 @@ export function SectionGrid({ children, cols = "xl:grid-cols-3" }: { children: R
 
 export function MetricCard({ label, value, helper }: { label: string; value: string; helper: string }) {
   return (
-    <Card>
-      <p className="text-sm text-slate-500">{label}</p>
-      <p className="mt-3 text-3xl font-semibold text-slate-950">{value}</p>
-      <p className="mt-2 text-sm text-slate-500">{helper}</p>
+    <Card style={{ background: "linear-gradient(180deg,#ffffff 0%, #f6fbf8 100%)" }}>
+      <p className="text-sm text-[#557072]">{label}</p>
+      <p className="mt-3 text-3xl font-semibold" style={{ color: "var(--category-text)" }}>{value}</p>
+      <p className="mt-2 text-sm text-[#557072]">{helper}</p>
     </Card>
   );
 }
@@ -30,9 +30,9 @@ export function InfoPanel({
       <CardTitle title={title} subtitle={subtitle} />
       <div className="space-y-3">
         {items.map((item) => (
-          <div key={item.label} className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 p-3">
-            <span className="text-sm text-slate-500">{item.label}</span>
-            <span className="text-sm font-semibold text-slate-900">{item.value}</span>
+          <div key={item.label} className="flex items-center justify-between gap-4 rounded-2xl border border-[#dbe9e1] bg-[#f8fbf9] p-3">
+            <span className="text-sm text-[#557072]">{item.label}</span>
+            <span className="text-sm font-semibold" style={{ color: "var(--category-text)" }}>{item.value}</span>
           </div>
         ))}
       </div>
@@ -47,7 +47,12 @@ export function CTAGroup({ items }: { items: Array<{ href: string; label: string
         <Link
           key={item.href}
           href={item.href}
-          className={item.variant === "light" ? "inline-flex rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-950" : "inline-flex rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white"}
+          className={
+            item.variant === "light"
+              ? "inline-flex rounded-full border border-[#003E51]/15 bg-white px-5 py-3 text-sm font-semibold text-[#003E51]"
+              : "inline-flex rounded-full px-5 py-3 text-sm font-semibold text-white"
+          }
+          style={item.variant === "light" ? undefined : { backgroundColor: "var(--category-primary)" }}
         >
           {item.label}
         </Link>

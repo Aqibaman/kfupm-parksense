@@ -27,7 +27,8 @@ export function MobileBottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={cn("flex flex-col items-center rounded-2xl px-2 py-2 text-[11px] font-medium", active ? "bg-slate-950 text-white" : "text-slate-500")}
+              className={cn("flex flex-col items-center rounded-2xl px-2 py-2 text-[11px] font-medium", active ? "text-white" : "text-slate-500")}
+              style={active ? { backgroundColor: "color-mix(in srgb, var(--category-primary) 42%, #003E51 58%)" } : undefined}
             >
               <Icon className="mb-1 h-4 w-4" />
               {item.label}

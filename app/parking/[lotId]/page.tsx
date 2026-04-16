@@ -1,24 +1,26 @@
-import { notFound } from "next/navigation";
+"use client";
+
+import { useParams } from "next/navigation";
 import { BusETAWidget } from "@/components/cards/bus-eta-widget";
 import { SensorStatusPanel } from "@/components/cards/sensor-status-panel";
 import { AppShell } from "@/components/layout/app-shell";
 import { InfoPanel, SectionGrid } from "@/components/layout/sections";
+import { useStudentProfile } from "@/components/providers/student-profile-provider";
 import { Card, CardTitle } from "@/components/ui/card";
 import { ChartBars } from "@/components/ui/chart-bars";
 import { buses, busRoutes, busStops, parkingLots, parkingSlots, sensors } from "@/lib/data/kfupm-data";
-import { getDemoUser } from "@/lib/services/query";
 import { getLotPermission } from "@/lib/engines/rules";
 
-export default function ParkingLotDetailPage({ params }: { params: { lotId: string } }) {
-  const lot = parkingLots.find((item) => item.id === params.lotId);
-  if (!lot) return notFound();
+export default function ParkingLotDetailPage() {
+  const params = useParams<{ lotId: string }>();
+  const lot = parkingLots.find((item) => item.id === params.lotId) ?? parkingLots[0];
+  const { user } = useStudentProfile();
 
-  const user = getDemoUser();
   const permission = getLotPermission(user, lot);
   const lotSlots = parkingSlots.filter((slot) => slot.lotId === lot.id);
   const lotSensors = sensors.filter((sensor) => sensor.lotId === lot.id);
   const nearestStop = busStops.find((stop) => stop.id === lot.nearestStopIds[0]);
-  const activeBus = buses.find((bus) => bus.currentStopId === nearestStop?.id) ?? buses[0];
+  const activeBus = buses.find((bus) => bus.currentStopId === nearestStop?.id && bus.networkType === user.gender) ?? buses.find((bus) => bus.networkType === user.gender) ?? buses[0];
   const busRoute = busRoutes.find((route) => route.id === activeBus.routeId) ?? busRoutes[0];
 
   return (

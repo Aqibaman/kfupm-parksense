@@ -1,13 +1,15 @@
+"use client";
+
 import { LotOccupancyCard } from "@/components/cards/lot-occupancy-card";
 import { ParkingMapLegend } from "@/components/cards/parking-map-legend";
 import { AppShell } from "@/components/layout/app-shell";
 import { InfoPanel, SectionGrid } from "@/components/layout/sections";
+import { useStudentProfile } from "@/components/providers/student-profile-provider";
 import { parkingLots } from "@/lib/data/kfupm-data";
-import { getDemoUser } from "@/lib/services/query";
 import { getLotPermission } from "@/lib/engines/rules";
 
 export default function ParkingPage() {
-  const user = getDemoUser();
+  const { user } = useStudentProfile();
 
   return (
     <AppShell
@@ -25,7 +27,7 @@ export default function ParkingPage() {
             { label: "Covered / uncovered", value: "Supported in lot data model" },
             { label: "Allowed now", value: "Evaluated in rule engine" },
             { label: "Nearest building", value: user.favoriteBuildings[0] },
-            { label: "Male / female network", value: user.gender }
+            { label: "Bus network", value: user.gender === "male" ? "Male routes only" : "Female routes only" }
           ]}
         />
       </SectionGrid>

@@ -1,10 +1,14 @@
+"use client";
+
 import { RecommendationPanel } from "@/components/cards/recommendation-panel";
 import { AppShell } from "@/components/layout/app-shell";
 import { InfoPanel, SectionGrid } from "@/components/layout/sections";
-import { getDashboardSnapshot } from "@/lib/services/query";
+import { useStudentProfile } from "@/components/providers/student-profile-provider";
+import { buildDashboardSnapshot } from "@/lib/services/query";
 
 export default function RecommendationsPage() {
-  const snapshot = getDashboardSnapshot();
+  const { user } = useStudentProfile();
+  const snapshot = buildDashboardSnapshot(user);
 
   return (
     <AppShell

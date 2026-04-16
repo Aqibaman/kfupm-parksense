@@ -5,17 +5,19 @@ import { challengeThemes, parkingLots, violationHotspots } from "@/lib/data/kfup
 import { CTAGroup, SectionGrid } from "@/components/layout/sections";
 import { Card, CardTitle } from "@/components/ui/card";
 import { ChartBars } from "@/components/ui/chart-bars";
+import { BrandLogo } from "@/components/layout/brand-logo";
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(14,165,233,0.18),transparent_30%),radial-gradient(circle_at_top_right,rgba(244,114,182,0.16),transparent_34%),linear-gradient(180deg,#020617_0%,#0f172a_45%,#e2e8f0_45%,#f8fafc_100%)] px-4 py-5 lg:px-6">
+    <main className="min-h-screen bg-[linear-gradient(180deg,#ffffff_0%,#f7faf8_72%,#eef6f1_100%)] px-4 py-5 lg:px-6">
       <div className="mx-auto max-w-[1440px] space-y-6">
-        <section className="overflow-hidden rounded-[36px] border border-white/10 bg-slate-950 text-white shadow-[0_30px_120px_rgba(15,23,42,0.45)]">
+        <section className="overflow-hidden rounded-[36px] border border-slate-200 bg-white text-black shadow-[0_30px_120px_rgba(0,62,81,0.12)]">
           <div className="grid gap-10 px-6 py-8 lg:grid-cols-[1.2fr_0.8fr] lg:px-10 lg:py-12">
             <div>
-              <p className="text-sm uppercase tracking-[0.34em] text-sky-200">KFUPM Mobility Solutions Challenge</p>
-              <h1 className="mt-4 max-w-3xl text-5xl font-semibold tracking-tight lg:text-7xl">{appName}</h1>
-              <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-300">{appDescription}</p>
+              <BrandLogo />
+              <p className="mt-6 text-sm uppercase tracking-[0.34em] text-[#008540]">KFUPM Mobility Solutions Challenge</p>
+              <h1 className="mt-4 max-w-3xl text-5xl font-semibold tracking-tight text-[#003E51] lg:text-7xl">{appName}</h1>
+              <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-700">{appDescription}</p>
               <div className="mt-8">
                 <CTAGroup
                   items={[
@@ -32,28 +34,28 @@ export default function HomePage() {
                   { label: "Violation records studied", value: "3,149" },
                   { label: "IoT sensor pathway", value: "Edge-ready" }
                 ].map((item) => (
-                  <div key={item.label} className="rounded-3xl border border-white/10 bg-white/5 p-4">
-                    <p className="text-sm text-slate-300">{item.label}</p>
-                    <p className="mt-2 text-3xl font-semibold">{item.value}</p>
+                  <div key={item.label} className="rounded-3xl border border-[#003E51]/10 bg-[#f6f8fb] p-4">
+                    <p className="text-sm text-slate-500">{item.label}</p>
+                    <p className="mt-2 text-3xl font-semibold text-[#003E51]">{item.value}</p>
                   </div>
                 ))}
               </div>
             </div>
             <div className="space-y-4">
-              <Card className="bg-white/10 text-white backdrop-blur">
+              <Card className="border-[#003E51]/10 bg-[#f3f7f8] text-black">
                 <CardTitle title="Smart mobility control loop" subtitle="Prepared for live hardware later, fully demoable now." />
                 <div className="space-y-3">
                   {systemPipeline.map((step, index) => (
-                    <div key={step} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-3">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-400/20 text-sm font-semibold text-sky-100">{index + 1}</span>
-                      <span className="text-sm text-slate-100">{step}</span>
+                    <div key={step} className="flex items-center gap-3 rounded-2xl border border-[#003E51]/10 bg-white p-3">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#008540]/10 text-sm font-semibold text-[#008540]">{index + 1}</span>
+                      <span className="text-sm text-slate-700">{step}</span>
                     </div>
                   ))}
                 </div>
               </Card>
-              <Card className="bg-white/10 text-white backdrop-blur">
+              <Card className="border-[#003E51]/10 bg-[#f8fbf9] text-black">
                 <CardTitle title="Competition-ready focus" subtitle="Problem understanding, feasibility, and operational fit are built into the product story." />
-                <Link href="/competition-insights" className="inline-flex items-center gap-2 text-sm font-semibold text-sky-200">
+                <Link href="/competition-insights" className="inline-flex items-center gap-2 text-sm font-semibold text-[#008540]">
                   Read challenge insights <ArrowRight className="h-4 w-4" />
                 </Link>
               </Card>

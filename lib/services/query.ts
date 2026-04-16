@@ -17,13 +17,22 @@ import {
 } from "@/lib/data/kfupm-data";
 import { generateRecommendation } from "@/lib/engines/recommendations";
 import { getAllowedLotsForUser } from "@/lib/engines/rules";
+import type { User, UserCategory } from "@/lib/types";
 
 export function getDemoUser(userId = "user-nrm-01") {
   return users.find((user) => user.id === userId) ?? users[1];
 }
 
+export function getDemoUserByCategory(category: UserCategory) {
+  return users.find((user) => user.userCategory === category && user.role === "student") ?? users[1];
+}
+
 export function getDashboardSnapshot(userId?: string) {
   const user = getDemoUser(userId);
+  return buildDashboardSnapshot(user);
+}
+
+export function buildDashboardSnapshot(user: User) {
   return {
     user,
     allowedLots: getAllowedLotsForUser(user),

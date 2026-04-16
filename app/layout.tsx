@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./generated.css";
+import { StudentProfileProvider } from "@/components/providers/student-profile-provider";
 
 export const metadata: Metadata = {
   title: "KFUPM ParkSense",
@@ -9,7 +10,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <StudentProfileProvider>{children}</StudentProfileProvider>
+      </body>
     </html>
   );
 }
