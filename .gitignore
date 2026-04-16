@@ -1,0 +1,15 @@
+node_modules
+.next
+out
+dist
+.DS_Store
+npm-debug.log*
+.tools/
+*.pack
+*.pack.gz
+KFUPM-Student-Hub.zip
+__pycache__/
+*.ipynb
+*.py
+gcm-diagnose.log
+start-kfupm-3001.cmd
