@@ -13,8 +13,8 @@ export default function LoginPage() {
     <main className="min-h-screen bg-[linear-gradient(180deg,#008540_0%,#017652_30%,#0c6a5c_100%)] px-4 py-8 lg:px-6 lg:py-10">
       <div className="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-6xl overflow-hidden rounded-[36px] border border-white/15 bg-white shadow-[0_40px_140px_rgba(0,62,81,0.26)] lg:grid-cols-[1.15fr_0.95fr]">
         <section className="bg-[linear-gradient(180deg,#0b4f6c_0%,#0a6a5b_58%,#0b7b5b_100%)] p-8 text-white lg:p-12">
-          <div className="inline-flex rounded-[28px] border border-white/10 bg-white/5 p-4 backdrop-blur">
-            <BrandLogo compact dark />
+          <div className="inline-flex rounded-[28px] bg-white px-5 py-4 shadow-[0_20px_50px_rgba(0,0,0,0.12)]">
+            <BrandLogo compact />
           </div>
           <p className="mt-10 text-sm uppercase tracking-[0.38em] text-[#d6f7e2]">Student Login</p>
           <h1 className="mt-4 text-5xl font-semibold tracking-tight lg:text-6xl">Access your dashboard</h1>

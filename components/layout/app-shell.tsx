@@ -52,7 +52,9 @@ export function AppShell({
       <div className="mx-auto grid min-h-screen max-w-[1440px] gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6">
         <aside className="hidden rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,#0b6e56_0%,#08755c_44%,#05684b_100%)] p-5 text-white shadow-[0_30px_120px_rgba(0,62,81,0.18)] lg:block">
           <div className="rounded-3xl border border-white/15 bg-[linear-gradient(180deg,rgba(11,79,108,0.92)_0%,rgba(10,109,91,0.9)_100%)] p-5 text-white">
-            <BrandLogo compact dark />
+            <div className="inline-flex rounded-[28px] bg-white px-4 py-3 shadow-[0_18px_40px_rgba(0,0,0,0.12)]">
+              <BrandLogo compact />
+            </div>
             <p className="mt-4 text-xs uppercase tracking-[0.32em] text-[#d8f6e3]">KFUPM Mobility</p>
             <h1 className="mt-3 text-2xl font-semibold">{appName}</h1>
             <p className="mt-3 text-sm text-white/82">Rule-aware parking, bus guidance, and IoT operations in one academic-grade control surface.</p>
