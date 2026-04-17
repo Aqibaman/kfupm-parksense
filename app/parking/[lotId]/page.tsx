@@ -4,7 +4,7 @@ import { useParams } from "next/navigation";
 import { BusETAWidget } from "@/components/cards/bus-eta-widget";
 import { SensorStatusPanel } from "@/components/cards/sensor-status-panel";
 import { AppShell } from "@/components/layout/app-shell";
-import { InfoPanel, SectionGrid } from "@/components/layout/sections";
+import { SectionGrid } from "@/components/layout/sections";
 import { useStudentProfile } from "@/components/providers/student-profile-provider";
 import { Card, CardTitle } from "@/components/ui/card";
 import { ChartBars } from "@/components/ui/chart-bars";
@@ -29,25 +29,28 @@ export default function ParkingLotDetailPage() {
       eyebrow="Parking Lot Detail"
       description="Slot-level visibility, special rules, nearest stop guidance, and sensor health are grouped into one lot operations view."
     >
-      <SectionGrid cols="xl:grid-cols-[1fr_1fr]">
-        <InfoPanel
-          title="Lot summary"
-          items={[
-            { label: "Zone", value: lot.zone },
-            { label: "Cluster", value: lot.buildingCluster },
-            { label: "Allowed for current user", value: permission.allowed ? "Yes" : "No" },
-            { label: "Nearest bus stop", value: nearestStop?.stopName ?? "Pending mapping" }
-          ]}
+      <Card>
+        <CardTitle
+          title="Lot access and rule summary"
+          subtitle="The key user permission, nearest stop, and current lot rules are grouped into one quick view."
         />
-        <Card>
-          <CardTitle title="Current rule summary" subtitle="Directly seeded from the parking report and special notices." />
-          <div className="space-y-2 text-sm text-slate-600">
-            {permission.reasons.map((reason) => (
-              <p key={reason} className="rounded-2xl border border-slate-200 p-3">{reason}</p>
-            ))}
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm text-slate-500">Allowed for current user</p>
+            <p className="mt-2 text-base font-semibold text-slate-900">{permission.allowed ? "Yes" : "No"}</p>
           </div>
-        </Card>
-      </SectionGrid>
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm text-slate-500">Nearest bus stop</p>
+            <p className="mt-2 text-base font-semibold text-slate-900">{nearestStop?.stopName ?? "Pending mapping"}</p>
+          </div>
+          {permission.reasons.slice(0, 2).map((reason, index) => (
+            <div key={reason} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-sm text-slate-500">Rule summary {index + 1}</p>
+              <p className="mt-2 text-base font-semibold text-slate-900">{reason}</p>
+            </div>
+          ))}
+        </div>
+      </Card>
       <SectionGrid cols="xl:grid-cols-[1fr_1fr]">
         <Card>
           <CardTitle title="Slot grid view" subtitle="Compact slot-level status for the selected lot." />
