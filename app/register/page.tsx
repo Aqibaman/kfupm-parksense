@@ -80,8 +80,8 @@ export default function RegisterPage() {
               <label className="label">
                 Permit category <span className="text-rose-600">*</span>
               </label>
-              <div className="mt-4">
-                <PermitSelector value={user.userCategory} onChange={selectCategory} />
+              <div className="mt-4 rounded-[30px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f8fbf9_100%)] p-4 md:p-5">
+                <PermitSelector value={user.userCategory} onChange={selectCategory} appearance="register" />
               </div>
             </div>
 

@@ -4,19 +4,76 @@ import { categoryMeta } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import type { UserCategory } from "@/lib/types";
 
+const categoryDescriptions: Record<UserCategory, string> = {
+  "resident-male": "Housing-based access with resident parking coverage.",
+  "non-resident-male": "Commuter access with 10:00 PM campus limit.",
+  "resident-female": "Resident female permit with category-specific routing.",
+  "non-resident-female": "Commuter female permit with time-aware mobility rules."
+};
+
 export function PermitSelector({
   value,
   onChange,
-  columns = "xl:grid-cols-4"
+  columns = "xl:grid-cols-4",
+  appearance = "default"
 }: {
   value: UserCategory;
   onChange?: (value: UserCategory) => void;
   columns?: string;
+  appearance?: "default" | "register";
 }) {
   return (
     <div className={`grid gap-4 md:grid-cols-2 ${columns}`}>
       {(Object.entries(categoryMeta) as Array<[UserCategory, (typeof categoryMeta)[UserCategory]]>).map(([key, meta]) => {
         const active = value === key;
+
+        if (appearance === "register") {
+          return (
+            <button
+              key={key}
+              type="button"
+              onClick={() => onChange?.(key)}
+              className={cn(
+                "group flex min-h-[228px] flex-col rounded-[28px] border bg-white p-5 text-left shadow-[0_14px_40px_rgba(0,62,81,0.06)] transition hover:-translate-y-0.5",
+                active && "ring-2 ring-[#003E51] ring-offset-2"
+              )}
+              style={{
+                borderColor: active ? "#003E51" : meta.border,
+                background: active ? "linear-gradient(180deg,#ffffff 0%, color-mix(in srgb, var(--category-soft) 55%, white 45%) 100%)" : "linear-gradient(180deg,#ffffff 0%, #fcfefe 100%)"
+              }}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className={cn("h-16 w-16 rounded-[22px] border border-white/70 shadow-inner", meta.previewClass)} />
+                <span
+                  className="rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em]"
+                  style={{
+                    color: meta.text,
+                    backgroundColor: meta.soft
+                  }}
+                >
+                  {meta.shortLabel}
+                </span>
+              </div>
+              <div className="mt-5">
+                <p className="text-2xl font-semibold leading-8" style={{ color: meta.text }}>
+                  {meta.label}
+                </p>
+                <p className="mt-3 text-sm leading-6 text-slate-600">{categoryDescriptions[key]}</p>
+              </div>
+              <div className="mt-auto pt-5">
+                <div
+                  className="rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em]"
+                  style={{
+                    color: active ? "#ffffff" : meta.text,
+                    background: active ? "linear-gradient(135deg,#003E51 0%, #007a4d 100%)" : meta.soft
+                  }}
+                >
+                  {active ? "Selected permit" : "Choose permit"}
+                </div>
+              </div>
+            </button>
+          );
+        }
 
         return (
           <button
