@@ -8,7 +8,7 @@ import { SectionGrid } from "@/components/layout/sections";
 import { useStudentProfile } from "@/components/providers/student-profile-provider";
 import { Card, CardTitle } from "@/components/ui/card";
 import { ChartBars } from "@/components/ui/chart-bars";
-import { buses, busRoutes, busStops, parkingLots, parkingSlots, sensors } from "@/lib/data/kfupm-data";
+import { buses, busRoutes, busStops, parkingLots, sensors } from "@/lib/data/kfupm-data";
 import { getLotPermission } from "@/lib/engines/rules";
 
 export default function ParkingLotDetailPage() {
@@ -17,11 +17,31 @@ export default function ParkingLotDetailPage() {
   const { user } = useStudentProfile();
 
   const permission = getLotPermission(user, lot);
-  const lotSlots = parkingSlots.filter((slot) => slot.lotId === lot.id);
   const lotSensors = sensors.filter((sensor) => sensor.lotId === lot.id);
   const nearestStop = busStops.find((stop) => stop.id === lot.nearestStopIds[0]);
   const activeBus = buses.find((bus) => bus.currentStopId === nearestStop?.id && bus.networkType === user.gender) ?? buses.find((bus) => bus.networkType === user.gender) ?? buses[0];
   const busRoute = busRoutes.find((route) => route.id === activeBus.routeId) ?? busRoutes[0];
+  const unavailableSlots = new Set([7, 18, 34, 63, 91]);
+  const occupiedSlots = new Set(
+    Array.from({ length: 100 }, (_, index) => index + 1).filter(
+      (slotNumber) => !unavailableSlots.has(slotNumber) && (slotNumber % 3 === 0 || slotNumber % 7 === 0 || slotNumber % 11 === 0)
+    )
+  );
+  const slotBoard = Array.from({ length: 100 }, (_, index) => {
+    const slotNumber = index + 1;
+
+    if (unavailableSlots.has(slotNumber)) {
+      return { number: slotNumber, status: "unavailable" as const };
+    }
+
+    if (occupiedSlots.has(slotNumber)) {
+      return { number: slotNumber, status: "occupied" as const };
+    }
+
+    return { number: slotNumber, status: "vacant" as const };
+  });
+  const occupiedCount = slotBoard.filter((slot) => slot.status === "occupied").length;
+  const vacantCount = slotBoard.filter((slot) => slot.status === "vacant").length;
 
   return (
     <AppShell
@@ -53,15 +73,63 @@ export default function ParkingLotDetailPage() {
       </Card>
       <SectionGrid cols="xl:grid-cols-[1fr_1fr]">
         <Card>
-          <CardTitle title="Slot grid view" subtitle="Compact slot-level status for the selected lot." />
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {lotSlots.map((slot) => (
-              <div key={slot.id} className={`rounded-2xl border p-3 text-sm ${slot.status === "vacant" ? "border-emerald-200 bg-emerald-50" : slot.status === "occupied" ? "border-rose-200 bg-rose-50" : "border-slate-200 bg-slate-50"}`}>
-                <p className="font-semibold text-slate-900">{slot.slotCode}</p>
-                <p className="text-slate-500">{slot.status}</p>
-                <p className="text-slate-400">{slot.floorLevel}</p>
+          <CardTitle title="Slot grid view" subtitle="Small numbered spaces let students scan this lot quickly and spot vacant, occupied, and unavailable places at a glance." />
+          <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_220px]">
+            <div className="rounded-[28px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f6fbf8_100%)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+              <div className="mb-4 flex items-center justify-between rounded-2xl border border-[#dbe9e1] bg-white/90 px-4 py-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#008540]">Live slot board</p>
+                  <p className="mt-1 text-sm text-slate-500">Demo layout for {lot.lotCode} with 100 visible spaces.</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-slate-500">Visible now</p>
+                  <p className="text-lg font-semibold text-[#003E51]">{vacantCount} vacant</p>
+                </div>
               </div>
-            ))}
+              <div className="grid grid-cols-5 gap-2 sm:grid-cols-8 xl:grid-cols-10">
+                {slotBoard.map((slot) => (
+                  <div
+                    key={slot.number}
+                    className={
+                      slot.status === "vacant"
+                        ? "flex aspect-square items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 text-sm font-semibold text-emerald-800 shadow-sm"
+                        : slot.status === "occupied"
+                          ? "flex aspect-square items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-sm font-semibold text-rose-800 shadow-sm"
+                          : "flex aspect-square items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-sm font-semibold text-slate-500 shadow-sm"
+                    }
+                  >
+                    {slot.number}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="rounded-[28px] border border-[#dbe9e1] bg-white p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#003E51]">Legend</p>
+              <p className="mt-2 text-sm text-slate-500">The same color language is used across parking boards so each numbered slot is easy to read.</p>
+              <div className="mt-5 space-y-3">
+                <div className="flex items-center gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-3">
+                  <span className="h-5 w-5 rounded-lg border border-emerald-300 bg-emerald-200" />
+                  <div>
+                    <p className="text-sm font-semibold text-emerald-900">Vacant</p>
+                    <p className="text-xs text-emerald-800">{vacantCount} spaces open</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 rounded-2xl border border-rose-200 bg-rose-50 px-3 py-3">
+                  <span className="h-5 w-5 rounded-lg border border-rose-300 bg-rose-200" />
+                  <div>
+                    <p className="text-sm font-semibold text-rose-900">Occupied</p>
+                    <p className="text-xs text-rose-800">{occupiedCount} spaces in use</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3">
+                  <span className="h-5 w-5 rounded-lg border border-slate-300 bg-slate-200" />
+                  <div>
+                    <p className="text-sm font-semibold text-slate-900">Unavailable</p>
+                    <p className="text-xs text-slate-600">5 spaces reserved for restricted use</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </Card>
         <div className="space-y-4">
