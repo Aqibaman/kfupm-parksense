@@ -41,7 +41,7 @@ export default function DashboardPage() {
             </span>
             <h2 className="mt-4 text-4xl font-semibold tracking-tight">Mobility overview for today</h2>
             <p className="mt-3 max-w-3xl text-base leading-8 text-white/85">
-              Permit-aware parking, nearby bus routes, session safety, and AI guidance are all tuned to the category you selected.
+              This dashboard brings together the next decisions you need to make right now: where you can park, which route fits your trip, how long you can stay, and what action to take before a rule becomes a violation.
             </p>
           </div>
           <div className="space-y-3 rounded-[28px] border border-white/15 bg-white/8 p-4 backdrop-blur">

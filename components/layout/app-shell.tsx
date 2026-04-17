@@ -57,7 +57,9 @@ export function AppShell({
             </div>
             <p className="mt-4 text-xs uppercase tracking-[0.32em] text-[#d8f6e3]">KFUPM Mobility</p>
             <h1 className="mt-3 text-2xl font-semibold">{appName}</h1>
-            <p className="mt-3 text-sm text-white/82">Rule-aware parking, bus guidance, and IoT operations in one academic-grade control surface.</p>
+            <p className="mt-3 text-sm leading-7 text-white/82">
+              A permit-aware mobility workspace that helps students find legal parking, follow the right bus network, and avoid violations before they happen.
+            </p>
           </div>
           <nav className="mt-6 space-y-2">
             {primaryItems.map((item) => (
@@ -68,13 +70,16 @@ export function AppShell({
         <main className="space-y-6">
           <section className="rounded-[32px] border border-white/20 bg-[linear-gradient(135deg,#0b4362_0%,#0a5e59_54%,#0b7a5c_100%)] px-5 py-6 text-white shadow-[0_24px_80px_rgba(0,62,81,0.12)] lg:px-7">
             <p className="text-xs uppercase tracking-[0.32em] text-[#d8f6e3]">{eyebrow}</p>
-            <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="mt-3 grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">
               <div>
                 <h2 className="text-3xl font-semibold tracking-tight lg:text-4xl">{title}</h2>
-                <p className="mt-3 max-w-3xl text-sm leading-7 text-white/84 lg:text-base">{description}</p>
+                <div className="mt-4 max-w-3xl rounded-[26px] border border-white/14 bg-white/8 px-5 py-4 backdrop-blur">
+                  <p className="text-xs font-semibold uppercase tracking-[0.30em] text-[#d8f6e3]">What This Page Helps You Do</p>
+                  <p className="mt-3 text-sm leading-7 text-white/84 lg:text-base">{description}</p>
+                </div>
               </div>
-              <div className="rounded-3xl border border-white/15 bg-white/8 px-4 py-3 text-sm text-white/82 backdrop-blur">
-                Mobile, tablet, and laptop layouts are all tuned from the same mock platform data.
+              <div className="rounded-[26px] border border-white/14 bg-white/8 px-5 py-4 text-sm leading-7 text-white/82 backdrop-blur">
+                Each screen is connected to the same permit rules, parking data, bus network logic, and mobility guidance used across the platform.
               </div>
             </div>
           </section>

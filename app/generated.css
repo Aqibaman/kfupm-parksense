@@ -1535,6 +1535,10 @@ video {
   letter-spacing: 0.2em;
 }
 
+.tracking-\[0\.30em\] {
+  letter-spacing: 0.30em;
+}
+
 .tracking-\[0\.32em\] {
   letter-spacing: 0.32em;
 }
@@ -2043,16 +2047,12 @@ textarea {
     grid-template-columns: 280px minmax(0,1fr);
   }
 
-  .lg\:flex-row {
-    flex-direction: row;
+  .lg\:grid-cols-\[minmax\(0\2c 1fr\)_320px\] {
+    grid-template-columns: minmax(0,1fr) 320px;
   }
 
   .lg\:items-end {
     align-items: flex-end;
-  }
-
-  .lg\:justify-between {
-    justify-content: space-between;
   }
 
   .lg\:p-12 {
