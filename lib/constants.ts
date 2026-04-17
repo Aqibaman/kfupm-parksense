@@ -91,8 +91,7 @@ export const mainNavigation = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/parking", label: "Parking" },
   { href: "/buses", label: "Buses" },
-  { href: "/recommendations", label: "AI Guide" },
-  { href: "/notifications", label: "Alerts" },
+  { href: "/guidance", label: "Smart Guidance" },
   { href: "/rules", label: "Rules" },
   { href: "/profile", label: "Profile" }
 ] as const;

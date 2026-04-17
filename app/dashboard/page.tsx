@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, CarFront, ChevronRight, MapPinned, ShieldAlert, Sparkles, UserRound } from "lucide-react";
+import { CarFront, ChevronRight, MapPinned, ShieldAlert, Sparkles, UserRound } from "lucide-react";
 import { NotificationBellPanel } from "@/components/cards/notification-bell-panel";
 import { RecommendationPanel } from "@/components/cards/recommendation-panel";
 import { ViolationCountdownCard } from "@/components/cards/violation-countdown-card";
@@ -16,8 +16,7 @@ const overviewLinks = [
   { href: "/parking", label: "Parking", helper: "See allowed lots, active space counts, and special-rule lots.", icon: CarFront },
   { href: "/buses", label: "Bus Routes", helper: "Open the live route board and gender-specific shuttle network.", icon: MapPinned },
   { href: "/parking/session", label: "Parking Session", helper: "Track how long the car has been parked and when to move.", icon: ShieldAlert },
-  { href: "/notifications", label: "Warnings", helper: "Review push-style alerts, curfew notices, and arrival reminders.", icon: Bell },
-  { href: "/recommendations", label: "AI Guide", helper: "Get best-lot recommendations for your destination and stay length.", icon: Sparkles },
+  { href: "/guidance", label: "Smart Guidance", helper: "See AI recommendations, violation warnings, and next-step alerts in one place.", icon: Sparkles },
   { href: "/profile", label: "Profile", helper: "Edit account details, permit category, and favorite buildings.", icon: UserRound }
 ];
 

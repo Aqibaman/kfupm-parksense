@@ -23,8 +23,8 @@ export function NotificationBellPanel({ notifications }: { notifications: AppNot
           </div>
         ))}
       </div>
-      <Link href="/notifications" className="mt-4 inline-flex rounded-full bg-[#008540] px-4 py-2 text-sm font-semibold text-white">
-        Open all alerts
+      <Link href="/guidance" className="mt-4 inline-flex rounded-full bg-[#008540] px-4 py-2 text-sm font-semibold text-white">
+        Open smart guidance
       </Link>
     </Card>
   );

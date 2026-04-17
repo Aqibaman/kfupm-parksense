@@ -37,8 +37,8 @@ export function RecommendationPanel({ recommendation }: { recommendation: Recomm
             View recommended lot
           </Link>
         ) : null}
-        <Link href="/recommendations" className="inline-flex rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-white">
-          Open full engine
+        <Link href="/guidance" className="inline-flex rounded-full border border-white/20 bg-white/5 px-4 py-2 text-sm font-semibold text-white">
+          Open smart guidance
         </Link>
       </div>
     </Card>
