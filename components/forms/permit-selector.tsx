@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { categoryMeta } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import type { UserCategory } from "@/lib/types";
@@ -9,6 +10,13 @@ const categoryDescriptions: Record<UserCategory, string> = {
   "non-resident-male": "Commuter access with 10:00 PM campus limit.",
   "resident-female": "Resident female permit with category-specific routing.",
   "non-resident-female": "Commuter female permit with time-aware mobility rules."
+};
+
+const categoryImageMap: Record<UserCategory, string> = {
+  "resident-male": "/permits/resident-male.png",
+  "non-resident-male": "/permits/non-resident-male.png",
+  "resident-female": "/permits/resident-female.png",
+  "non-resident-female": "/permits/non-resident-female.png"
 };
 
 export function PermitSelector({
@@ -43,7 +51,15 @@ export function PermitSelector({
               }}
             >
               <div className="flex items-start justify-between gap-3">
-                <div className={cn("h-16 w-16 rounded-[22px] border border-white/70 shadow-inner", meta.previewClass)} />
+                <div className="rounded-[24px] border border-slate-100 bg-white p-2 shadow-[0_10px_24px_rgba(0,62,81,0.06)]">
+                  <Image
+                    src={categoryImageMap[key]}
+                    alt={meta.label}
+                    width={88}
+                    height={110}
+                    className="h-[92px] w-[76px] object-contain"
+                  />
+                </div>
                 <span
                   className="rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.28em]"
                   style={{
@@ -55,7 +71,7 @@ export function PermitSelector({
                 </span>
               </div>
               <div className="mt-5">
-                <p className="text-2xl font-semibold leading-8" style={{ color: meta.text }}>
+                <p className="text-[18px] font-semibold leading-8" style={{ color: meta.text }}>
                   {meta.label}
                 </p>
                 <p className="mt-3 text-sm leading-6 text-slate-600">{categoryDescriptions[key]}</p>
@@ -86,7 +102,15 @@ export function PermitSelector({
               active && "ring-2 ring-[#003E51] ring-offset-2"
             )}
           >
-            <div className={cn("mx-auto mb-5 h-16 w-[82%] rounded-[22px] border border-white/70 shadow-inner", meta.previewClass)} />
+            <div className="mx-auto mb-5 rounded-[24px] border border-white/70 bg-white/70 p-2 shadow-[0_10px_24px_rgba(0,62,81,0.05)]">
+              <Image
+                src={categoryImageMap[key]}
+                alt={meta.label}
+                width={88}
+                height={110}
+                className="h-[92px] w-[76px] object-contain"
+              />
+            </div>
             <p className="text-xs uppercase tracking-[0.24em] opacity-70">{meta.shortLabel}</p>
             <div className="mt-4 flex min-h-[132px] items-center justify-center">
               <p className="max-w-[10ch] text-[18px] font-semibold leading-8">{meta.label}</p>

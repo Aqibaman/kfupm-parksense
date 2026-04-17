@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { BrandLogo } from "@/components/layout/brand-logo";
 
@@ -6,6 +7,13 @@ const highlights = [
   "Male and female bus routes matched to student access",
   "Rule-aware warnings before parking violations happen",
   "Competition-ready KFUPM mobility demo experience"
+];
+
+const permitShowcase = [
+  { src: "/permits/resident-male.png", alt: "Resident male permit" },
+  { src: "/permits/non-resident-male.png", alt: "Non-resident male permit" },
+  { src: "/permits/resident-female.png", alt: "Resident female permit" },
+  { src: "/permits/non-resident-female.png", alt: "Non-resident female permit" }
 ];
 
 export default function LoginPage() {
@@ -21,6 +29,13 @@ export default function LoginPage() {
           <p className="mt-5 max-w-2xl text-lg leading-8 text-white/85">
             Enter the KFUPM ParkSense demo to explore category-based parking access, bus route guidance, live session monitoring, and compliance alerts in one premium university dashboard.
           </p>
+          <div className="mt-8 grid grid-cols-4 gap-3">
+            {permitShowcase.map((item) => (
+              <div key={item.alt} className="rounded-[24px] border border-white/20 bg-white/8 p-2 backdrop-blur">
+                <Image src={item.src} alt={item.alt} width={92} height={116} className="mx-auto h-[92px] w-[76px] object-contain" />
+              </div>
+            ))}
+          </div>
           <div className="mt-10 grid gap-4 sm:grid-cols-2">
             {highlights.map((item) => (
               <div key={item} className="rounded-[28px] border border-white/25 bg-white/6 p-5 text-lg font-medium leading-8 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
