@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bell, BusFront, CarFront, Cpu, Gauge, Home, Map, ShieldCheck, Sparkles } from "lucide-react";
-import { adminNavigation, appName, mainNavigation, projectSections } from "@/lib/constants";
+import { adminNavigation, appName, mainNavigation } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import type { ReactNode } from "react";
@@ -64,14 +64,6 @@ export function AppShell({
               <SidebarLink key={item.href} href={item.href} label={item.label} active={pathname === item.href || pathname.startsWith(`${item.href}/`)} />
             ))}
           </nav>
-          <div className="mt-8">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-white/55">Competition</p>
-            <div className="space-y-2">
-              {projectSections.map((item) => (
-                <SidebarLink key={item.href} href={item.href} label={item.label} active={pathname === item.href} compact />
-              ))}
-            </div>
-          </div>
         </aside>
         <main className="space-y-6">
           <section className="rounded-[32px] border border-white/20 bg-[linear-gradient(135deg,#0b4362_0%,#0a5e59_54%,#0b7a5c_100%)] px-5 py-6 text-white shadow-[0_24px_80px_rgba(0,62,81,0.12)] lg:px-7">
