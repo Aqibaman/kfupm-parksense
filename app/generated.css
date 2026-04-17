@@ -1266,10 +1266,6 @@ video {
   background-color: rgb(255 255 255 / 0.7);
 }
 
-.bg-white\/90 {
-  background-color: rgb(255 255 255 / 0.9);
-}
-
 .bg-\[linear-gradient\(135deg\2c \#0b4362_0\%\2c \#0a5e59_54\%\2c \#0b7a5c_100\%\)\] {
   background-image: linear-gradient(135deg,#0b4362 0%,#0a5e59 54%,#0b7a5c 100%);
 }
@@ -1486,10 +1482,6 @@ video {
 
 .text-center {
   text-align: center;
-}
-
-.text-right {
-  text-align: right;
 }
 
 .text-2xl {
@@ -2127,6 +2119,10 @@ textarea {
     display: none;
   }
 
+  .lg\:grid-cols-10 {
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+  }
+
   .lg\:grid-cols-\[0\.95fr_1\.05fr\] {
     grid-template-columns: 0.95fr 1.05fr;
   }
@@ -2137,10 +2133,6 @@ textarea {
 
   .lg\:grid-cols-\[280px_minmax\(0\2c 1fr\)\] {
     grid-template-columns: 280px minmax(0,1fr);
-  }
-
-  .lg\:grid-cols-\[minmax\(0\2c 1fr\)_220px\] {
-    grid-template-columns: minmax(0,1fr) 220px;
   }
 
   .lg\:grid-cols-\[minmax\(0\2c 1fr\)_320px\] {
@@ -2214,8 +2206,8 @@ textarea {
 }
 
 @media (min-width: 1280px) {
-  .xl\:grid-cols-10 {
-    grid-template-columns: repeat(10, minmax(0, 1fr));
+  .xl\:grid-cols-12 {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
   }
 
   .xl\:grid-cols-2 {
@@ -2248,6 +2240,10 @@ textarea {
 
   .xl\:grid-cols-\[1fr_1fr\] {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .xl\:grid-cols-\[minmax\(0\2c 1fr\)_240px\] {
+    grid-template-columns: minmax(0,1fr) 240px;
   }
 }
 
