@@ -6,7 +6,7 @@ import { type FormEvent, useState } from "react";
 import { BrandLogo } from "@/components/layout/brand-logo";
 import { PermitSelector } from "@/components/forms/permit-selector";
 import { useStudentProfile } from "@/components/providers/student-profile-provider";
-import { academicBuildingOptions } from "@/lib/constants";
+import { academicBuildingOptions, categoryMeta } from "@/lib/constants";
 
 const buildingFieldLabels = [
   "Preferred Building 1",
@@ -77,9 +77,12 @@ export default function RegisterPage() {
 
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label className="label">
-                Permit category <span className="text-rose-600">*</span>
-              </label>
+              <p className="text-sm font-semibold text-[#003E51]">Current category</p>
+              <div className="mt-3 inline-flex rounded-full border px-3 py-1.5 text-sm font-semibold" style={{ borderColor: categoryMeta[user.userCategory].border, backgroundColor: categoryMeta[user.userCategory].soft, color: categoryMeta[user.userCategory].text }}>
+                {categoryMeta[user.userCategory].label}
+              </div>
+              <h3 className="mt-7 text-2xl font-semibold text-[#003E51]">Choose your permit category</h3>
+              <p className="mt-2 text-sm leading-7 text-slate-600">Pick the full category directly instead of entering gender or residency separately.</p>
               <div className="mt-4 rounded-[30px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f8fbf9_100%)] p-4 md:p-5">
                 <PermitSelector value={user.userCategory} onChange={selectCategory} appearance="register" />
               </div>
