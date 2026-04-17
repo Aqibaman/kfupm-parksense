@@ -41,6 +41,7 @@ export function ParkingSessionStatusCard({ session, lot }: { session: ParkingSes
   }, [leftAt, parkedAt, storageKey]);
 
   const safeUntilMs = new Date(session.expectedEndAt).getTime();
+  const leaveByTime = session.expectedEndAt.split("T")[1].slice(0, 5);
   const activeEndPoint = leftAt ?? now;
   const elapsed = parkedAt ? activeEndPoint - parkedAt : 0;
   const remaining = parkedAt && !leftAt ? safeUntilMs - now : safeUntilMs - (leftAt ?? now);
@@ -60,8 +61,8 @@ export function ParkingSessionStatusCard({ session, lot }: { session: ParkingSes
   return (
     <Card style={{ background: "linear-gradient(180deg,#ffffff 0%, #f6fbf8 100%)" }}>
       <div className="flex items-start justify-between gap-4">
-        <CardTitle title="Current parking timer" subtitle={`Use the buttons below to mark when you parked in ${lot.lotCode} and when you left the space.`} />
-        <StatPill label="Safe until" value={session.expectedEndAt.split("T")[1].slice(0, 5)} tone={remaining <= 30 * 60 * 1000 ? "red" : "green"} />
+        <CardTitle title="Current parking timer" subtitle={`Use the buttons below to mark when you parked in ${lot.lotCode}. The leave-by time follows this lot's active parking restriction.`} />
+        <StatPill label="Safe until" value={leaveByTime} tone={remaining <= 30 * 60 * 1000 ? "red" : "green"} />
       </div>
       <div className="mt-4 flex flex-wrap gap-3">
         <button
@@ -74,7 +75,7 @@ export function ParkingSessionStatusCard({ session, lot }: { session: ParkingSes
         <button
           type="button"
           onClick={handleLeaving}
-          className="inline-flex rounded-full border border-[#d6e6dc] bg-white px-5 py-2.5 text-sm font-semibold text-[#003E51]"
+          className="inline-flex rounded-full bg-[#0d5f74] px-5 py-2.5 text-sm font-semibold text-white shadow-[0_12px_30px_rgba(0,62,81,0.16)]"
         >
           I am leaving
         </button>
@@ -89,9 +90,9 @@ export function ParkingSessionStatusCard({ session, lot }: { session: ParkingSes
           <p className="mt-2 text-sm text-slate-600">The timer starts when you click parked and stops when you click leaving.</p>
         </div>
         <div className="rounded-[24px] border border-[#dbe9e1] bg-white p-4">
-          <p className="text-sm text-slate-500">Time until warning limit</p>
-          <p className="mt-3 text-4xl font-semibold tracking-tight text-[#007a4d]">{formatDuration(remaining)}</p>
-          <p className="mt-2 text-sm text-slate-600">You must leave the parking space by the allowed time shown in the rules engine.</p>
+          <p className="text-sm text-slate-500">Leave by</p>
+          <p className="mt-3 text-4xl font-semibold tracking-tight text-[#007a4d]">{leaveByTime}</p>
+          <p className="mt-2 text-sm text-slate-600">You have to leave this parking lot by {leaveByTime} based on the current time restriction for this lot.</p>
         </div>
       </div>
     </Card>
