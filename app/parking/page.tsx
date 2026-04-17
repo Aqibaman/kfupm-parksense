@@ -37,16 +37,6 @@ export default function ParkingPage() {
             ]}
           />
         )}
-        <InfoPanel
-          title="Parking warning logic"
-          subtitle="How the app handles legal parking duration."
-          items={[
-            { label: "When timer starts", value: "When the slot changes to occupied" },
-            { label: "When timer stops", value: "When the slot becomes vacant again" },
-            { label: "Primary warning", value: "30 minutes before the allowed limit" },
-            { label: "Urgent warning", value: "10 minutes before the allowed limit" }
-          ]}
-        />
       </SectionGrid>
 
       <ParkingMapLegend />
