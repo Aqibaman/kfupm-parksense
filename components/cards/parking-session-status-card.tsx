@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardTitle, StatPill } from "@/components/ui/card";
+import { Card, CardTitle } from "@/components/ui/card";
 import type { ParkingLot, ParkingSession } from "@/lib/types";
 
 function formatDuration(ms: number) {
@@ -60,10 +60,7 @@ export function ParkingSessionStatusCard({ session, lot }: { session: ParkingSes
 
   return (
     <Card style={{ background: "linear-gradient(180deg,#ffffff 0%, #f6fbf8 100%)" }}>
-      <div className="flex items-start justify-between gap-4">
-        <CardTitle title="Current parking timer" subtitle={`Use the buttons below to mark when you parked in ${lot.lotCode}. The leave-by time follows this lot's active parking restriction.`} />
-        <StatPill label="Safe until" value={leaveByTime} tone={remaining <= 30 * 60 * 1000 ? "red" : "green"} />
-      </div>
+      <CardTitle title="Current parking timer" subtitle={`Use the buttons below to mark when you parked in ${lot.lotCode}. The leave-by time follows this lot's active parking restriction.`} />
       <div className="mt-4 flex flex-wrap gap-3">
         <button
           type="button"
