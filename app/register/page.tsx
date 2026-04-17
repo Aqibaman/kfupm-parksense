@@ -51,7 +51,9 @@ export default function RegisterPage() {
     <main className="min-h-screen bg-[linear-gradient(180deg,#f3faf6_0%,#ffffff_100%)] px-4 py-8 lg:px-6 lg:py-10">
       <div className="mx-auto grid max-w-6xl gap-6 rounded-[36px] border border-[#dbe9e1] bg-white p-6 shadow-[0_30px_120px_rgba(0,62,81,0.12)] lg:grid-cols-[0.95fr_1.05fr] lg:p-8">
         <section className="rounded-[30px] bg-[linear-gradient(180deg,#0b4f6c_0%,#0a6a5b_58%,#0b7b5b_100%)] p-7 text-white lg:p-9">
-          <BrandLogo compact dark />
+          <div className="inline-flex rounded-[28px] bg-white px-5 py-4 shadow-[0_20px_50px_rgba(0,0,0,0.12)]">
+            <BrandLogo compact />
+          </div>
           <p className="mt-8 text-sm uppercase tracking-[0.34em] text-[#d6f7e2]">Create Account</p>
           <h1 className="mt-4 text-4xl font-semibold tracking-tight lg:text-5xl">Register your mobility profile</h1>
           <p className="mt-5 text-base leading-8 text-white/85">
@@ -78,7 +80,7 @@ export default function RegisterPage() {
               <label className="label">
                 Permit category <span className="text-rose-600">*</span>
               </label>
-              <div className="mt-3">
+              <div className="mt-4">
                 <PermitSelector value={user.userCategory} onChange={selectCategory} />
               </div>
             </div>
