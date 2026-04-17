@@ -58,8 +58,14 @@ export function StudentProfileProvider({ children }: { children: ReactNode }) {
       selectCategory: (category) => {
         const template = getTemplateUser(category);
         setUser((current) => ({
-          ...template,
-          notificationSettings: current.notificationSettings
+          ...current,
+          gender: template.gender,
+          residencyStatus: template.residencyStatus,
+          userCategory: template.userCategory,
+          role: template.role,
+          passwordHash: current.passwordHash || template.passwordHash,
+          notificationSettings: current.notificationSettings,
+          updatedAt: template.updatedAt
         }));
       },
       updateUser: (updates) => {

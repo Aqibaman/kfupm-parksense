@@ -81,6 +81,12 @@ export const kfupmTheme = {
   ink: "#111111"
 };
 
+export const academicBuildingOptions = [
+  ...Array.from({ length: 25 }, (_, index) => `Building ${index + 1}`),
+  "Building 57",
+  "Building 58"
+];
+
 export const mainNavigation = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/parking", label: "Parking" },

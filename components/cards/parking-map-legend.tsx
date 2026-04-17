@@ -11,11 +11,11 @@ export function ParkingMapLegend() {
   return (
     <Card>
       <CardTitle title="Parking Map Legend" subtitle="Use the same traffic-style state across parking cards and lot views." />
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3 md:grid-cols-4">
         {items.map((item) => (
-          <div key={item.label} className="flex items-center gap-3 rounded-2xl border border-slate-200 p-3">
-            <span className={`h-3 w-3 rounded-full ${item.color}`} />
-            <span className="text-sm text-slate-700">{item.label}</span>
+          <div key={item.label} className="flex items-center gap-4 rounded-[24px] border border-[#dbe9e1] bg-[#f8fbf9] px-5 py-4">
+            <span className={`h-4 w-4 rounded-full ${item.color}`} />
+            <span className="text-base font-medium text-slate-700">{item.label}</span>
           </div>
         ))}
       </div>

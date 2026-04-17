@@ -4,7 +4,8 @@ import { formatPercent, lotAvailabilityTone } from "@/lib/utils";
 import type { ParkingLot } from "@/lib/types";
 
 export function LotOccupancyCard({ lot, allowed }: { lot: ParkingLot; allowed: boolean }) {
-  const tone = !allowed ? "slate" : lotAvailabilityTone(lot.occupancyRate) === "green" ? "green" : lotAvailabilityTone(lot.occupancyRate) === "yellow" ? "yellow" : "red";
+  const availabilityTone = lotAvailabilityTone(lot.occupancyRate);
+  const tone = !allowed ? "slate" : availabilityTone === "green" ? "green" : availabilityTone === "yellow" ? "yellow" : "red";
   const freeSlots = Math.round(lot.totalSlots * (1 - lot.occupancyRate));
 
   return (
@@ -12,7 +13,7 @@ export function LotOccupancyCard({ lot, allowed }: { lot: ParkingLot; allowed: b
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium uppercase tracking-[0.2em] text-slate-400">{lot.zone}</p>
-          <CardTitle title={`${lot.lotCode} · ${lot.lotName}`} subtitle={lot.buildingCluster} />
+          <CardTitle title={`${lot.lotCode} - ${lot.lotName}`} subtitle={lot.buildingCluster} />
         </div>
         <StatPill label={allowed ? "Status" : "Access"} value={allowed ? formatPercent(1 - lot.occupancyRate) : "Restricted"} tone={tone} />
       </div>
@@ -33,7 +34,7 @@ export function LotOccupancyCard({ lot, allowed }: { lot: ParkingLot; allowed: b
             <p className="text-lg font-semibold text-slate-900">{lot.totalSlots}</p>
           </div>
         </div>
-        <Link href={`/parking/${lot.id}`} className="inline-flex rounded-full bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">
+        <Link href={`/parking/${lot.id}`} className="inline-flex rounded-full bg-[#007a4d] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#006842]">
           Open lot details
         </Link>
       </div>

@@ -48,14 +48,14 @@ export function AppShell({
   useStudentProfile();
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#ffffff_0%,#f5faf7_48%,#ffffff_100%)] pb-20 lg:pb-0">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#edf6f1_0%,#ffffff_38%,#f4faf6_100%)] pb-20 lg:pb-0">
       <div className="mx-auto grid min-h-screen max-w-[1440px] gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6">
-        <aside className="hidden rounded-[32px] border border-slate-200 bg-white p-5 shadow-[0_24px_80px_rgba(0,62,81,0.08)] lg:block">
-          <div className="rounded-3xl border border-[#d7e8de] bg-[linear-gradient(180deg,#ffffff_0%,#f4faf6_100%)] p-5 text-[#003E51]">
-            <BrandLogo compact />
-            <p className="mt-4 text-xs uppercase tracking-[0.32em]" style={{ color: "color-mix(in srgb, var(--category-primary) 62%, #003E51 38%)" }}>KFUPM Mobility</p>
+        <aside className="hidden rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,#0b6e56_0%,#08755c_44%,#05684b_100%)] p-5 text-white shadow-[0_30px_120px_rgba(0,62,81,0.18)] lg:block">
+          <div className="rounded-3xl border border-white/15 bg-[linear-gradient(180deg,rgba(11,79,108,0.92)_0%,rgba(10,109,91,0.9)_100%)] p-5 text-white">
+            <BrandLogo compact dark />
+            <p className="mt-4 text-xs uppercase tracking-[0.32em] text-[#d8f6e3]">KFUPM Mobility</p>
             <h1 className="mt-3 text-2xl font-semibold">{appName}</h1>
-            <p className="mt-3 text-sm text-slate-700">Rule-aware parking, bus guidance, and IoT operations in one academic-grade control surface.</p>
+            <p className="mt-3 text-sm text-white/82">Rule-aware parking, bus guidance, and IoT operations in one academic-grade control surface.</p>
           </div>
           <nav className="mt-6 space-y-2">
             {primaryItems.map((item) => (
@@ -63,7 +63,7 @@ export function AppShell({
             ))}
           </nav>
           <div className="mt-8">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Competition</p>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-white/55">Competition</p>
             <div className="space-y-2">
               {projectSections.map((item) => (
                 <SidebarLink key={item.href} href={item.href} label={item.label} active={pathname === item.href} compact />
@@ -72,14 +72,14 @@ export function AppShell({
           </div>
         </aside>
         <main className="space-y-6">
-          <section className="rounded-[32px] border border-slate-200 bg-white px-5 py-6 text-black shadow-[0_24px_80px_rgba(0,62,81,0.08)] lg:px-7">
-            <p className="text-xs uppercase tracking-[0.32em]" style={{ color: "color-mix(in srgb, var(--category-primary) 62%, #003E51 38%)" }}>{eyebrow}</p>
+          <section className="rounded-[32px] border border-white/20 bg-[linear-gradient(135deg,#0b4362_0%,#0a5e59_54%,#0b7a5c_100%)] px-5 py-6 text-white shadow-[0_24px_80px_rgba(0,62,81,0.12)] lg:px-7">
+            <p className="text-xs uppercase tracking-[0.32em] text-[#d8f6e3]">{eyebrow}</p>
             <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <h2 className="text-3xl font-semibold tracking-tight lg:text-4xl">{title}</h2>
-                <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700 lg:text-base">{description}</p>
+                <p className="mt-3 max-w-3xl text-sm leading-7 text-white/84 lg:text-base">{description}</p>
               </div>
-              <div className="rounded-3xl border border-[#d9e8e0] bg-[#f7fbf8] px-4 py-3 text-sm text-slate-700">
+              <div className="rounded-3xl border border-white/15 bg-white/8 px-4 py-3 text-sm text-white/82 backdrop-blur">
                 Mobile, tablet, and laptop layouts are all tuned from the same mock platform data.
               </div>
             </div>
@@ -110,10 +110,10 @@ function SidebarLink({
       href={href}
       className={cn(
         "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition",
-        active ? "text-white" : "text-slate-700 hover:text-[#003E51]",
+        active ? "text-white" : "text-white/84 hover:text-white",
         compact && "py-2.5 text-[13px]"
       )}
-      style={active ? { background: "linear-gradient(135deg, #003E51 0%, color-mix(in srgb, var(--category-primary) 28%, #003E51 72%) 100%)" } : { backgroundColor: "transparent" }}
+      style={active ? { background: "linear-gradient(135deg, #0b4362 0%, color-mix(in srgb, var(--category-primary) 38%, #0b6e56 62%) 100%)", boxShadow: "0 18px 40px rgba(0, 62, 81, 0.16)" } : { backgroundColor: "transparent" }}
     >
       <Icon className="h-4 w-4" />
       {label}
