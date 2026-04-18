@@ -1,22 +1,64 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import { ActiveParkingSessionCard } from "@/components/cards/active-parking-session-card";
 import { CountdownList } from "@/components/cards/countdown-list";
+import { PreferredBuildingParkingRecommendations } from "@/components/cards/preferred-building-parking-recommendations";
 import { RuleAlertsPanel } from "@/components/cards/rule-alerts-panel";
 import { SmartGuidanceCard } from "@/components/cards/smart-guidance-card";
 import { AppShell } from "@/components/layout/app-shell";
 import { useParkingSession } from "@/components/providers/parking-session-provider";
+import { useStudentProfile } from "@/components/providers/student-profile-provider";
 import { Card, CardTitle } from "@/components/ui/card";
+import {
+  buildSmartGuidanceRecommendationViewModel,
+  buildingLocations,
+  getBuildingIdFromLabel,
+  parkingLocations,
+  type BuildingId
+} from "@/lib/engines/preferred-building-guidance";
+import { toStudentCategory } from "@/lib/engines/rules";
 
 export default function GuidancePage() {
   const { activeSession, parkingPageData, now } = useParkingSession();
+  const { user, updateUser } = useStudentProfile();
+  const category = toStudentCategory(user.userCategory);
+  const savedBuildingId = getBuildingIdFromLabel(user.favoriteBuildings[0]);
+  const [selectedBuildingId, setSelectedBuildingId] = useState<BuildingId | null>(savedBuildingId);
+
+  useEffect(() => {
+    setSelectedBuildingId(savedBuildingId);
+  }, [savedBuildingId]);
+
+  const recommendationSection = useMemo(
+    () => buildSmartGuidanceRecommendationViewModel(category, selectedBuildingId, parkingLocations, buildingLocations),
+    [category, selectedBuildingId]
+  );
+
+  function handleBuildingChange(nextBuildingId: BuildingId | null) {
+    setSelectedBuildingId(nextBuildingId);
+    const selectedBuilding = buildingLocations.find((building) => building.id === nextBuildingId);
+    const remainingFavorites = user.favoriteBuildings.filter((building) => building !== user.favoriteBuildings[0]);
+
+    updateUser({
+      favoriteBuildings: selectedBuilding ? [selectedBuilding.name, ...remainingFavorites].slice(0, 5) : remainingFavorites.slice(0, 5)
+    });
+  }
 
   return (
     <AppShell
       title="Smart Guidance"
-      eyebrow="Live Session Guidance"
-      description="Follow your current parked session with nearest bus-stop guidance, preferred-building parking insight, and live rule countdowns in one place."
+      eyebrow="Always-On Recommendation Layer"
+      description="See the nearest permitted parking for your preferred building at any time, then follow live bus-stop guidance and rule alerts whenever you start a parked session."
     >
+      <PreferredBuildingParkingRecommendations
+        buildings={buildingLocations}
+        selectedBuildingId={selectedBuildingId}
+        onBuildingChange={handleBuildingChange}
+        section={recommendationSection}
+        category={user.userCategory}
+      />
+
       {activeSession && parkingPageData ? (
         <>
           <div className="grid gap-4 xl:grid-cols-[1fr_1fr]">
@@ -45,9 +87,9 @@ export default function GuidancePage() {
         </>
       ) : (
         <Card>
-          <CardTitle title="No active parked session" subtitle="Start a parked session from a lot detail slot to activate live guidance." />
+          <CardTitle title="No active parked session" subtitle="Your preferred-building parking recommendations stay visible even before you park." />
           <p className="text-sm text-slate-600">
-            Once you click “I parked” on a slot, this page will show the nearest bus stop from your parked location, the nearest permitted parking to your preferred building, and all live countdown guidance.
+            Use the section above to plan where to park for your destination first. When you later click “I parked” on a slot, this page will add live stop guidance, alerts, and countdowns for that exact parked session below.
           </p>
         </Card>
       )}
