@@ -1,8 +1,13 @@
 import { LotOccupancyCard } from "@/components/cards/lot-occupancy-card";
 import { AppShell } from "@/components/layout/app-shell";
 import { parkingLots } from "@/lib/data/kfupm-data";
+import { getPermittedLots } from "@/lib/engines/rules";
 
 export default function AdminLotsPage() {
+  const lotViews = getPermittedLots("non_resident_male", parkingLots, new Date(), {
+    showUnauthorizedAsDisabled: true
+  });
+
   return (
     <AppShell
       title="Lot Management"
@@ -11,8 +16,8 @@ export default function AdminLotsPage() {
       admin
     >
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {parkingLots.map((lot) => (
-          <LotOccupancyCard key={lot.id} lot={lot} allowed />
+        {lotViews.map((lot) => (
+          <LotOccupancyCard key={lot.id} lot={lot} />
         ))}
       </div>
     </AppShell>

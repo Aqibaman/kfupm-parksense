@@ -891,6 +891,10 @@ video {
   flex: 1 1 0%;
 }
 
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
 .grid-cols-1 {
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
@@ -1336,6 +1340,11 @@ video {
 .bg-\[\#fff5db\] {
   --tw-bg-opacity: 1;
   background-color: rgb(255 245 219 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#fff7e8\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 247 232 / var(--tw-bg-opacity));
 }
 
 .bg-amber-500 {
@@ -1848,6 +1857,11 @@ video {
 .text-\[\#8a6a14\] {
   --tw-text-opacity: 1;
   color: rgb(138 106 20 / var(--tw-text-opacity));
+}
+
+.text-\[\#9a6700\] {
+  --tw-text-opacity: 1;
+  color: rgb(154 103 0 / var(--tw-text-opacity));
 }
 
 .text-\[\#d6f7e2\] {

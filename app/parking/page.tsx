@@ -7,7 +7,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { InfoPanel, SectionGrid } from "@/components/layout/sections";
 import { useStudentProfile } from "@/components/providers/student-profile-provider";
 import { parkingLots } from "@/lib/data/kfupm-data";
-import { getLotPermission, getPermissionWindow } from "@/lib/engines/rules";
+import { SHOW_UNAUTHORIZED_AS_DISABLED, getPermissionWindow, getPermittedLots, toStudentCategory, parkingPermissionTestCases } from "@/lib/engines/rules";
 import { buildDashboardSnapshot } from "@/lib/services/query";
 
 export default function ParkingPage() {
@@ -16,12 +16,15 @@ export default function ParkingPage() {
   const activeSession = snapshot.sessions[0];
   const activeLot = activeSession ? parkingLots.find((lot) => lot.id === activeSession.lotId) : null;
   const permissionWindow = getPermissionWindow(user);
+  const visibleLots = getPermittedLots(toStudentCategory(user.userCategory), parkingLots, new Date(), {
+    showUnauthorizedAsDisabled: SHOW_UNAUTHORIZED_AS_DISABLED
+  });
 
   return (
     <AppShell
       title="Parking Map and Availability"
       eyebrow="Parking Operations"
-      description="View legal lots, current availability, your active parking duration, and the exact time you must leave the space before a violation starts."
+      description="See only the parking lots available to your permit, along with floor-specific rules, leave-by warnings, and lot-level restrictions before you choose a space."
     >
       <SectionGrid cols="xl:grid-cols-[1.1fr_0.9fr]">
         {activeSession && activeLot ? (
@@ -42,11 +45,19 @@ export default function ParkingPage() {
       <ParkingMapLegend />
 
       <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
-        {parkingLots.map((lot) => {
-          const permission = getLotPermission(user, lot);
-          return <LotOccupancyCard key={lot.id} lot={lot} allowed={permission.allowed} />;
-        })}
+        {visibleLots.map((lot) => (
+          <LotOccupancyCard key={lot.id} lot={lot} />
+        ))}
       </div>
+
+      <InfoPanel
+        title="Parking access test cases"
+        subtitle="Example permit outcomes from the centralized rule engine."
+        items={parkingPermissionTestCases.map((testCase) => ({
+          label: testCase.category,
+          value: `${testCase.visibleLots.length} visible lots`
+        }))}
+      />
     </AppShell>
   );
 }

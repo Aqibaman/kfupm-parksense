@@ -7,14 +7,16 @@ import { useStudentProfile } from "@/components/providers/student-profile-provid
 import { Card, CardTitle } from "@/components/ui/card";
 import { ChartBars } from "@/components/ui/chart-bars";
 import { buses, busRoutes, busStops, parkingLots } from "@/lib/data/kfupm-data";
-import { getLotPermission } from "@/lib/engines/rules";
+import { getLotAccessDetails, getPermittedLots, toStudentCategory } from "@/lib/engines/rules";
 
 export default function ParkingLotDetailPage() {
   const params = useParams<{ lotId: string }>();
   const lot = parkingLots.find((item) => item.id === params.lotId) ?? parkingLots[0];
   const { user } = useStudentProfile();
 
-  const permission = getLotPermission(user, lot);
+  const category = toStudentCategory(user.userCategory);
+  const [lotView] = getPermittedLots(category, [lot], new Date(), { showUnauthorizedAsDisabled: true });
+  const accessDetails = lotView ? getLotAccessDetails(category, lotView.canonicalLotId, new Date()) : null;
   const nearestStop = busStops.find((stop) => stop.id === lot.nearestStopIds[0]);
   const activeBus = buses.find((bus) => bus.currentStopId === nearestStop?.id && bus.networkType === user.gender) ?? buses.find((bus) => bus.networkType === user.gender) ?? buses[0];
   const busRoute = busRoutes.find((route) => route.id === activeBus.routeId) ?? busRoutes[0];
@@ -44,29 +46,45 @@ export default function ParkingLotDetailPage() {
     <AppShell
       title={`${lot.lotCode} · ${lot.lotName}`}
       eyebrow="Parking Lot Detail"
-      description="Slot visibility, key parking rules, and nearest stop guidance are grouped into one lot operations view."
+      description="Slot visibility, permit-specific parking rules, and nearest stop guidance are grouped into one lot operations view."
     >
       <Card>
         <CardTitle
           title="Lot access and rule summary"
-          subtitle="The key user permission, nearest stop, and current lot rules are grouped into one quick view."
+          subtitle="Read the primary lot rule first so you can park without violating the permit conditions."
         />
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
             <p className="text-sm text-slate-500">Allowed for current user</p>
-            <p className="mt-2 text-base font-semibold text-slate-900">{permission.allowed ? "Yes" : "No"}</p>
+            <p className="mt-2 text-base font-semibold text-slate-900">{accessDetails?.allowed ? "Yes" : "No"}</p>
           </div>
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
             <p className="text-sm text-slate-500">Nearest bus stop</p>
             <p className="mt-2 text-base font-semibold text-slate-900">{nearestStop?.stopName ?? "Pending mapping"}</p>
           </div>
-          {permission.reasons.slice(0, 2).map((reason, index) => (
-            <div key={reason} className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-              <p className="text-sm text-slate-500">Rule summary {index + 1}</p>
-              <p className="mt-2 text-base font-semibold text-slate-900">{reason}</p>
-            </div>
-          ))}
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm text-slate-500">Primary rule</p>
+            <p className="mt-2 text-base font-semibold text-slate-900">{lotView?.ruleText[0] ?? accessDetails?.specialNote ?? "No special rule recorded."}</p>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm text-slate-500">Access detail</p>
+            <p className="mt-2 text-base font-semibold text-slate-900">
+              {lotView?.allowedFloors.length ? `Allowed: ${lotView.allowedFloors.join(", ")}` : accessDetails?.timeRestrictionText ?? "General permit access"}
+            </p>
+          </div>
         </div>
+        {lotView?.ruleText?.length ? (
+          <div className="mt-4 rounded-2xl border border-[#dbe9e1] bg-[#f8fbf9] p-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#008540]">Full lot rule</p>
+            <div className="mt-3 space-y-2 text-sm text-[#003E51]">
+              {lotView.ruleText.map((rule) => (
+                <p key={rule} className="rounded-2xl border border-[#dbe9e1] bg-white px-3 py-2">
+                  {rule}
+                </p>
+              ))}
+            </div>
+          </div>
+        ) : null}
       </Card>
       <Card>
         <CardTitle title="Slot grid view" subtitle="See which spaces are open, occupied, or unavailable below." />
