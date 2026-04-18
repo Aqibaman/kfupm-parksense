@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./generated.css";
+import { ParkingSessionProvider } from "@/components/providers/parking-session-provider";
 import { StudentProfileProvider } from "@/components/providers/student-profile-provider";
 
 export const metadata: Metadata = {
@@ -11,7 +12,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body>
-        <StudentProfileProvider>{children}</StudentProfileProvider>
+        <StudentProfileProvider>
+          <ParkingSessionProvider>{children}</ParkingSessionProvider>
+        </StudentProfileProvider>
       </body>
     </html>
   );

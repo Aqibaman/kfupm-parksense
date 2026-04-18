@@ -1,61 +1,56 @@
 "use client";
 
-import { NotificationBellPanel } from "@/components/cards/notification-bell-panel";
-import { RecommendationPanel } from "@/components/cards/recommendation-panel";
-import { ViolationCountdownCard } from "@/components/cards/violation-countdown-card";
+import { ActiveParkingSessionCard } from "@/components/cards/active-parking-session-card";
+import { CountdownList } from "@/components/cards/countdown-list";
+import { RuleAlertsPanel } from "@/components/cards/rule-alerts-panel";
+import { SmartGuidanceCard } from "@/components/cards/smart-guidance-card";
 import { AppShell } from "@/components/layout/app-shell";
-import { InfoPanel, SectionGrid } from "@/components/layout/sections";
-import { useStudentProfile } from "@/components/providers/student-profile-provider";
-import { getNotificationsForUser } from "@/lib/engines/notifications";
-import { getPermissionWindow } from "@/lib/engines/rules";
-import { buildDashboardSnapshot } from "@/lib/services/query";
+import { useParkingSession } from "@/components/providers/parking-session-provider";
+import { Card, CardTitle } from "@/components/ui/card";
 
 export default function GuidancePage() {
-  const { user } = useStudentProfile();
-  const snapshot = buildDashboardSnapshot(user);
-  const userNotifications = getNotificationsForUser(user.id);
-  const permissionWindow = getPermissionWindow(user);
+  const { activeSession, parkingPageData, now } = useParkingSession();
 
   return (
     <AppShell
       title="Smart Guidance"
-      eyebrow="Recommendations and Alerts"
-      description="Use this page to understand your safest next move: where to park, when to leave, which warnings need attention, and whether the bus is a better option right now."
+      eyebrow="Live Session Guidance"
+      description="Follow your current parked session with nearest bus-stop guidance, preferred-building parking insight, and live rule countdowns in one place."
     >
-      <SectionGrid cols="xl:grid-cols-[1.05fr_0.95fr]">
-        <RecommendationPanel recommendation={snapshot.recommendation} />
-        <ViolationCountdownCard
-          title="Violation warning state"
-          deadline={permissionWindow.safeUntil}
-          helper="This countdown represents the live time window before your current parking permission turns into a rule violation."
-          tone={user.residencyStatus === "non-resident" ? "critical" : "safe"}
-        />
-      </SectionGrid>
-
-      <SectionGrid cols="xl:grid-cols-[1fr_1fr]">
-        <NotificationBellPanel notifications={userNotifications} />
-        <InfoPanel
-          title="How the guidance engine thinks"
-          subtitle="The system combines legality, timing, occupancy, and transport options before it advises the student."
-          items={[
-            { label: "Illegal lots", value: "Hidden from recommendation as primary choices" },
-            { label: "Nearly full lots", value: "Down-ranked unless they are still the closest legal option" },
-            { label: "Curfew pressure", value: "Raises warning strength for commuter permits nearing 10:00 PM" },
-            { label: "Bus usefulness", value: "Raises park-and-ride suggestions when the nearest stop improves the trip" }
-          ]}
-        />
-      </SectionGrid>
-
-      <InfoPanel
-        title="What to do next"
-        subtitle="A simple action view that blends alerts and recommendations."
-        items={[
-          { label: "Best immediate action", value: snapshot.recommendation.shouldUseBus ? "Park near the recommended stop and continue by bus" : "Drive directly to the recommended legal lot" },
-          { label: "Primary warning", value: userNotifications[0]?.title ?? "No urgent warning at the moment" },
-          { label: "Fallback if the lot fills", value: snapshot.recommendation.alternatives[0] ?? "Use the next closest legal lot" },
-          { label: "Reason this matters", value: "The page is designed to help students avoid violations before they happen" }
-        ]}
-      />
+      {activeSession && parkingPageData ? (
+        <>
+          <div className="grid gap-4 xl:grid-cols-[1fr_1fr]">
+            <SmartGuidanceCard guidance={parkingPageData.guidance} />
+            <ActiveParkingSessionCard data={parkingPageData} now={now} />
+          </div>
+          <div className="grid gap-4 xl:grid-cols-[1fr_1fr]">
+            <CountdownList countdowns={parkingPageData.countdowns} />
+            <RuleAlertsPanel alerts={parkingPageData.alerts} compact />
+          </div>
+          <Card>
+            <CardTitle title="Guidance explanation" subtitle="Why the system is recommending this path for the active parked session." />
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="rounded-2xl border border-[#dbe9e1] bg-[#f9fcfa] p-4">
+                <p className="text-sm text-slate-500">Parked session lot</p>
+                <p className="mt-2 text-lg font-semibold text-[#003E51]">{parkingPageData.session.lotId}</p>
+              </div>
+              <div className="rounded-2xl border border-[#dbe9e1] bg-[#f9fcfa] p-4">
+                <p className="text-sm text-slate-500">Preferred destination insight</p>
+                <p className="mt-2 text-lg font-semibold text-[#003E51]">
+                  {parkingPageData.guidance.nearestPermittedParkingToDestination?.name ?? "No destination-linked lot recommendation yet"}
+                </p>
+              </div>
+            </div>
+          </Card>
+        </>
+      ) : (
+        <Card>
+          <CardTitle title="No active parked session" subtitle="Start a parked session from a lot detail slot to activate live guidance." />
+          <p className="text-sm text-slate-600">
+            Once you click “I parked” on a slot, this page will show the nearest bus stop from your parked location, the nearest permitted parking to your preferred building, and all live countdown guidance.
+          </p>
+        </Card>
+      )}
     </AppShell>
   );
 }

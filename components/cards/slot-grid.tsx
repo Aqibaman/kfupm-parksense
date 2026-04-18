@@ -1,6 +1,14 @@
 import type { FloorSlotGridResult } from "@/lib/engines/lot-detail";
 
-export function SlotGrid({ floor }: { floor: FloorSlotGridResult }) {
+export function SlotGrid({
+  floor,
+  selectedSlotId,
+  onSlotSelect
+}: {
+  floor: FloorSlotGridResult;
+  selectedSlotId?: string | null;
+  onSlotSelect?: (slotId: string) => void;
+}) {
   return (
     <div className="rounded-[28px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f6fbf8_100%)] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#dbe9e1] bg-white px-4 py-3">
@@ -34,19 +42,26 @@ export function SlotGrid({ floor }: { floor: FloorSlotGridResult }) {
       <div className="max-h-[420px] overflow-auto rounded-[24px] border border-[#dbe9e1] bg-white p-4">
         <div className="grid grid-cols-5 gap-2 sm:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12">
           {floor.slots.map((slot) => (
-            <div
+            <button
               key={slot.id}
+              type="button"
+              onClick={() => (slot.interactive ? onSlotSelect?.(slot.id) : undefined)}
               className={
-                slot.status === "vacant"
-                  ? "flex aspect-square items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 text-sm font-semibold text-emerald-800 shadow-sm"
-                  : slot.status === "occupied"
-                    ? "flex aspect-square items-center justify-center rounded-xl border border-rose-200 bg-rose-50 text-sm font-semibold text-rose-800 shadow-sm"
-                    : "flex aspect-square items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-sm font-semibold text-slate-500 shadow-sm"
+                `${
+                  slot.status === "vacant"
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                    : slot.status === "occupied"
+                      ? "border-rose-200 bg-rose-50 text-rose-800"
+                      : "border-slate-200 bg-slate-100 text-slate-500"
+                } ${
+                  selectedSlotId === slot.id ? "ring-2 ring-[#003E51] ring-offset-2" : ""
+                } flex aspect-square items-center justify-center rounded-xl border text-sm font-semibold shadow-sm transition hover:scale-[1.02] disabled:cursor-not-allowed disabled:hover:scale-100`
               }
               aria-disabled={!slot.interactive}
+              disabled={!slot.interactive}
             >
               {slot.label}
-            </div>
+            </button>
           ))}
         </div>
       </div>
