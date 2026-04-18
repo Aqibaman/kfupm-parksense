@@ -3,22 +3,16 @@
 import { useMemo, useState } from "react";
 import { CanIParkHereChecker } from "@/components/cards/can-i-park-here-checker";
 import { CategorySwitcher } from "@/components/cards/category-switcher";
-import { LegalAlternativesPanel } from "@/components/cards/legal-alternatives-panel";
-import { LivePolicyTimersPanel } from "@/components/cards/live-policy-timers-panel";
 import { PermitRulesPanel } from "@/components/cards/permit-rules-panel";
-import { PracticeScenariosPanel } from "@/components/cards/practice-scenarios-panel";
 import { TopRiskLotsCard } from "@/components/cards/top-risk-lots-card";
 import { AppShell } from "@/components/layout/app-shell";
 import { useStudentProfile } from "@/components/providers/student-profile-provider";
 import { Card, CardTitle } from "@/components/ui/card";
 import {
-  evaluateParkingPolicy,
-  formatPolicyExplanation,
   getCategoryPolicySummary,
-  type CheckerInput,
-  type CheckerResult
+  type CheckerInput
 } from "@/lib/engines/parking-policy-guide";
-import { getBuildingIdFromLabel, type ParkingLotId } from "@/lib/engines/preferred-building-guidance";
+import { getBuildingIdFromLabel } from "@/lib/engines/preferred-building-guidance";
 import { toStudentCategory } from "@/lib/engines/rules";
 import type { UserCategory } from "@/lib/types";
 
@@ -37,16 +31,6 @@ export default function ParkingPolicyGuidePage() {
     durationMinutes: 30,
     preferredBuildingId
   });
-  const [checkerResult, setCheckerResult] = useState<CheckerResult | null>(
-    evaluateParkingPolicy({
-      category: selectedStudentCategory,
-      lotId: "parking_23",
-      floorKey: "F3",
-      currentTime: "21:00",
-      durationMinutes: 30,
-      preferredBuildingId
-    })
-  );
 
   const summary = useMemo(() => getCategoryPolicySummary(selectedStudentCategory), [selectedStudentCategory]);
 
@@ -84,21 +68,8 @@ export default function ParkingPolicyGuidePage() {
       <CanIParkHereChecker
         input={syncedCheckerInput}
         onInputChange={(nextInput) => setCheckerInput(nextInput)}
-        onResult={setCheckerResult}
+        onResult={() => {}}
       />
-
-      <LivePolicyTimersPanel input={syncedCheckerInput} />
-
-      <Card>
-        <CardTitle title="Checker explanation" subtitle="Plain-English rule guidance for the current lot, floor, and time selection." />
-        <p className="text-sm leading-7 text-slate-600">
-          {checkerResult ? formatPolicyExplanation(checkerResult) : "Choose a lot and floor to see the active policy explanation."}
-        </p>
-      </Card>
-
-      <PracticeScenariosPanel category={selectedStudentCategory} />
-
-      <LegalAlternativesPanel alternatives={checkerResult?.alternatives ?? []} />
 
       <TopRiskLotsCard />
     </AppShell>
