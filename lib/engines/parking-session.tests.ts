@@ -1,12 +1,7 @@
 import {
-  buildAlertsFromRules,
-  buildSmartGuidance,
-  BUS_STOP_LOCATIONS,
-  BUILDING_DESTINATIONS,
-  evaluateParkingRules,
+  buildSessionInputFromUser,
   getAlertsPageData,
-  getParkingModalData,
-  PARKING_LOT_LOCATIONS,
+  getParkingPageData,
   parkingSessionTests,
   startParkingSession
 } from "@/lib/engines/parking-session";
@@ -23,30 +18,39 @@ export function runParkingSessionAssertions() {
     throw new Error(`Parking session assertions failed: ${failures.map((failure) => failure.name).join(", ")}`);
   }
 
-  const smokeSession = startParkingSession({
-    userId: "smoke-user",
-    category: "non_resident_male",
-    lotId: "lot-25",
-    floorKey: "F2",
-    slotId: "lot-25-F2-03",
-    parkedAt: new Date("2026-04-18T21:15:00").toISOString(),
-    parkedCoordinates: { lat: 26.308, lng: 50.1495 },
-    preferredDestinationBuildingId: "building_22"
-  });
+  const smokeUser = {
+    id: "smoke-user",
+    name: "Smoke User",
+    studentId: "20219999",
+    email: "smoke@kfupm.edu.sa",
+    passwordHash: "",
+    gender: "male" as const,
+    residencyStatus: "non-resident" as const,
+    userCategory: "non-resident-male" as const,
+    favoriteBuildings: ["Building 22"],
+    notificationSettings: {
+      push: true,
+      email: false,
+      sound: true,
+      busAlerts: true,
+      violationAlerts: true
+    },
+    role: "student" as const,
+    createdAt: "",
+    updatedAt: ""
+  };
 
-  const rules = evaluateParkingRules(smokeSession, new Date("2026-04-18T21:20:00"));
-  const alerts = buildAlertsFromRules(smokeSession, rules, new Date("2026-04-18T21:20:00"));
-  const modal = getParkingModalData(smokeSession, new Date("2026-04-18T21:20:00"));
-  const alertsPage = getAlertsPageData(smokeSession, new Date("2026-04-18T21:20:00"));
-  const guidance = buildSmartGuidance(smokeSession, PARKING_LOT_LOCATIONS, BUS_STOP_LOCATIONS, BUILDING_DESTINATIONS);
+  const session = startParkingSession(buildSessionInputFromUser(smokeUser, "lot-73", "F1", "73-09", null));
+  const parkingData = getParkingPageData(session, new Date("2026-04-19T21:15:00"));
+  const alertsPage = getAlertsPageData(session, new Date("2026-04-19T21:15:00"));
 
   return {
     failures,
     smoke: {
-      alerts: alerts.length,
-      modalLotName: modal.lotName,
-      alertsPageCountdowns: alertsPage.countdowns.length,
-      nearestBusStop: guidance.nearestBusStop?.label ?? null
+      nearestBusStop: parkingData.guidance.nearestBusStop?.label ?? null,
+      countdowns: alertsPage.countdowns.length,
+      alerts: alertsPage.alerts.length
     }
   };
 }
+

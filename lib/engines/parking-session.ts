@@ -1,14 +1,18 @@
-import { busStops, parkingLots } from "@/lib/data/kfupm-data";
+import { busStops } from "@/lib/data/bus-stops";
+import { academicBuildings } from "@/lib/data/academic-buildings";
+import { parkingLocations } from "@/lib/data/parking-locations";
+import { PARKING_RULES_CONFIG, type CanonicalParkingLotId } from "@/lib/data/parking-rules";
 import {
-  getFloorAccessDetails,
-  getLotAccessDetails as getLotDetailAccessDetails,
-  type FloorKey,
-  type ParkingLotId
-} from "@/lib/engines/lot-detail";
-import {
-  toStudentCategory,
-  type StudentCategory
-} from "@/lib/engines/rules";
+  buildPreferredBuildingParkingRecommendations,
+  getBuildingIdFromLabel,
+  getNearestBusStopsForParkedSession,
+  haversineDistanceMeters,
+  normalizeLotId,
+  type Coordinate,
+  type ParkingLocation as GuidanceParkingLocation
+} from "@/lib/engines/preferred-building-guidance";
+import type { FloorKey } from "@/lib/engines/lot-detail";
+import { type StudentCategory, toStudentCategory } from "@/lib/engines/rules";
 import type { User } from "@/lib/types";
 
 export type SlotId = string;
@@ -22,10 +26,7 @@ export type ParkingRuleType =
   | "violation_risk_rule"
   | "lot_specific_rule";
 
-export interface Coordinates {
-  lat: number;
-  lng: number;
-}
+export interface Coordinates extends Coordinate {}
 
 export interface ParkingRule {
   id: string;
@@ -43,10 +44,11 @@ export interface UserParkingSession {
   userId: string;
   category: StudentCategory;
   lotId: string;
+  canonicalLotId: string;
   floorKey?: FloorKey;
   slotId: SlotId;
   parkedAt: string;
-  parkedCoordinates: Coordinates | null;
+  parkedCoordinates: Coordinates;
   preferredDestinationBuildingId: string;
   isActive: boolean;
   endedAt?: string | null;
@@ -77,7 +79,11 @@ export interface CountdownTimer {
 export interface BusStop {
   id: string;
   label: string;
+  routeId: string;
+  routeName: string;
   coordinates: Coordinates;
+  distanceMeters?: number;
+  distanceLabel?: string;
 }
 
 export interface BuildingDestination {
@@ -88,13 +94,15 @@ export interface BuildingDestination {
 
 export interface ParkingLotLocation {
   id: string;
-  canonicalLotId: ParkingLotId;
+  canonicalLotId: CanonicalParkingLotId;
   name: string;
   coordinates: Coordinates;
 }
 
 export interface SmartGuidanceResult {
   nearestBusStop: BusStop | null;
+  nearestBusStops: BusStop[];
+  nearestBusRouteHint: string | null;
   nearestPermittedParkingToDestination: ParkingLotLocation | null;
   walkingRecommended: boolean;
   summaryLines: string[];
@@ -105,15 +113,6 @@ export interface RuleEvaluationResult {
   violationRiskStatus: "none" | "warning" | "critical";
   leaveByTime: string | null;
   rules: ParkingRule[];
-}
-
-export interface ParkingPermissionConfig {
-  allowedLots: ParkingLotId[];
-  commuterCutoff?: "22:00";
-}
-
-export interface FloorAccessConfig {
-  [lotId: string]: Partial<Record<FloorKey, { allowedCategories?: StudentCategory[]; blockedCategories?: StudentCategory[]; note: string }>>;
 }
 
 export interface ParkingPageData {
@@ -130,275 +129,37 @@ export interface ParkingModalData extends ParkingPageData {
   slotLabel: string;
 }
 
-const CATEGORY_PERMISSION_CONFIG: Record<StudentCategory, ParkingPermissionConfig> = {
-  resident_male: {
-    allowedLots: [
-      "dhahran_mosque",
-      "al_zubair_mosque",
-      "student_mall",
-      "medical_center",
-      "parking_60",
-      "parking_71",
-      "parking_72",
-      "parking_73",
-      "parking_74"
-    ]
-  },
-  non_resident_male: {
-    allowedLots: [
-      "parking_59",
-      "parking_60",
-      "medical_center",
-      "parking_64",
-      "parking_19",
-      "parking_20",
-      "student_mall",
-      "parking_71",
-      "parking_72",
-      "parking_73",
-      "parking_74",
-      "parking_23",
-      "parking_25",
-      "parking_77",
-      "parking_39",
-      "dhahran_mosque"
-    ],
-    commuterCutoff: "22:00"
-  },
-  resident_female: {
-    allowedLots: ["female_student_housing", "family_mall", "medical_center", "parking_60", "parking_73"]
-  },
-  non_resident_female: {
-    allowedLots: [
-      "female_student_housing",
-      "family_mall",
-      "student_mall",
-      "medical_center",
-      "parking_39",
-      "parking_57",
-      "parking_59",
-      "parking_60",
-      "parking_400",
-      "parking_19",
-      "parking_20",
-      "parking_23",
-      "parking_25",
-      "parking_73",
-      "parking_77",
-      "parking_64"
-    ],
-    commuterCutoff: "22:00"
-  }
-};
-
-const FLOOR_ACCESS_CONFIG: FloorAccessConfig = {
-  parking_23: {
-    F1: {
-      blockedCategories: ["resident_male", "non_resident_male", "resident_female", "non_resident_female"],
-      note: "Only the 3rd floor is allowed for eligible student permits."
-    },
-    F2: {
-      blockedCategories: ["resident_male", "non_resident_male", "resident_female", "non_resident_female"],
-      note: "Only the 3rd floor is allowed for eligible student permits."
-    },
-    F3: {
-      allowedCategories: ["non_resident_male", "non_resident_female"],
-      note: "3rd floor only for eligible non-resident students."
-    }
-  },
-  parking_25: {
-    F1: {
-      blockedCategories: ["resident_male", "non_resident_male", "resident_female", "non_resident_female"],
-      note: "Only the 2nd floor is allowed for eligible student permits."
-    },
-    F2: {
-      allowedCategories: ["non_resident_male", "non_resident_female"],
-      note: "2nd floor only for eligible non-resident students."
-    }
-  },
-  parking_64: {
-    L0: {
-      allowedCategories: ["non_resident_male", "non_resident_female"],
-      note: "Off-campus students only."
-    },
-    L1: {
-      blockedCategories: ["resident_male", "non_resident_male", "resident_female", "non_resident_female"],
-      note: "Faculty/staff only."
-    },
-    L2: {
-      blockedCategories: ["resident_male", "non_resident_male", "resident_female", "non_resident_female"],
-      note: "Faculty/staff only."
-    },
-    L3: {
-      allowedCategories: ["non_resident_male", "non_resident_female"],
-      note: "Off-campus students only."
-    },
-    UNCOVERED: {
-      allowedCategories: ["non_resident_male", "non_resident_female"],
-      note: "Off-campus students only."
-    }
-  },
-  parking_77: {
-    L1: {
-      allowedCategories: ["non_resident_male", "non_resident_female"],
-      note: "L1 and L2 only for eligible non-resident students."
-    },
-    L2: {
-      allowedCategories: ["non_resident_male", "non_resident_female"],
-      note: "L1 and L2 only for eligible non-resident students."
-    }
-  }
-};
-
-const CANONICAL_LOT_ALIASES: Record<string, ParkingLotId> = {
-  "lot-19": "parking_19",
-  "lot-20": "parking_20",
-  "lot-23": "parking_23",
-  "lot-25": "parking_25",
-  "lot-39": "parking_39",
-  "lot-57": "parking_57",
-  "lot-59": "parking_59",
-  "lot-60": "parking_60",
-  "lot-64": "parking_64",
-  "lot-71": "parking_71",
-  "lot-72": "parking_72",
-  "lot-73": "parking_73",
-  "lot-74": "parking_74",
-  "lot-77": "parking_77",
-  "lot-400": "parking_400",
-  "lot-mall": "student_mall",
-  "lot-medical": "medical_center",
-  "lot-dhahran-mosque": "dhahran_mosque",
-  "lot-alzubair": "al_zubair_mosque",
-  "lot-female-housing": "female_student_housing",
-  "lot-university-square": "family_mall"
-};
-
-export const BUILDING_DESTINATIONS: BuildingDestination[] = [
-  { id: "building_4", name: "Building 4", coordinates: { lat: 26.3042, lng: 50.1468 } },
-  { id: "building_22", name: "Building 22", coordinates: { lat: 26.3056, lng: 50.1494 } },
-  { id: "building_58", name: "Building 58", coordinates: { lat: 26.3011, lng: 50.1518 } },
-  { id: "building_64", name: "Building 64", coordinates: { lat: 26.3061, lng: 50.1517 } },
-  { id: "student_mall", name: "Student Mall", coordinates: { lat: 26.2957, lng: 50.1462 } },
-  { id: "medical_center", name: "Medical Center", coordinates: { lat: 26.2993, lng: 50.1492 } },
-  { id: "female_housing", name: "Female Housing", coordinates: { lat: 26.2943, lng: 50.1602 } },
-  { id: "university_square", name: "University Square", coordinates: { lat: 26.2952, lng: 50.1585 } }
-];
+const sessionStore = new Map<string, UserParkingSession>();
 
 export const BUS_STOP_LOCATIONS: BusStop[] = busStops.map((stop) => ({
   id: stop.id,
-  label: stop.stopName,
-  coordinates: { lat: stop.latitude, lng: stop.longitude }
+  label: stop.name,
+  routeId: stop.routeId,
+  routeName: stop.routeName,
+  coordinates: stop.coordinates
 }));
 
-export const PARKING_LOT_LOCATIONS: ParkingLotLocation[] = parkingLots.map((lot) => ({
-  id: lot.id,
-  canonicalLotId: resolveCanonicalLotId(lot.id),
-  name: lot.lotName,
-  coordinates: { lat: lot.latitude, lng: lot.longitude }
+export const BUILDING_DESTINATIONS: BuildingDestination[] = academicBuildings.map((building) => ({
+  id: building.id,
+  name: building.name,
+  coordinates: building.coordinates
 }));
 
-export function resolveCanonicalLotId(lotId: string): ParkingLotId {
-  return (CANONICAL_LOT_ALIASES[lotId] ?? lotId) as ParkingLotId;
-}
+export const PARKING_LOT_LOCATIONS: ParkingLotLocation[] = parkingLocations.map((location) => ({
+  id: location.id,
+  canonicalLotId: location.canonicalId,
+  name: location.name,
+  coordinates: location.coordinates
+}));
 
-export function getDistanceMeters(a: Coordinates, b: Coordinates) {
-  const toRadians = (value: number) => (value * Math.PI) / 180;
-  const earthRadius = 6371000;
-  const dLat = toRadians(b.lat - a.lat);
-  const dLng = toRadians(b.lng - a.lng);
-  const lat1 = toRadians(a.lat);
-  const lat2 = toRadians(b.lat);
-  const haversine =
-    Math.sin(dLat / 2) ** 2 +
-    Math.sin(dLng / 2) ** 2 * Math.cos(lat1) * Math.cos(lat2);
-  return 2 * earthRadius * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
-}
-
-export function sortByNearest<T extends { coordinates: Coordinates }>(origin: Coordinates, candidates: T[]) {
-  return [...candidates].sort((left, right) => getDistanceMeters(origin, left.coordinates) - getDistanceMeters(origin, right.coordinates));
-}
-
-function buildDateInput(input: string | Date) {
-  if (input instanceof Date) return input;
-  const date = new Date(input);
-  return Number.isNaN(date.getTime()) ? new Date() : date;
-}
-
-function setClock(base: Date, time: string) {
-  const [hours, minutes] = time.split(":").map(Number);
-  const result = new Date(base);
-  result.setHours(hours, minutes, 0, 0);
-  return result;
+function buildDateInput(value: string | Date) {
+  return value instanceof Date ? value : new Date(value);
 }
 
 function formatTime(date: Date | null) {
-  if (!date) return null;
-  return date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
-}
-
-function formatDurationMs(ms: number) {
-  const safe = Math.max(ms, 0);
-  const totalSeconds = Math.floor(safe / 1000);
-  const hours = Math.floor(totalSeconds / 3600);
-  const minutes = Math.floor((totalSeconds % 3600) / 60);
-  const seconds = totalSeconds % 60;
-  return [hours, minutes, seconds].map((value) => String(value).padStart(2, "0")).join(":");
-}
-
-function getLotLocationByCanonicalId(lotId: ParkingLotId) {
-  return PARKING_LOT_LOCATIONS.find((lot) => lot.canonicalLotId === lotId) ?? null;
-}
-
-function getSeedLotById(lotId: string) {
-  return parkingLots.find((lot) => lot.id === lotId) ?? null;
-}
-
-function getBuildingDestination(buildingId: string) {
-  return BUILDING_DESTINATIONS.find((building) => building.id === buildingId) ?? null;
-}
-
-function normalizeBuildingId(nameOrId: string) {
-  const normalized = nameOrId.toLowerCase().replace(/\s+/g, "_");
-  return (
-    BUILDING_DESTINATIONS.find((building) => building.id === normalized || building.name.toLowerCase() === nameOrId.toLowerCase())?.id ??
-    "building_22"
-  );
-}
-
-export function getNearestBusStop(parkedCoordinates: Coordinates | null, stops: BusStop[]) {
-  if (!parkedCoordinates) return null;
-  return sortByNearest(parkedCoordinates, stops)[0] ?? null;
-}
-
-export function getNearestPermittedParkingToBuilding(category: StudentCategory, buildingId: string, lots: ParkingLotLocation[]) {
-  const building = getBuildingDestination(buildingId);
-  if (!building) return null;
-  const permittedCanonicalIds = new Set(CATEGORY_PERMISSION_CONFIG[category].allowedLots);
-  return sortByNearest(
-    building.coordinates,
-    lots.filter((lot) => permittedCanonicalIds.has(lot.canonicalLotId))
-  )[0] ?? null;
-}
-
-function buildSessionId(userId: string, lotId: string, slotId: string) {
-  return `session-${userId}-${lotId}-${slotId}-${Date.now()}`;
-}
-
-export function startParkingSession(input: Omit<UserParkingSession, "id" | "isActive">) {
-  return {
-    ...input,
-    id: buildSessionId(input.userId, input.lotId, input.slotId),
-    isActive: true
-  } satisfies UserParkingSession;
-}
-
-export function endParkingSession(sessionId: string) {
-  return {
-    id: sessionId,
-    endedAt: new Date().toISOString(),
-    isActive: false
-  };
+  return date
+    ? date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true })
+    : null;
 }
 
 function buildRule(
@@ -408,151 +169,232 @@ function buildRule(
   title: string,
   message: string,
   active = true,
-  leaveBy?: string | null,
   countdownTarget?: string | null
 ): ParkingRule {
-  return { id, type, severity, title, message, active, leaveBy, countdownTarget };
+  return {
+    id,
+    type,
+    severity,
+    title,
+    message,
+    active,
+    countdownTarget,
+    leaveBy: countdownTarget ? formatTime(new Date(countdownTarget)) : null
+  };
+}
+
+function isCommuterCategory(category: StudentCategory) {
+  return category === "non_resident_male" || category === "non_resident_female";
+}
+
+function getCommuterCutoff(now: Date) {
+  const cutoff = new Date(now);
+  cutoff.setHours(22, 0, 0, 0);
+  return cutoff;
+}
+
+function getLotCoordinates(lotId: string) {
+  return PARKING_LOT_LOCATIONS.find((lot) => normalizeLotId(lot.id) === normalizeLotId(lotId))?.coordinates ?? null;
+}
+
+function getLotName(lotId: string) {
+  return PARKING_LOT_LOCATIONS.find((lot) => normalizeLotId(lot.id) === normalizeLotId(lotId))?.name ?? lotId;
+}
+
+function getFloorRestrictionAlert(category: StudentCategory, lotId: CanonicalParkingLotId, floorKey?: string) {
+  if (!floorKey) return null;
+
+  if (lotId === "parking_23" && floorKey !== "F3") {
+    return buildRule("lot-23-floor", "floor_access_rule", "critical", "Wrong floor for Lot 23", "Only the 3rd floor is allowed for your permit in Lot 23.");
+  }
+
+  if (lotId === "parking_25" && floorKey !== "F2") {
+    return buildRule("lot-25-floor", "floor_access_rule", "critical", "Wrong floor for Lot 25", "Only the 2nd floor is allowed for your permit in Lot 25.");
+  }
+
+  if (lotId === "parking_77" && !["L1", "L2"].includes(floorKey)) {
+    return buildRule("lot-77-floor", "floor_access_rule", "critical", "Wrong floor for Lot 77", "Only L1 and L2 are allowed for your permit in Lot 77.");
+  }
+
+  if (lotId === "parking_64") {
+    if (category === "resident_male" || category === "resident_female") {
+      return buildRule(
+        "lot-64-resident",
+        "lot_specific_rule",
+        "critical",
+        "Building 64 is blocked",
+        "Resident students are not allowed in the student-access areas of Lot 64."
+      );
+    }
+
+    if (["L1", "L2"].includes(floorKey)) {
+      return buildRule(
+        "lot-64-faculty",
+        "floor_access_rule",
+        "critical",
+        "Faculty/staff-only level",
+        "Levels L1 and L2 in Lot 64 are reserved for faculty and staff only."
+      );
+    }
+
+    if (!["L0", "L3", "UNCOVERED"].includes(floorKey)) {
+      return buildRule(
+        "lot-64-off-campus",
+        "floor_access_rule",
+        "critical",
+        "Restricted level in Lot 64",
+        "Off-campus students may only use L0, L3, and uncovered in Lot 64."
+      );
+    }
+  }
+
+  return null;
+}
+
+function getParkingCountdownTargets(session: UserParkingSession, now: Date) {
+  const targets: { label: string; target: Date }[] = [];
+
+  if (isCommuterCategory(session.category)) {
+    targets.push({ label: "10:00 PM commuter cutoff", target: getCommuterCutoff(now) });
+  }
+
+  if (normalizeLotId(session.canonicalLotId) === "student_mall") {
+    targets.push({
+      label: "Student Mall 2-hour limit",
+      target: new Date(new Date(session.parkedAt).getTime() + 2 * 60 * 60 * 1000)
+    });
+  }
+
+  return targets;
+}
+
+function getPrimaryLeaveBy(targets: { label: string; target: Date }[]) {
+  if (!targets.length) return null;
+  const earliest = [...targets].sort((left, right) => left.target.getTime() - right.target.getTime())[0];
+  return formatTime(earliest.target);
+}
+
+export function startParkingSession(input: {
+  userId: string;
+  category: StudentCategory;
+  lotId: string;
+  floorKey?: FloorKey;
+  slotId: string;
+  parkedAt: string;
+  parkedCoordinates: Coordinates | null;
+  preferredDestinationBuildingId: string;
+  endedAt?: string | null;
+}) {
+  const canonicalLotId = normalizeLotId(input.lotId);
+  const coordinates = input.parkedCoordinates ?? getLotCoordinates(input.lotId) ?? { lat: 0, lng: 0 };
+
+  const session: UserParkingSession = {
+    id: `${input.userId}-${Date.now()}`,
+    userId: input.userId,
+    category: input.category,
+    lotId: input.lotId,
+    canonicalLotId,
+    floorKey: input.floorKey,
+    slotId: input.slotId,
+    parkedAt: input.parkedAt,
+    parkedCoordinates: coordinates,
+    preferredDestinationBuildingId: input.preferredDestinationBuildingId,
+    isActive: true,
+    endedAt: input.endedAt ?? null
+  };
+
+  sessionStore.set(session.id, session);
+  return session;
+}
+
+export function endParkingSession(sessionId: string) {
+  const session = sessionStore.get(sessionId);
+  if (session) {
+    sessionStore.delete(sessionId);
+  }
+  return session ?? null;
 }
 
 export function evaluateParkingRules(session: UserParkingSession, now: string | Date): RuleEvaluationResult {
   const nowDate = buildDateInput(now);
-  const canonicalLotId = resolveCanonicalLotId(session.lotId);
-  const lotAccess = getLotDetailAccessDetails(session.category, canonicalLotId, nowDate);
-  const floorAccess = session.floorKey ? getFloorAccessDetails(session.category, canonicalLotId, session.floorKey, nowDate) : null;
-  const floorConfigNote = session.floorKey ? FLOOR_ACCESS_CONFIG[canonicalLotId]?.[session.floorKey]?.note ?? null : null;
+  const categoryRules = PARKING_RULES_CONFIG[session.category];
+  const canonicalLotId = normalizeLotId(session.canonicalLotId);
+  const lotAllowed = categoryRules.allowedLots.includes(canonicalLotId);
   const rules: ParkingRule[] = [];
 
-  if (!lotAccess.allowed) {
+  if (!lotAllowed) {
     rules.push(
       buildRule(
         "category-access",
         "category_access_rule",
         "critical",
-        "Permit access blocked",
-        "You are parked in an area not permitted for your permit."
+        "Lot not allowed for your permit",
+        `${getLotName(session.lotId)} is not permitted for your parking category.`
       )
     );
   }
 
-  if (floorAccess && !floorAccess.allowed) {
-    rules.push(
-      buildRule(
-        "floor-access",
-        "floor_access_rule",
-        "critical",
-        "Floor access blocked",
-        floorConfigNote ?? floorAccess.bannerText ?? "This floor is not available for your permit."
-      )
-    );
+  const floorRestrictionRule = getFloorRestrictionAlert(session.category, canonicalLotId, session.floorKey);
+  if (floorRestrictionRule) {
+    rules.push(floorRestrictionRule);
   }
 
-  const profile = CATEGORY_PERMISSION_CONFIG[session.category];
-  const curfewTime = profile.commuterCutoff ? setClock(nowDate, profile.commuterCutoff) : null;
-  if (curfewTime) {
-    const remainingMs = curfewTime.getTime() - nowDate.getTime();
+  const restriction = categoryRules.lotRestrictions?.[canonicalLotId];
+  if (restriction?.shortText) {
+    rules.push(buildRule(`note-${canonicalLotId}`, "note_rule", "info", "Parking note", restriction.shortText));
+  }
+
+  const countdownTargets = getParkingCountdownTargets(session, nowDate);
+  for (const countdown of countdownTargets) {
+    const remainingMs = countdown.target.getTime() - nowDate.getTime();
     rules.push(
       buildRule(
-        "curfew-rule",
-        "curfew_rule",
+        `countdown-${countdown.label}`,
+        countdown.label.includes("2-hour") ? "duration_rule" : "curfew_rule",
         remainingMs <= 0 ? "critical" : remainingMs <= 60 * 60 * 1000 ? "warning" : "info",
-        "10:00 PM campus leave-by",
-        remainingMs <= 0 ? "Leave now to avoid violation." : "You must leave this parking area by 10:00 PM.",
+        countdown.label,
+        remainingMs <= 0 ? "Leave now to avoid violation." : `${countdown.label} is active.`,
         true,
-        formatTime(curfewTime),
-        curfewTime.toISOString()
+        countdown.target.toISOString()
       )
     );
   }
 
-  if (canonicalLotId === "student_mall") {
-    const durationTarget = new Date(buildDateInput(session.parkedAt).getTime() + 2 * 60 * 60 * 1000);
-    const remainingMs = durationTarget.getTime() - nowDate.getTime();
-    rules.push(
-      buildRule(
-        "student-mall-duration",
-        "duration_rule",
-        remainingMs <= 0 ? "critical" : remainingMs <= 60 * 60 * 1000 ? "warning" : "info",
-        "Student Mall 2-hour rule",
-        remainingMs <= 0 ? "Student Mall parking time has been exceeded." : "Student Mall parking is limited to 2 hours.",
-        true,
-        formatTime(durationTarget),
-        durationTarget.toISOString()
-      )
-    );
-  }
-
-  if (canonicalLotId === "parking_64") {
-    rules.push(
-      buildRule(
-        "lot-64-specific",
-        "lot_specific_rule",
-        floorAccess?.allowed ? "info" : "critical",
-        "Building 64 mixed-access rule",
-        "L1 and L2 are faculty/staff only. L0, L3, and uncovered are only for off-campus students."
-      )
-    );
-  }
-
-  for (const note of lotAccess.fullRuleText) {
-    rules.push(buildRule(`note-${note}`, "note_rule", "info", "Parking note", note));
-  }
-
-  const violationRuleTargets = rules.filter((rule) => rule.countdownTarget);
-  for (const target of violationRuleTargets) {
-    const remainingMs = new Date(target.countdownTarget as string).getTime() - nowDate.getTime();
-    if (remainingMs <= 60 * 60 * 1000) {
-      rules.push(
-        buildRule(
-          `violation-${target.id}`,
-          "violation_risk_rule",
-          remainingMs <= 0 ? "critical" : "warning",
-          remainingMs <= 0 ? "Violation risk active" : "Violation window approaching",
-          remainingMs <= 0 ? "Leave now to avoid violation." : "Your leave-by time is approaching.",
-          true,
-          target.leaveBy,
-          target.countdownTarget
-        )
-      );
-    }
-  }
-
-  const permitStatus: RuleEvaluationResult["permitStatus"] = !lotAccess.allowed || (floorAccess && !floorAccess.allowed)
+  const permitStatus: RuleEvaluationResult["permitStatus"] = !lotAllowed || floorRestrictionRule
     ? "unauthorized"
-    : floorAccess?.accessStatus === "restricted"
+    : restriction?.partiallyRestricted
       ? "restricted"
       : "allowed";
+
   const violationRiskStatus: RuleEvaluationResult["violationRiskStatus"] = rules.some((rule) => rule.severity === "critical")
     ? "critical"
     : rules.some((rule) => rule.severity === "warning")
       ? "warning"
       : "none";
-  const leaveByRule = rules.find((rule) => rule.leaveBy);
 
   return {
     permitStatus,
     violationRiskStatus,
-    leaveByTime: leaveByRule?.leaveBy ?? null,
+    leaveByTime: getPrimaryLeaveBy(countdownTargets),
     rules
   };
 }
 
 export function buildAlertsFromRules(session: UserParkingSession, ruleResult: RuleEvaluationResult, now: string | Date) {
-  const nowIso = buildDateInput(now).toISOString();
-  return ruleResult.rules
-    .filter((rule) => rule.active)
-    .map<ActiveAlert>((rule) => ({
-      id: `${session.id}-${rule.id}`,
-      type: rule.type,
-      severity: rule.severity,
-      title: rule.title,
-      message: rule.message,
-      lotId: session.lotId,
-      floorKey: session.floorKey,
-      startsAt: nowIso,
-      endsAt: rule.countdownTarget ?? undefined,
-      countdownMs: rule.countdownTarget ? new Date(rule.countdownTarget).getTime() - buildDateInput(now).getTime() : null,
-      actionLabel: rule.severity === "critical" ? "Review now" : "Open session"
-    }));
+  const nowDate = buildDateInput(now);
+  return ruleResult.rules.map<ActiveAlert>((rule) => ({
+    id: `${session.id}-${rule.id}`,
+    type: rule.type,
+    severity: rule.severity,
+    title: rule.title,
+    message: rule.message,
+    lotId: session.lotId,
+    floorKey: session.floorKey,
+    startsAt: nowDate.toISOString(),
+    endsAt: rule.countdownTarget ?? undefined,
+    countdownMs: rule.countdownTarget ? new Date(rule.countdownTarget).getTime() - nowDate.getTime() : null,
+    actionLabel: rule.severity === "critical" ? "Review now" : "Open session"
+  }));
 }
 
 export function buildCountdownsFromRules(session: UserParkingSession, ruleResult: RuleEvaluationResult, now: string | Date) {
@@ -564,45 +406,68 @@ export function buildCountdownsFromRules(session: UserParkingSession, ruleResult
       return {
         id: `${session.id}-${rule.id}`,
         label: rule.title,
-        targetTime: rule.leaveBy ?? formatTime(new Date(rule.countdownTarget as string)) ?? "",
+        targetTime: rule.leaveBy ?? "",
         remainingMs,
-        status: remainingMs <= 0 ? "expired" : remainingMs <= 60 * 60 * 1000 ? "warning" : "active"
+        status: remainingMs <= 0 ? "expired" : remainingMs <= 15 * 60 * 1000 ? "warning" : "active"
       };
     });
 }
 
 export function buildSmartGuidance(
   session: UserParkingSession,
-  parkingLotLocations: ParkingLotLocation[],
-  stops: BusStop[],
-  buildings: BuildingDestination[]
+  parkingLotLocations: ParkingLotLocation[] = PARKING_LOT_LOCATIONS,
+  stops: BusStop[] = BUS_STOP_LOCATIONS,
+  buildings: BuildingDestination[] = BUILDING_DESTINATIONS
 ): SmartGuidanceResult {
-  const building = buildings.find((item) => item.id === session.preferredDestinationBuildingId) ?? null;
-  const nearestBusStop = getNearestBusStop(session.parkedCoordinates, stops);
-  const nearestPermittedParkingToDestination = getNearestPermittedParkingToBuilding(session.category, session.preferredDestinationBuildingId, parkingLotLocations);
-  const currentLot = parkingLotLocations.find((lot) => lot.id === session.lotId) ?? null;
-  const walkingDistance = session.parkedCoordinates && building
-    ? getDistanceMeters(session.parkedCoordinates, building.coordinates)
-    : currentLot && building
-      ? getDistanceMeters(currentLot.coordinates, building.coordinates)
-      : Infinity;
-  const walkingRecommended = walkingDistance <= 650;
-  const summaryLines = [
-    currentLot ? `You parked at ${currentLot.name}.` : "Your parked lot is active in the system.",
-    nearestBusStop ? `Nearest bus stop from your parked location: ${nearestBusStop.label}.` : "Bus stop guidance is unavailable until location is captured.",
-    building && nearestPermittedParkingToDestination
-      ? `For ${building.name}, the nearest permitted parking for your permit is ${nearestPermittedParkingToDestination.name}.`
-      : "Preferred-building parking insight is ready once a destination is selected.",
-    walkingRecommended
-      ? "Walking directly to your destination is short enough right now."
-      : "Use the bus stop guidance for the smoother trip."
-  ];
+  const preferredGuidance = buildPreferredBuildingParkingRecommendations({
+    category: session.category,
+    selectedPreferredBuildingId: session.preferredDestinationBuildingId || null,
+    parkingLocations: parkingLocations as GuidanceParkingLocation[],
+    academicBuildings: buildings
+  });
+  const nearestBusStops = getNearestBusStopsForParkedSession(session.category, session.parkedCoordinates, busStops, 3).map((stop) => ({
+    id: stop.id,
+    label: stop.label,
+    routeId: stop.routeId,
+    routeName: stop.routeName,
+    coordinates: stop.coordinates,
+    distanceMeters: stop.distanceMeters,
+    distanceLabel: stop.distanceLabel
+  }));
+  const nearestBusStop = nearestBusStops[0] ?? null;
+  const nearestPermittedParking = preferredGuidance.recommendations[0];
+  const preferredBuilding = buildings.find((building) => building.id === session.preferredDestinationBuildingId) ?? null;
+  const walkingRecommended = preferredBuilding
+    ? haversineDistanceMeters(session.parkedCoordinates, preferredBuilding.coordinates) <= 350
+    : false;
+  const routeHint = nearestBusStop ? `${nearestBusStop.routeName} is the closest route from ${nearestBusStop.label}.` : null;
 
   return {
     nearestBusStop,
-    nearestPermittedParkingToDestination,
+    nearestBusStops,
+    nearestBusRouteHint: routeHint,
+    nearestPermittedParkingToDestination: nearestPermittedParking
+      ? [...parkingLotLocations]
+          .sort((left, right) => {
+            const leftScore = left.id === nearestPermittedParking.canonicalLotId ? 0 : 1;
+            const rightScore = right.id === nearestPermittedParking.canonicalLotId ? 0 : 1;
+            return leftScore - rightScore;
+          })
+          .find((lot) => normalizeLotId(lot.id) === nearestPermittedParking.canonicalLotId) ?? null
+      : null,
     walkingRecommended,
-    summaryLines
+    summaryLines: [
+      `You parked at ${getLotName(session.lotId)}.`,
+      nearestBusStop
+        ? `Nearest bus stop from your parked location: ${nearestBusStop.label} (${nearestBusStop.distanceLabel ?? ""}).`
+        : "Bus-stop guidance will appear once a parking location is available.",
+      nearestPermittedParking
+        ? `For ${preferredGuidance.buildingName ?? "your preferred building"}, the nearest permitted parking is ${nearestPermittedParking.lotName}.`
+        : "Preferred-building parking recommendations are ready once a destination is mapped.",
+      walkingRecommended
+        ? "Walking directly is short enough, so you may not need the shuttle."
+        : routeHint ?? "Use the nearest shuttle stop guidance for the next leg."
+    ]
   };
 }
 
@@ -613,17 +478,15 @@ export function getActiveSessionPanelData(session: UserParkingSession, now: stri
     ruleResult,
     alerts: buildAlertsFromRules(session, ruleResult, now),
     countdowns: buildCountdownsFromRules(session, ruleResult, now),
-    guidance: buildSmartGuidance(session, PARKING_LOT_LOCATIONS, BUS_STOP_LOCATIONS, BUILDING_DESTINATIONS),
-    elapsedLabel: formatDurationMs(buildDateInput(now).getTime() - buildDateInput(session.parkedAt).getTime())
+    guidance: buildSmartGuidance(session, PARKING_LOT_LOCATIONS, BUS_STOP_LOCATIONS, BUILDING_DESTINATIONS)
   };
 }
 
 export function getParkingModalData(session: UserParkingSession, now: string | Date): ParkingModalData {
   const panel = getActiveSessionPanelData(session, now);
-  const lot = getSeedLotById(session.lotId);
   return {
     ...panel,
-    lotName: lot?.lotName ?? session.lotId,
+    lotName: getLotName(session.lotId),
     floorLabel: session.floorKey ?? "Ground",
     slotLabel: session.slotId
   };
@@ -640,17 +503,17 @@ export function getAlertsPageData(session: UserParkingSession, now: string | Dat
 }
 
 export function getParkingPageData(session: UserParkingSession, now: string | Date): ParkingPageData {
-  const ruleResult = evaluateParkingRules(session, now);
-  return {
-    session,
-    ruleResult,
-    alerts: buildAlertsFromRules(session, ruleResult, now),
-    countdowns: buildCountdownsFromRules(session, ruleResult, now),
-    guidance: buildSmartGuidance(session, PARKING_LOT_LOCATIONS, BUS_STOP_LOCATIONS, BUILDING_DESTINATIONS)
-  };
+  return getActiveSessionPanelData(session, now);
 }
 
-export function buildSessionInputFromUser(user: User, lotId: string, floorKey: FloorKey | undefined, slotId: string, coordinates: Coordinates | null) {
+export function buildSessionInputFromUser(
+  user: User,
+  lotId: string,
+  floorKey: FloorKey | undefined,
+  slotId: string,
+  coordinates: Coordinates | null
+) {
+  const defaultPreferred = getBuildingIdFromLabel(user.favoriteBuildings[0]) ?? "";
   return {
     userId: user.id,
     category: toStudentCategory(user.userCategory),
@@ -658,148 +521,66 @@ export function buildSessionInputFromUser(user: User, lotId: string, floorKey: F
     floorKey,
     slotId,
     parkedAt: new Date().toISOString(),
-    parkedCoordinates: coordinates,
-    preferredDestinationBuildingId: normalizeBuildingId(user.favoriteBuildings[0] ?? "Building 22"),
+    parkedCoordinates: coordinates ?? getLotCoordinates(lotId),
+    preferredDestinationBuildingId: defaultPreferred,
     endedAt: null
   };
 }
 
 export const parkingSessionTests = [
   {
-    name: "non_resident_male parked in parking_25 floor 2 at 21:30 => allowed + 10 PM countdown",
+    name: "active parked session in parking_73 for non_resident_male => nearest male bus stops + 10 PM countdown",
     run: () => {
       const session = startParkingSession({
         userId: "u1",
         category: "non_resident_male",
-        lotId: "lot-25",
-        floorKey: "F2",
-        slotId: "lot-25-F2-01",
-        parkedAt: new Date("2026-04-18T21:30:00").toISOString(),
-        parkedCoordinates: { lat: 26.308, lng: 50.1495 },
-        preferredDestinationBuildingId: "building_22"
-      });
-      const result = evaluateParkingRules(session, new Date("2026-04-18T21:30:00"));
-      return result.permitStatus !== "unauthorized" && result.leaveByTime === "10:00 PM";
-    }
-  },
-  {
-    name: "non_resident_male parked in parking_25 floor 1 => critical unauthorized floor alert",
-    run: () => {
-      const session = startParkingSession({
-        userId: "u1",
-        category: "non_resident_male",
-        lotId: "lot-25",
+        lotId: "lot-73",
         floorKey: "F1",
-        slotId: "lot-25-F1-01",
-        parkedAt: new Date("2026-04-18T20:00:00").toISOString(),
-        parkedCoordinates: { lat: 26.308, lng: 50.1495 },
+        slotId: "73-01",
+        parkedAt: new Date("2026-04-19T21:15:00").toISOString(),
+        parkedCoordinates: { lat: 26.3129852, lng: 50.1426181 },
         preferredDestinationBuildingId: "building_22"
       });
-      return buildAlertsFromRules(session, evaluateParkingRules(session, new Date("2026-04-18T20:00:00")), new Date("2026-04-18T20:00:00")).some(
-        (alert) => alert.severity === "critical" && alert.type === "floor_access_rule"
-      );
+      const data = getParkingPageData(session, new Date("2026-04-19T21:15:00"));
+      return Boolean(data.guidance.nearestBusStop) && data.countdowns.some((item) => item.label.includes("10:00 PM"));
     }
   },
   {
-    name: "resident_male parked in student_mall for over 2 hours => duration violation alert",
+    name: "active parked session in parking_64 L2 for non_resident_female => blocked/faculty-staff-only alert returned",
     run: () => {
       const session = startParkingSession({
         userId: "u2",
-        category: "resident_male",
-        lotId: "lot-mall",
-        floorKey: "UNCOVERED",
-        slotId: "lot-mall-01",
-        parkedAt: new Date("2026-04-18T17:00:00").toISOString(),
-        parkedCoordinates: { lat: 26.2957, lng: 50.1462 },
-        preferredDestinationBuildingId: "student_mall"
-      });
-      return evaluateParkingRules(session, new Date("2026-04-18T19:30:00")).rules.some(
-        (rule) => rule.type === "duration_rule" && rule.severity === "critical"
-      );
-    }
-  },
-  {
-    name: "resident_male parked in parking_64 L0 => critical blocked alert",
-    run: () => {
-      const session = startParkingSession({
-        userId: "u3",
-        category: "resident_male",
-        lotId: "lot-64",
-        floorKey: "L0",
-        slotId: "lot-64-L0-01",
-        parkedAt: new Date("2026-04-18T18:00:00").toISOString(),
-        parkedCoordinates: { lat: 26.3062, lng: 50.1518 },
-        preferredDestinationBuildingId: "building_64"
-      });
-      return evaluateParkingRules(session, new Date("2026-04-18T18:05:00")).permitStatus === "unauthorized";
-    }
-  },
-  {
-    name: "non_resident_female parked in parking_64 L3 => allowed + 10 PM countdown",
-    run: () => {
-      const session = startParkingSession({
-        userId: "u4",
-        category: "non_resident_female",
-        lotId: "lot-64",
-        floorKey: "L3",
-        slotId: "lot-64-L3-01",
-        parkedAt: new Date("2026-04-18T20:15:00").toISOString(),
-        parkedCoordinates: { lat: 26.3062, lng: 50.1518 },
-        preferredDestinationBuildingId: "building_64"
-      });
-      const result = evaluateParkingRules(session, new Date("2026-04-18T20:15:00"));
-      return result.permitStatus !== "unauthorized" && result.leaveByTime === "10:00 PM";
-    }
-  },
-  {
-    name: "non_resident_female parked in parking_64 L2 => critical faculty/staff-only alert",
-    run: () => {
-      const session = startParkingSession({
-        userId: "u5",
         category: "non_resident_female",
         lotId: "lot-64",
         floorKey: "L2",
-        slotId: "lot-64-L2-01",
-        parkedAt: new Date("2026-04-18T20:15:00").toISOString(),
-        parkedCoordinates: { lat: 26.3062, lng: 50.1518 },
-        preferredDestinationBuildingId: "building_64"
+        slotId: "64-L2-05",
+        parkedAt: new Date("2026-04-19T21:15:00").toISOString(),
+        parkedCoordinates: { lat: 26.3112126, lng: 50.137706 },
+        preferredDestinationBuildingId: "building_22"
       });
-      return buildAlertsFromRules(session, evaluateParkingRules(session, new Date("2026-04-18T20:15:00")), new Date("2026-04-18T20:15:00")).some(
-        (alert) => alert.severity === "critical" && alert.message.includes("faculty/staff")
-      );
+      return getAlertsPageData(session, new Date("2026-04-19T21:15:00")).alerts.some((alert) => alert.message.includes("faculty and staff"));
     }
   },
   {
-    name: "parked session creates modal data and alerts page data",
+    name: "active parked session with geolocation unavailable => falls back to lot coordinates",
     run: () => {
-      const session = startParkingSession({
-        userId: "u6",
-        category: "non_resident_male",
-        lotId: "lot-25",
-        floorKey: "F2",
-        slotId: "lot-25-F2-02",
-        parkedAt: new Date("2026-04-18T21:00:00").toISOString(),
-        parkedCoordinates: { lat: 26.308, lng: 50.1495 },
-        preferredDestinationBuildingId: "building_22"
-      });
-      return Boolean(getParkingModalData(session, new Date("2026-04-18T21:05:00")).alerts.length) && Boolean(getAlertsPageData(session, new Date("2026-04-18T21:05:00")).countdowns.length);
-    }
-  },
-  {
-    name: "smart guidance returns nearest bus stop and nearest permitted parking",
-    run: () => {
-      const session = startParkingSession({
-        userId: "u7",
-        category: "non_resident_male",
-        lotId: "lot-60",
-        floorKey: "UNCOVERED",
-        slotId: "lot-60-01",
-        parkedAt: new Date("2026-04-18T15:00:00").toISOString(),
-        parkedCoordinates: { lat: 26.2975, lng: 50.1538 },
-        preferredDestinationBuildingId: "building_22"
-      });
-      const guidance = buildSmartGuidance(session, PARKING_LOT_LOCATIONS, BUS_STOP_LOCATIONS, BUILDING_DESTINATIONS);
-      return Boolean(guidance.nearestBusStop && guidance.nearestPermittedParkingToDestination);
+      const user = {
+        id: "u3",
+        name: "User",
+        studentId: "1",
+        email: "u@test.com",
+        passwordHash: "",
+        gender: "male" as const,
+        residencyStatus: "non-resident" as const,
+        userCategory: "non-resident-male" as const,
+        favoriteBuildings: ["Building 22"],
+        notificationSettings: { push: true, email: true, sound: true, busAlerts: true, violationAlerts: true },
+        role: "student" as const,
+        createdAt: "",
+        updatedAt: ""
+      };
+      const session = startParkingSession(buildSessionInputFromUser(user, "lot-73", "F1", "73-02", null));
+      return session.parkedCoordinates.lat === 26.3129852 && session.parkedCoordinates.lng === 50.1426181;
     }
   }
 ] as const;

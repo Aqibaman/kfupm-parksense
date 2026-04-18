@@ -13,7 +13,9 @@ import { Card, CardTitle } from "@/components/ui/card";
 import {
   buildSmartGuidanceRecommendationViewModel,
   buildingLocations,
+  getDefaultPreferredBuildingIdFromProfile,
   getBuildingIdFromLabel,
+  getSavedPreferredBuildingIdsFromProfile,
   parkingLocations,
   type BuildingId
 } from "@/lib/engines/preferred-building-guidance";
@@ -23,8 +25,16 @@ export default function GuidancePage() {
   const { activeSession, parkingPageData, now } = useParkingSession();
   const { user, updateUser } = useStudentProfile();
   const category = toStudentCategory(user.userCategory);
-  const savedBuildingId = getBuildingIdFromLabel(user.favoriteBuildings[0]);
+  const savedPreferredBuildingIds = getSavedPreferredBuildingIdsFromProfile(user);
+  const savedBuildingId = getDefaultPreferredBuildingIdFromProfile(user);
   const [selectedBuildingId, setSelectedBuildingId] = useState<BuildingId | null>(savedBuildingId);
+  const selectorBuildings = useMemo(
+    () =>
+      savedPreferredBuildingIds.length
+        ? buildingLocations.filter((building) => savedPreferredBuildingIds.includes(building.id))
+        : [],
+    [savedPreferredBuildingIds]
+  );
 
   useEffect(() => {
     setSelectedBuildingId(savedBuildingId);
@@ -38,7 +48,7 @@ export default function GuidancePage() {
   function handleBuildingChange(nextBuildingId: BuildingId | null) {
     setSelectedBuildingId(nextBuildingId);
     const selectedBuilding = buildingLocations.find((building) => building.id === nextBuildingId);
-    const remainingFavorites = user.favoriteBuildings.filter((building) => building !== user.favoriteBuildings[0]);
+    const remainingFavorites = user.favoriteBuildings.filter((building) => getBuildingIdFromLabel(building) !== savedBuildingId);
 
     updateUser({
       favoriteBuildings: selectedBuilding ? [selectedBuilding.name, ...remainingFavorites].slice(0, 5) : remainingFavorites.slice(0, 5)
@@ -52,7 +62,7 @@ export default function GuidancePage() {
       description="See the nearest permitted parking for your preferred building at any time, then follow live bus-stop guidance and rule alerts whenever you start a parked session."
     >
       <PreferredBuildingParkingRecommendations
-        buildings={buildingLocations}
+        buildings={selectorBuildings}
         selectedBuildingId={selectedBuildingId}
         onBuildingChange={handleBuildingChange}
         section={recommendationSection}

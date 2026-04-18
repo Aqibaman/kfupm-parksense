@@ -373,7 +373,8 @@ export function getLotRestrictionSummary(category: StudentCategory, lotId: Parki
     return {
       lotId,
       badges: ["Always prohibited"],
-      shortText: `${LOT_LABELS[lotId]} is permanently prohibited.`
+      shortText: `${LOT_LABELS[lotId]} is permanently prohibited.`,
+      partiallyRestricted: false
     };
   }
 
@@ -449,7 +450,7 @@ export function getLegalAlternatives(
 
   const building = buildingLocations.find((item) => item.id === preferredBuildingId);
   const alternativeLots = parkingLocations
-    .filter((lot) => allowedLots.includes(lot.id) && lot.id !== disallowedLotId)
+    .filter((lot) => allowedLots.includes(lot.canonicalId) && lot.canonicalId !== disallowedLotId)
     .map((lot) => ({
       lot,
       distance: building ? getDistanceMeters(building.coordinates, lot.coordinates) : null
@@ -458,17 +459,17 @@ export function getLegalAlternatives(
       if (left.distance !== null && right.distance !== null) {
         return left.distance - right.distance || left.lot.name.localeCompare(right.lot.name);
       }
-      return allowedLots.indexOf(left.lot.id) - allowedLots.indexOf(right.lot.id);
+      return allowedLots.indexOf(left.lot.canonicalId) - allowedLots.indexOf(right.lot.canonicalId);
     })
     .slice(0, 6);
 
   recommendations.push(
     ...alternativeLots.map(({ lot, distance }): AlternativeSuggestion => ({
-      lotId: lot.id,
+      lotId: lot.canonicalId,
       lotName: lot.name,
       why: "Legal alternative for your permit.",
       distanceLabel: distance !== null ? `${distance} m` : null,
-      restrictionBadges: getLotRestrictionSummary(category, lot.id).badges
+      restrictionBadges: getLotRestrictionSummary(category, lot.canonicalId).badges
     }))
   );
 
