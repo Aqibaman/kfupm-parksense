@@ -2,9 +2,6 @@
 
 import Link from "next/link";
 import { CarFront, ChevronRight, MapPinned, ShieldAlert, Sparkles, UserRound } from "lucide-react";
-import { NotificationBellPanel } from "@/components/cards/notification-bell-panel";
-import { RecommendationPanel } from "@/components/cards/recommendation-panel";
-import { ViolationCountdownCard } from "@/components/cards/violation-countdown-card";
 import { CategoryBadge } from "@/components/cards/category-badge";
 import { AppShell } from "@/components/layout/app-shell";
 import { InfoPanel, MetricCard, SectionGrid } from "@/components/layout/sections";
@@ -24,7 +21,6 @@ export default function DashboardPage() {
   const { user } = useStudentProfile();
   const snapshot = buildDashboardSnapshot(user);
   const permissionWindow = getPermissionWindow(snapshot.user);
-  const activeSession = snapshot.sessions[0];
 
   return (
     <AppShell
@@ -85,33 +81,16 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <SectionGrid cols="xl:grid-cols-[1.08fr_0.92fr]">
-        <ViolationCountdownCard
-          title={activeSession ? "Current parking safety timer" : "No active parking session"}
-          deadline={activeSession ? activeSession.expectedEndAt : permissionWindow.safeUntil}
-          helper={
-            activeSession
-              ? "The timer tracks your current parked session and can escalate to push and sound warnings as the legal window gets closer."
-              : "Once a session starts, this area becomes the live parking timer for your current slot."
-          }
-          tone={snapshot.user.residencyStatus === "non-resident" ? "critical" : "safe"}
-        />
-        <RecommendationPanel recommendation={snapshot.recommendation} />
-      </SectionGrid>
-
-      <SectionGrid cols="xl:grid-cols-[1fr_1fr]">
-        <InfoPanel
-          title="Today's compliance summary"
-          subtitle="Rules the student should keep in mind right now."
-          items={[
-            { label: "Building 64", value: snapshot.user.residencyStatus === "non-resident" ? "Allowed only on L0, L3, and uncovered zones" : "Not allowed for residents" },
-            { label: "Academic lots after hours", value: "Generally open from 5:00 PM to 7:00 AM except prohibited lots" },
-            { label: "Push warning policy", value: "Warnings intensify at 30 minutes and 10 minutes before violation" },
-            { label: "Nearest destination", value: snapshot.user.favoriteBuildings[0] ?? "Not selected" }
-          ]}
-        />
-        <NotificationBellPanel notifications={snapshot.notifications} />
-      </SectionGrid>
+      <InfoPanel
+        title="Today's compliance summary"
+        subtitle="Rules the student should keep in mind right now."
+        items={[
+          { label: "Building 64", value: snapshot.user.residencyStatus === "non-resident" ? "Allowed only on L0, L3, and uncovered zones" : "Not allowed for residents" },
+          { label: "Academic lots after hours", value: "Generally open from 5:00 PM to 7:00 AM except prohibited lots" },
+          { label: "Push warning policy", value: "Warnings intensify at 30 minutes and 10 minutes before violation" },
+          { label: "Nearest destination", value: snapshot.user.favoriteBuildings[0] ?? "Not selected" }
+        ]}
+      />
     </AppShell>
   );
 }
