@@ -10,7 +10,7 @@ const items = [
   { href: "/parking", label: "Parking", icon: MapPinned },
   { href: "/buses", label: "Buses", icon: Bus },
   { href: "/guidance", label: "Smart", icon: Sparkles },
-  { href: "/rules", label: "Rules", icon: ShieldCheck },
+  { href: "/rules", label: "Policy", icon: ShieldCheck },
   { href: "/profile", label: "Profile", icon: UserRound }
 ];
 

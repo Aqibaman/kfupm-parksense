@@ -1317,6 +1317,11 @@ video {
   border-color: rgb(203 213 225 / var(--tw-border-opacity));
 }
 
+.border-white {
+  --tw-border-opacity: 1;
+  border-color: rgb(255 255 255 / var(--tw-border-opacity));
+}
+
 .border-white\/10 {
   border-color: rgb(255 255 255 / 0.1);
 }
@@ -1363,6 +1368,11 @@ video {
   background-color: rgb(13 95 116 / var(--tw-bg-opacity));
 }
 
+.bg-\[\#111827\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+}
+
 .bg-\[\#7c4d99\] {
   --tw-bg-opacity: 1;
   background-color: rgb(124 77 153 / var(--tw-bg-opacity));
@@ -1381,6 +1391,11 @@ video {
 .bg-\[\#d8efe4\] {
   --tw-bg-opacity: 1;
   background-color: rgb(216 239 228 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#e8f0f6\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(232 240 246 / var(--tw-bg-opacity));
 }
 
 .bg-\[\#e8f5ee\] {
@@ -1471,6 +1486,11 @@ video {
 .bg-\[\#fff1f7\] {
   --tw-bg-opacity: 1;
   background-color: rgb(255 241 247 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#fff4dc\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 244 220 / var(--tw-bg-opacity));
 }
 
 .bg-\[\#fff5db\] {
@@ -2058,6 +2078,11 @@ video {
   color: rgb(138 106 20 / var(--tw-text-opacity));
 }
 
+.text-\[\#8a6b11\] {
+  --tw-text-opacity: 1;
+  color: rgb(138 107 17 / var(--tw-text-opacity));
+}
+
 .text-\[\#9a6700\] {
   --tw-text-opacity: 1;
   color: rgb(154 103 0 / var(--tw-text-opacity));
@@ -2193,6 +2218,12 @@ video {
 
 .shadow-\[0_12px_30px_rgba\(0\2c 133\2c 64\2c 0\.18\)\] {
   --tw-shadow: 0 12px 30px rgba(0,133,64,0.18);
+  --tw-shadow-colored: 0 12px 30px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.shadow-\[0_12px_30px_rgba\(0\2c 62\2c 81\2c 0\.05\)\] {
+  --tw-shadow: 0 12px 30px rgba(0,62,81,0.05);
   --tw-shadow-colored: 0 12px 30px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
@@ -2839,6 +2870,10 @@ textarea {
 
   .xl\:grid-cols-\[1\.1fr_0\.9fr\] {
     grid-template-columns: 1.1fr 0.9fr;
+  }
+
+  .xl\:grid-cols-\[1\.2fr_0\.8fr\] {
+    grid-template-columns: 1.2fr 0.8fr;
   }
 
   .xl\:grid-cols-\[1fr_1fr\] {

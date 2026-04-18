@@ -1,35 +1,106 @@
-import { ParkingRuleCard } from "@/components/cards/parking-rule-card";
-import { AppShell } from "@/components/layout/app-shell";
-import { Card, CardTitle } from "@/components/ui/card";
-import { parkingRules } from "@/lib/data/kfupm-data";
+"use client";
 
-export default function RulesPage() {
+import { useMemo, useState } from "react";
+import { CanIParkHereChecker } from "@/components/cards/can-i-park-here-checker";
+import { CategorySwitcher } from "@/components/cards/category-switcher";
+import { LegalAlternativesPanel } from "@/components/cards/legal-alternatives-panel";
+import { LivePolicyTimersPanel } from "@/components/cards/live-policy-timers-panel";
+import { PermitRulesPanel } from "@/components/cards/permit-rules-panel";
+import { PracticeScenariosPanel } from "@/components/cards/practice-scenarios-panel";
+import { TopRiskLotsCard } from "@/components/cards/top-risk-lots-card";
+import { AppShell } from "@/components/layout/app-shell";
+import { useStudentProfile } from "@/components/providers/student-profile-provider";
+import { Card, CardTitle } from "@/components/ui/card";
+import {
+  evaluateParkingPolicy,
+  formatPolicyExplanation,
+  getCategoryPolicySummary,
+  type CheckerInput,
+  type CheckerResult
+} from "@/lib/engines/parking-policy-guide";
+import { getBuildingIdFromLabel, type ParkingLotId } from "@/lib/engines/preferred-building-guidance";
+import { toStudentCategory } from "@/lib/engines/rules";
+import type { UserCategory } from "@/lib/types";
+
+const userCategoryToStudentCategory = (value: UserCategory) => toStudentCategory(value);
+
+export default function ParkingPolicyGuidePage() {
+  const { user } = useStudentProfile();
+  const [selectedCategory, setSelectedCategory] = useState<UserCategory>(user.userCategory);
+  const selectedStudentCategory = userCategoryToStudentCategory(selectedCategory);
+  const preferredBuildingId = getBuildingIdFromLabel(user.favoriteBuildings[0]);
+  const [checkerInput, setCheckerInput] = useState<CheckerInput>({
+    category: selectedStudentCategory,
+    lotId: "parking_23",
+    floorKey: "F3",
+    currentTime: "21:00",
+    durationMinutes: 30,
+    preferredBuildingId
+  });
+  const [checkerResult, setCheckerResult] = useState<CheckerResult | null>(
+    evaluateParkingPolicy({
+      category: selectedStudentCategory,
+      lotId: "parking_23",
+      floorKey: "F3",
+      currentTime: "21:00",
+      durationMinutes: 30,
+      preferredBuildingId
+    })
+  );
+
+  const summary = useMemo(() => getCategoryPolicySummary(selectedStudentCategory), [selectedStudentCategory]);
+
+  const syncedCheckerInput = useMemo(
+    () => ({
+      ...checkerInput,
+      category: selectedStudentCategory,
+      preferredBuildingId
+    }),
+    [checkerInput, preferredBuildingId, selectedStudentCategory]
+  );
+
   return (
     <AppShell
-      title="Rules and Policies"
-      eyebrow="Plain-English Rulebook"
-      description="This page translates the parking guide, notices, and Building 64 special policy into readable rules for students and reviewers."
+      title="Parking Policy Guide"
+      eyebrow="Permit & Policy Guide"
+      description="Understand your permit, check where you can park, and avoid violations with live policy guidance."
     >
-      <div className="grid gap-4 xl:grid-cols-2">
-        {parkingRules.map((rule) => (
-          <ParkingRuleCard key={rule.id} rule={rule} />
-        ))}
-      </div>
       <Card>
-        <CardTitle title="Key policy summary" subtitle="Directly grounded in the shared report." />
-        <div className="grid gap-3 text-sm text-slate-600 md:grid-cols-2">
-          {[
-            "There are 4 user categories: resident male, non-resident male, resident female, and non-resident female.",
-            "Non-resident male and female students must leave by 10:00 PM.",
-            "Academic parking is generally allowed after 5:00 PM until 7:00 AM except prohibited lots.",
-            "Building 64 levels 1 and 2 are faculty and staff only.",
-            "Building 64 level 0, level 3, and uncovered 64 are reserved for off-campus students.",
-            "Resident students are prohibited from Building 64 student-access areas."
-          ].map((item) => (
-            <div key={item} className="rounded-2xl border border-slate-200 p-3">{item}</div>
-          ))}
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <CardTitle title="Policy awareness controls" subtitle="Switch permit categories for demo review and test policy outcomes before parking." />
+          <CategorySwitcher
+            value={selectedCategory}
+            onChange={(category) => {
+              setSelectedCategory(category);
+              const nextCategory = userCategoryToStudentCategory(category);
+              setCheckerInput((current) => ({ ...current, category: nextCategory }));
+            }}
+          />
         </div>
       </Card>
+
+      <PermitRulesPanel summary={summary} category={selectedCategory} />
+
+      <CanIParkHereChecker
+        input={syncedCheckerInput}
+        onInputChange={(nextInput) => setCheckerInput(nextInput)}
+        onResult={setCheckerResult}
+      />
+
+      <LivePolicyTimersPanel input={syncedCheckerInput} />
+
+      <Card>
+        <CardTitle title="Checker explanation" subtitle="Plain-English rule guidance for the current lot, floor, and time selection." />
+        <p className="text-sm leading-7 text-slate-600">
+          {checkerResult ? formatPolicyExplanation(checkerResult) : "Choose a lot and floor to see the active policy explanation."}
+        </p>
+      </Card>
+
+      <PracticeScenariosPanel category={selectedStudentCategory} />
+
+      <LegalAlternativesPanel alternatives={checkerResult?.alternatives ?? []} />
+
+      <TopRiskLotsCard />
     </AppShell>
   );
 }

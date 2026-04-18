@@ -16,6 +16,7 @@ const iconMap: Record<string, typeof Home> = {
   Buses: BusFront,
   "Smart Guidance": Sparkles,
   Rules: ShieldCheck,
+  "Policy Guide": ShieldCheck,
   Profile: Gauge,
   Overview: Home,
   Sensors: Cpu,
