@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { CarFront, ChevronRight, MapPinned, ShieldAlert, Sparkles, UserRound } from "lucide-react";
+import { ArrowDownRight, CarFront, ChevronRight, LogIn, MapPinned, ShieldAlert, Sparkles, UserRound, UserPlus } from "lucide-react";
 import { CategoryBadge } from "@/components/cards/category-badge";
 import { AppShell } from "@/components/layout/app-shell";
+import { Card } from "@/components/ui/card";
 import { SectionGrid } from "@/components/layout/sections";
 import { useStudentProfile } from "@/components/providers/student-profile-provider";
 import { buildDashboardSnapshot } from "@/lib/services/query";
@@ -14,6 +15,39 @@ const overviewLinks = [
   { href: "/guidance", label: "Smart Guidance", helper: "See AI recommendations, violation warnings, and next-step alerts in one place.", icon: Sparkles },
   { href: "/rules", label: "Rules", helper: "Read permit rules, lot restrictions, and special notices before parking.", icon: ShieldAlert },
   { href: "/profile", label: "Profile", helper: "Edit account details, permit category, and favorite buildings.", icon: UserRound }
+];
+
+const dashboardFlow = [
+  {
+    title: "Create Account",
+    text: "Register, select the permit category, and save preferred buildings.",
+    icon: UserPlus
+  },
+  {
+    title: "Login",
+    text: "Enter the platform and unlock the permit-aware student experience.",
+    icon: LogIn
+  },
+  {
+    title: "Dashboard",
+    text: "See the five connected tools that support the full mobility journey.",
+    icon: Sparkles
+  },
+  {
+    title: "Parking",
+    text: "Pick legal lots, check slot visibility, and start a parked session.",
+    icon: CarFront
+  },
+  {
+    title: "Buses",
+    text: "Open the relevant route network and track the next movement layer.",
+    icon: MapPinned
+  },
+  {
+    title: "Smart Guidance + Rules",
+    text: "Follow active alerts, guidance, and profile-based rule decisions until the trip is complete.",
+    icon: ShieldAlert
+  }
 ];
 
 export default function DashboardPage() {
@@ -70,6 +104,41 @@ export default function DashboardPage() {
             );
           })}
         </SectionGrid>
+      </section>
+
+      <section>
+        <h3 className="text-2xl font-semibold text-[#111827]">How to use this system</h3>
+        <p className="mt-2 text-sm leading-7 text-slate-600">Follow the connected student flow below to understand how the platform works from entry to action.</p>
+        <Card className="mt-5 overflow-hidden border-[#cae5d9] bg-[linear-gradient(180deg,#ffffff_0%,#f6fbf8_52%,#eef8f2_100%)] p-6">
+          <div className="grid gap-4 xl:grid-cols-3">
+            {dashboardFlow.map((step, index) => {
+              const Icon = step.icon;
+              const isLast = index === dashboardFlow.length - 1;
+              return (
+                <div key={step.title} className="relative rounded-[28px] border border-[#dbe9e1] bg-white p-5 shadow-[0_14px_38px_rgba(0,62,81,0.06)]">
+                  <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#0b5b72_0%,#008540_100%)]" />
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-[20px] bg-[linear-gradient(135deg,#dff6e7_0%,#eef8f2_100%)] text-[#008540] shadow-[0_14px_30px_rgba(0,133,64,0.10)]">
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    <span className="rounded-full bg-[#eef8f2] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0b5b72]">
+                      Step {index + 1}
+                    </span>
+                  </div>
+                  <h4 className="mt-4 text-2xl font-semibold text-[#0f172a]">{step.title}</h4>
+                  <p className="mt-3 text-sm leading-7 text-slate-600">{step.text}</p>
+                  {!isLast ? (
+                    <div className="mt-5 flex justify-end">
+                      <div className="inline-flex items-center rounded-full border border-[#dbe9e1] bg-[#f5faf7] px-3 py-1.5 text-[#008540] shadow-sm">
+                        <ArrowDownRight className="h-4 w-4" />
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        </Card>
       </section>
     </AppShell>
   );

@@ -33,6 +33,7 @@ export default function ParkingLotDetailPage() {
   const floorResults = useMemo(() => buildFloorSlotGrid(category, params.lotId, now), [category, now, params.lotId]);
   const [activeFloorKey, setActiveFloorKey] = useState(floorResults[0]?.floor.key ?? "F1");
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null);
+  const [recentlyReleasedSlotId, setRecentlyReleasedSlotId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!floorResults.find((floor) => floor.floor.key === activeFloorKey)) {
@@ -41,8 +42,28 @@ export default function ParkingLotDetailPage() {
   }, [activeFloorKey, floorResults]);
 
   const activeFloor = floorResults.find((floor) => floor.floor.key === activeFloorKey) ?? floorResults[0];
-  const selectedSlot = activeFloor?.slots.find((slot) => slot.id === selectedSlotId) ?? null;
   const currentLotSession = activeSession?.lotId === seedLot.id ? activeSession : null;
+  const parkedSlotId =
+    currentLotSession && activeFloor
+      ? activeFloor.slots.find((slot) => slot.label === currentLotSession.slotId)?.id ?? null
+      : null;
+  const displayFloor = activeFloor
+    ? {
+        ...activeFloor,
+        slots: activeFloor.slots.map((slot) => {
+          if (parkedSlotId && slot.id === parkedSlotId) {
+            return { ...slot, status: "occupied" as const, interactive: true };
+          }
+
+          if (!parkedSlotId && recentlyReleasedSlotId && slot.id === recentlyReleasedSlotId) {
+            return { ...slot, status: "vacant" as const, interactive: true };
+          }
+
+          return slot;
+        })
+      }
+    : null;
+  const selectedSlot = displayFloor?.slots.find((slot) => slot.id === selectedSlotId) ?? null;
   const currentLotPageData = currentLotSession ? parkingPageData : null;
   const nearestStop = busStops.find((stop) => stop.id === seedLot.nearestStopIds[0]);
   const activeBus =
@@ -63,7 +84,8 @@ export default function ParkingLotDetailPage() {
 
   async function handleParked() {
     if (!selectedSlot || !activeFloor) return;
-        await startSession({
+    setRecentlyReleasedSlotId(null);
+    await startSession({
       lotId: seedLot.id,
       floorKey: activeFloor.floor.key,
       slotId: selectedSlot.label,
@@ -72,6 +94,11 @@ export default function ParkingLotDetailPage() {
   }
 
   function handleLeft() {
+    if (selectedSlotId) {
+      setRecentlyReleasedSlotId(selectedSlotId);
+    } else if (parkedSlotId) {
+      setRecentlyReleasedSlotId(parkedSlotId);
+    }
     stopSession();
     setSelectedSlotId(null);
   }
@@ -140,17 +167,17 @@ export default function ParkingLotDetailPage() {
           <div className="mt-5">
             <FloorSummaryCards floors={floorResults} />
           </div>
-          {activeFloor ? (
+          {displayFloor ? (
             <div className="mt-5 space-y-5">
-              <SlotGrid floor={activeFloor} selectedSlotId={selectedSlotId} onSlotSelect={setSelectedSlotId} />
+              <SlotGrid floor={displayFloor} selectedSlotId={selectedSlotId} onSlotSelect={setSelectedSlotId} />
               {selectedSlot ? (
                 <SlotActionBar
                   lotName={lotStructure.name}
-                  floorLabel={activeFloor.floor.label}
+                  floorLabel={displayFloor.floor.label}
                   slotLabel={selectedSlot.label}
                   onParked={handleParked}
                   onLeft={handleLeft}
-                  disabled={!selectedSlot.interactive}
+                  disabled={!selectedSlot.interactive || selectedSlot.status !== "vacant"}
                   locationState={locationState}
                 />
               ) : null}
