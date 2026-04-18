@@ -10,76 +10,68 @@ export function ChartBars({
   items: Array<{ label: string; value: number }>;
   tone?: string;
 }) {
-  const max = Math.max(...items.map((item) => item.value), 1);
-  const min = Math.min(...items.map((item) => item.value), 0);
   const peak = items.reduce((best, item) => (item.value > best.value ? item : best), items[0]);
-  const points = items
-    .map((item, index) => {
-      const x = (index / Math.max(items.length - 1, 1)) * 100;
-      const normalized = (item.value - min) / Math.max(max - min, 1);
-      const y = 82 - normalized * 56;
-      return { ...item, x, y };
-    });
-
-  const linePath = points.map((point, index) => `${index === 0 ? "M" : "L"} ${point.x} ${point.y}`).join(" ");
-  const areaPath = `${linePath} L 100 88 L 0 88 Z`;
+  const average = Math.round(items.reduce((sum, item) => sum + item.value, 0) / Math.max(items.length, 1));
 
   return (
     <Card className="overflow-hidden">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <CardTitle title={title} subtitle={subtitle} />
-        <div className="rounded-2xl border border-[#cfe5da] bg-[#f5fbf7] px-4 py-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#008540]">Busiest period</p>
-          <p className="mt-2 text-lg font-semibold text-[#003E51]">{peak.label}</p>
-          <p className="text-sm text-slate-500">{peak.value}% occupied</p>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="rounded-2xl border border-[#cfe5da] bg-[#f5fbf7] px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#008540]">Busiest period</p>
+            <p className="mt-2 text-lg font-semibold text-[#003E51]">{peak.label}</p>
+            <p className="text-sm text-slate-500">{peak.value}% occupied</p>
+          </div>
+          <div className="rounded-2xl border border-[#d9e8e0] bg-white px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#0d5f74]">Daily average</p>
+            <p className="mt-2 text-lg font-semibold text-[#003E51]">{average}%</p>
+            <p className="text-sm text-slate-500">Typical lot pressure</p>
+          </div>
         </div>
       </div>
       <div className="mt-2 rounded-[28px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f7fcf9_100%)] p-5">
-        <div className="relative h-[280px] overflow-hidden rounded-[24px] border border-[#e3efe8] bg-[radial-gradient(circle_at_top,#f4fbf7_0%,#ffffff_55%,#ffffff_100%)] px-4 pb-5 pt-6">
-          <div className="pointer-events-none absolute inset-x-4 top-6 bottom-12">
-            {[0, 1, 2, 3].map((line) => (
-              <div
-                key={line}
-                className="absolute left-0 right-0 border-t border-dashed border-[#dcebe3]"
-                style={{ top: `${line * 25}%` }}
-              />
-            ))}
-          </div>
-          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-x-4 bottom-12 top-6 h-[calc(100%-4.5rem)] w-[calc(100%-2rem)]">
-            <defs>
-              <linearGradient id="occupancyArea" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor="#0d7f62" stopOpacity="0.28" />
-                <stop offset="100%" stopColor="#0d7f62" stopOpacity="0.03" />
-              </linearGradient>
-              <linearGradient id="occupancyLine" x1="0" x2="1" y1="0" y2="0">
-                <stop offset="0%" stopColor="#0d5f74" />
-                <stop offset="100%" stopColor="#008540" />
-              </linearGradient>
-            </defs>
-            <path d={areaPath} fill="url(#occupancyArea)" />
-            <path d={linePath} fill="none" stroke="url(#occupancyLine)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-            {points.map((point) => (
-              <g key={point.label}>
-                <circle cx={point.x} cy={point.y} r="3.2" fill="#ffffff" stroke={point.label === peak.label ? "#008540" : "#0d5f74"} strokeWidth="2" />
-                {point.label === peak.label ? (
-                  <>
-                    <circle cx={point.x} cy={point.y} r="5.2" fill="none" stroke="#008540" strokeOpacity="0.18" strokeWidth="4" />
-                    <rect x={Math.max(point.x - 8, 1)} y={Math.max(point.y - 18, 3)} width="16" height="9" rx="4.5" fill="#003E51" />
-                    <text x={point.x} y={Math.max(point.y - 11.8, 7)} textAnchor="middle" fontSize="4.2" fontWeight="700" fill="#ffffff">
-                      {point.value}%
-                    </text>
-                  </>
-                ) : null}
-              </g>
-            ))}
-          </svg>
-          <div className="absolute inset-x-4 bottom-4 grid grid-cols-5 gap-2">
-            {items.map((item) => (
-              <div key={item.label} className="text-center">
-                <p className="text-sm font-semibold text-[#003E51]">{item.label}</p>
-                <p className={`mt-1 text-xs ${item.label === peak.label ? "font-semibold text-[#008540]" : "text-slate-500"}`}>{item.value}%</p>
+        <div className="relative rounded-[24px] border border-[#e3efe8] bg-[radial-gradient(circle_at_top,#f4fbf7_0%,#ffffff_60%,#ffffff_100%)] p-5">
+          <div className="pointer-events-none absolute inset-x-5 top-5 bottom-[4.5rem]">
+            {[0, 25, 50, 75, 100].map((tick, index) => (
+              <div key={tick} className="absolute left-0 right-0" style={{ top: `${index * 25}%` }}>
+                <div className="border-t border-dashed border-[#dcebe3]" />
+                <span className="absolute -top-3 right-0 bg-white px-2 text-[11px] font-medium text-slate-400">{100 - tick}%</span>
               </div>
             ))}
+            <div
+              className="absolute left-0 right-0 border-t border-[#0d5f74]/30 border-dashed"
+              style={{ top: `${100 - average}%` }}
+            />
+          </div>
+          <div className="grid h-[280px] grid-cols-5 items-end gap-4 pt-6">
+            {items.map((item) => {
+              const isPeak = item.label === peak.label;
+
+              return (
+                <div key={item.label} className="relative flex h-full flex-col items-center justify-end">
+                  <div className="mb-3 text-center">
+                    <p className={`text-lg font-semibold ${isPeak ? "text-[#008540]" : "text-[#003E51]"}`}>{item.value}%</p>
+                    {isPeak ? <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[#008540]">Peak</p> : null}
+                  </div>
+                  <div className="relative flex h-[210px] w-full items-end justify-center">
+                    <div className="absolute inset-x-4 bottom-0 top-0 rounded-t-[22px] bg-[#edf5f0]" />
+                    <div
+                      className={`relative z-10 w-full max-w-[92px] rounded-t-[22px] border shadow-[0_16px_30px_rgba(0,62,81,0.08)] ${
+                        isPeak
+                          ? "border-[#0d8e5b] bg-[linear-gradient(180deg,#19a56f_0%,#008540_100%)]"
+                          : "border-[#0d5f74]/20 bg-[linear-gradient(180deg,#0d5f74_0%,#11789a_100%)]"
+                      }`}
+                      style={{ height: `${Math.max(item.value, 8)}%` }}
+                    />
+                  </div>
+                  <div className="mt-4 text-center">
+                    <p className="text-sm font-semibold text-[#003E51]">{item.label}</p>
+                    <p className="mt-1 text-xs text-slate-500">Occupancy</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
