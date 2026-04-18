@@ -573,6 +573,10 @@ video {
   right: 1.25rem;
 }
 
+.-right-3 {
+  right: -0.75rem;
+}
+
 .-top-3 {
   top: -0.75rem;
 }
@@ -595,6 +599,10 @@ video {
 
 .top-0 {
   top: 0px;
+}
+
+.top-1\/2 {
+  top: 50%;
 }
 
 .top-5 {
@@ -909,6 +917,11 @@ video {
 
 .flex-1 {
   flex: 1 1 0%;
+}
+
+.-translate-y-1\/2 {
+  --tw-translate-y: -50%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
 .cursor-not-allowed {
@@ -1327,6 +1340,16 @@ video {
   background-color: rgb(237 247 242 / var(--tw-bg-opacity));
 }
 
+.bg-\[\#eef5fb\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(238 245 251 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#eef8f2\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(238 248 242 / var(--tw-bg-opacity));
+}
+
 .bg-\[\#eff8f3\] {
   --tw-bg-opacity: 1;
   background-color: rgb(239 248 243 / var(--tw-bg-opacity));
@@ -1337,9 +1360,19 @@ video {
   background-color: rgb(242 95 150 / var(--tw-bg-opacity));
 }
 
+.bg-\[\#f2fbf6\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(242 251 246 / var(--tw-bg-opacity));
+}
+
 .bg-\[\#f5effb\] {
   --tw-bg-opacity: 1;
   background-color: rgb(245 239 251 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#f5faf7\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(245 250 247 / var(--tw-bg-opacity));
 }
 
 .bg-\[\#f5fbf7\] {
@@ -2041,6 +2074,12 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.shadow-\[0_10px_30px_rgba\(0\2c 62\2c 81\2c 0\.05\)\] {
+  --tw-shadow: 0 10px 30px rgba(0,62,81,0.05);
+  --tw-shadow-colored: 0 10px 30px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
 .shadow-\[0_10px_30px_rgba\(13\2c 95\2c 116\2c 0\.08\)\] {
   --tw-shadow: 0 10px 30px rgba(13,95,116,0.08);
   --tw-shadow-colored: 0 10px 30px var(--tw-shadow-color);
@@ -2602,6 +2641,10 @@ textarea {
 }
 
 @media (min-width: 1280px) {
+  .xl\:flex {
+    display: flex;
+  }
+
   .xl\:grid-cols-12 {
     grid-template-columns: repeat(12, minmax(0, 1fr));
   }
@@ -2624,6 +2667,10 @@ textarea {
 
   .xl\:grid-cols-6 {
     grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .xl\:grid-cols-7 {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
   }
 
   .xl\:grid-cols-\[1\.08fr_0\.92fr\] {
