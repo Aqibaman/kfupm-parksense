@@ -1,13 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowDown, CarFront, ChevronRight, LogIn, MapPinned, Route, ShieldAlert, Sparkles, UserRound, UserPlus } from "lucide-react";
+import { CarFront, ChevronRight, MapPinned, ShieldAlert, Sparkles, UserRound } from "lucide-react";
 import { CategoryBadge } from "@/components/cards/category-badge";
 import { AppShell } from "@/components/layout/app-shell";
-import { Card } from "@/components/ui/card";
-import { MetricCard, SectionGrid } from "@/components/layout/sections";
+import { SectionGrid } from "@/components/layout/sections";
 import { useStudentProfile } from "@/components/providers/student-profile-provider";
-import { getPermissionWindow } from "@/lib/engines/rules";
 import { buildDashboardSnapshot } from "@/lib/services/query";
 
 const overviewLinks = [
@@ -18,86 +16,15 @@ const overviewLinks = [
   { href: "/profile", label: "Profile", helper: "Edit account details, permit category, and favorite buildings.", icon: UserRound }
 ];
 
-const journeySteps = [
-  {
-    title: "Create Account",
-    text: "Student registers, selects a permit category, and saves preferred academic buildings.",
-    icon: UserPlus,
-    tone: "bg-[#e8f5ee] text-[#008540]",
-    side: "left"
-  },
-  {
-    title: "Login",
-    text: "Student enters the platform and the selected permit controls what they can see next.",
-    icon: LogIn,
-    tone: "bg-[#edf7f2] text-[#0b5b72]",
-    side: "right"
-  },
-  {
-    title: "Dashboard",
-    text: "The dashboard gives one quick overview of parking, buses, guidance, rules, and profile tools.",
-    icon: Sparkles,
-    tone: "bg-[#eef5fb] text-[#0b5b72]",
-    side: "left"
-  },
-  {
-    title: "Parking",
-    text: "Parking shows only legal lots, floor restrictions, slot availability, and active parked-session controls.",
-    icon: CarFront,
-    tone: "bg-[#e8f5ee] text-[#008540]",
-    side: "right"
-  },
-  {
-    title: "Buses",
-    text: "Buses shows the correct male or female route network with live route movement and stop guidance.",
-    icon: MapPinned,
-    tone: "bg-[#edf7f2] text-[#0b5b72]",
-    side: "left"
-  },
-  {
-    title: "Smart Guidance",
-    text: "Smart Guidance keeps helping during the parked session with nearest bus stop and preferred-building advice.",
-    icon: Sparkles,
-    tone: "bg-[#eef8f2] text-[#008540]",
-    side: "right"
-  },
-  {
-    title: "Rules + Profile",
-    text: "Rules explains permit logic while Profile lets the student update category, favorites, and alerts.",
-    icon: UserRound,
-    tone: "bg-[#f2fbf6] text-[#0b5b72]",
-    side: "left"
-  }
-];
-
-const journeyHighlights = [
-  {
-    title: "Permit-aware entry",
-    text: "Registration and login immediately shape the lots, routes, and rules the student sees.",
-    icon: UserPlus
-  },
-  {
-    title: "Live mobility layer",
-    text: "Parking, buses, and guidance stay synchronized while the student moves through campus.",
-    icon: Route
-  },
-  {
-    title: "Safer decisions",
-    text: "Rules, alerts, and profile preferences work together to prevent violations before they happen.",
-    icon: ShieldAlert
-  }
-];
-
 export default function DashboardPage() {
   const { user } = useStudentProfile();
   const snapshot = buildDashboardSnapshot(user);
-  const permissionWindow = getPermissionWindow(snapshot.user);
 
   return (
     <AppShell
       title={`Welcome back, ${snapshot.user.name.split(" ")[0]}`}
       eyebrow="Student Services"
-      description="Access parking availability, bus routes, active parking session timing, smart recommendations, and violation warnings from one connected KFUPM mobility dashboard."
+      description="Access parking availability, bus routes, active parking guidance, smart recommendations, and rule-aware decisions from one connected KFUPM mobility dashboard."
     >
       <section className="rounded-[32px] bg-[linear-gradient(135deg,#0b4362_0%,#0a5f5a_52%,#0b7b5b_100%)] px-6 py-6 text-white shadow-[0_30px_90px_rgba(0,62,81,0.18)]">
         <div className="flex flex-wrap items-start justify-between gap-4">
@@ -107,7 +34,7 @@ export default function DashboardPage() {
             </span>
             <h2 className="mt-4 text-4xl font-semibold tracking-tight">Mobility overview for today</h2>
             <p className="mt-3 max-w-3xl text-base leading-8 text-white/85">
-              This dashboard brings together the next decisions you need to make right now: where you can park, which route fits your trip, how long you can stay, and what action to take before a rule becomes a violation.
+              This dashboard brings together the next decisions you need to make right now: where you can park, which route fits your trip, what rules apply to you, and where to go next in the platform.
             </p>
           </div>
           <div className="space-y-3 rounded-[28px] border border-white/15 bg-white/8 p-4 backdrop-blur">
@@ -117,117 +44,10 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      <SectionGrid cols="md:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="Allowed lots now" value={String(snapshot.allowedLots.length)} helper="Computed from your permit, prohibitions, and Building 64 logic." />
-        <MetricCard label="Safe until" value={permissionWindow.safeUntil.split("T")[1].slice(0, 5)} helper={permissionWindow.summary} />
-        <MetricCard label="Visible routes" value={String(snapshot.routes.filter((route) => route.networkType === snapshot.user.gender).length)} helper="Only the relevant male or female network is shown." />
-        <MetricCard label="Unread warnings" value={String(snapshot.notifications.filter((notification) => !notification.readAt).length)} helper="Push-style notifications are armed for rule cutoffs and route reminders." />
-      </SectionGrid>
-
-      <section>
-        <h3 className="text-2xl font-semibold text-[#111827]">How to use this system</h3>
-        <p className="mt-2 text-sm leading-7 text-slate-600">
-          Follow the connected student flow below to understand how registration, login, and the main mobility pages work together.
-        </p>
-        <Card className="mt-5 overflow-hidden border-[#cae5d9] bg-[linear-gradient(180deg,#ffffff_0%,#f6fbf8_52%,#eef8f2_100%)] p-0">
-          <div className="border-b border-[#dbe9e1] bg-[radial-gradient(circle_at_top_left,rgba(0,133,64,0.13),transparent_38%),radial-gradient(circle_at_top_right,rgba(11,91,114,0.14),transparent_42%),linear-gradient(135deg,#f8fcfa_0%,#eef8f2_100%)] px-6 py-6">
-            <div className="grid gap-4 xl:grid-cols-[1.25fr_0.75fr]">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.30em] text-[#008540]">Connected student journey</p>
-                <h4 className="mt-3 text-3xl font-semibold tracking-tight text-[#0f172a]">From account setup to confident parking decisions</h4>
-                <p className="mt-3 max-w-3xl text-sm leading-8 text-slate-600">
-                  The dashboard is the student’s command center. It begins with permit setup, then continuously connects parking visibility, route guidance, live alerts, and profile preferences into one experience.
-                </p>
-                <div className="mt-5 flex flex-wrap gap-3">
-                  {journeyHighlights.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <div key={item.title} className="min-w-[220px] flex-1 rounded-[24px] border border-white/80 bg-white/85 px-4 py-4 shadow-[0_16px_35px_rgba(0,62,81,0.06)] backdrop-blur">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#dff6e7_0%,#eef8f2_100%)] text-[#008540]">
-                          <Icon className="h-5 w-5" />
-                        </div>
-                        <p className="mt-4 text-base font-semibold text-[#0f172a]">{item.title}</p>
-                        <p className="mt-2 text-sm leading-7 text-slate-600">{item.text}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="rounded-[28px] border border-white/80 bg-white/85 p-5 shadow-[0_16px_35px_rgba(0,62,81,0.06)] backdrop-blur">
-                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#0b5b72]">Experience map</p>
-                <div className="mt-5 space-y-3">
-                  {[
-                    "Register permit and preferred buildings",
-                    "Login and unlock category-aware campus view",
-                    "Use dashboard to jump into the right tool",
-                    "Park, ride, and monitor rules without switching systems"
-                  ].map((line, index) => (
-                    <div key={line} className="flex items-start gap-3 rounded-2xl border border-[#dbe9e1] bg-[#f9fcfa] px-4 py-3">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#e8f5ee] text-sm font-semibold text-[#008540]">
-                        {index + 1}
-                      </div>
-                      <p className="text-sm leading-7 text-slate-600">{line}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="relative px-6 py-8">
-            <div className="pointer-events-none absolute left-1/2 top-0 hidden h-full w-[3px] -translate-x-1/2 bg-[linear-gradient(180deg,rgba(11,91,114,0.05)_0%,rgba(0,133,64,0.45)_18%,rgba(11,91,114,0.28)_50%,rgba(0,133,64,0.45)_82%,rgba(11,91,114,0.05)_100%)] xl:block" />
-            <div className="space-y-5">
-              {journeySteps.map((step, index) => {
-                const Icon = step.icon;
-                const isLeft = step.side === "left";
-                const isLast = index === journeySteps.length - 1;
-
-                return (
-                  <div key={step.title} className="grid gap-3 xl:grid-cols-[1fr_88px_1fr] xl:items-center">
-                    <div className={isLeft ? "" : "xl:order-3"}>
-                      <div className="group relative overflow-hidden rounded-[28px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f8fcfa_100%)] p-5 shadow-[0_14px_40px_rgba(0,62,81,0.06)] transition hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(0,62,81,0.10)]">
-                        <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#0b5b72_0%,#008540_100%)] opacity-80" />
-                        <div className="absolute -right-6 -top-6 h-20 w-20 rounded-full bg-[radial-gradient(circle,rgba(0,133,64,0.12)_0%,transparent_72%)]" />
-                        <div className="flex items-start justify-between gap-4">
-                          <div className={`relative flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] ${step.tone} shadow-[0_14px_30px_rgba(0,133,64,0.10)]`}>
-                            <Icon className="h-6 w-6" />
-                          </div>
-                          <span className="rounded-full bg-[#eef8f2] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0b5b72]">
-                            Step {index + 1}
-                          </span>
-                        </div>
-                        <p className="mt-4 text-xl font-semibold text-[#0f172a]">{step.title}</p>
-                        <p className="mt-3 text-sm leading-7 text-slate-600">{step.text}</p>
-                      </div>
-                    </div>
-
-                    <div className="relative hidden items-center justify-center xl:flex">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#cfe5d9] bg-white shadow-[0_14px_30px_rgba(0,62,81,0.08)]">
-                        <ArrowDown className="h-5 w-5 text-[#008540]" />
-                      </div>
-                      {!isLast ? (
-                        <div className="pointer-events-none absolute left-1/2 top-14 h-10 w-[2px] -translate-x-1/2 bg-[linear-gradient(180deg,rgba(0,133,64,0.4)_0%,rgba(11,91,114,0.12)_100%)]" />
-                      ) : null}
-                    </div>
-
-                    <div className={isLeft ? "xl:order-3" : ""}>
-                      {isLeft ? (
-                        <div className="hidden xl:block" />
-                      ) : null}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </Card>
-      </section>
-
       <section>
         <h3 className="text-2xl font-semibold text-[#111827]">Overview tiles</h3>
-        <p className="mt-2 text-sm leading-7 text-slate-600">Jump directly into the five main student pages used across the mobility platform.</p>
-        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <p className="mt-2 text-sm leading-7 text-slate-600">Start directly from the five main student pages used across the mobility platform.</p>
+        <SectionGrid cols="md:grid-cols-2 xl:grid-cols-5">
           {overviewLinks.map((item) => {
             const Icon = item.icon;
             return (
@@ -249,7 +69,7 @@ export default function DashboardPage() {
               </Link>
             );
           })}
-        </div>
+        </SectionGrid>
       </section>
     </AppShell>
   );
