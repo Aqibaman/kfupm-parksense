@@ -151,7 +151,7 @@ export default function ParkingLotDetailPage() {
                 </span>
               ) : null}
             </div>
-            <div className="mt-3 space-y-2">
+            <div className="mt-3 grid gap-2 md:grid-cols-2">
               {lotAccess.fullRuleText.map((rule) => (
                 <p key={rule} className="rounded-2xl border border-[#dbe9e1] bg-white px-3 py-2 text-sm text-[#003E51]">
                   {rule}
