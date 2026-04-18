@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, CarFront, ChevronRight, LogIn, MapPinned, Route, ShieldAlert, Sparkles, UserRound, UserPlus } from "lucide-react";
+import { ArrowDown, CarFront, ChevronRight, LogIn, MapPinned, Route, ShieldAlert, Sparkles, UserRound, UserPlus } from "lucide-react";
 import { CategoryBadge } from "@/components/cards/category-badge";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card } from "@/components/ui/card";
@@ -21,45 +21,52 @@ const overviewLinks = [
 const journeySteps = [
   {
     title: "Create Account",
-    text: "Student registers, selects the permit category, and saves preferred academic buildings.",
+    text: "Student registers, selects a permit category, and saves preferred academic buildings.",
     icon: UserPlus,
-    tone: "bg-[#e8f5ee] text-[#008540]"
+    tone: "bg-[#e8f5ee] text-[#008540]",
+    side: "left"
   },
   {
     title: "Login",
     text: "Student enters the platform and the selected permit controls what they can see next.",
     icon: LogIn,
-    tone: "bg-[#edf7f2] text-[#0b5b72]"
+    tone: "bg-[#edf7f2] text-[#0b5b72]",
+    side: "right"
   },
   {
     title: "Dashboard",
     text: "The dashboard gives one quick overview of parking, buses, guidance, rules, and profile tools.",
     icon: Sparkles,
-    tone: "bg-[#eef5fb] text-[#0b5b72]"
+    tone: "bg-[#eef5fb] text-[#0b5b72]",
+    side: "left"
   },
   {
     title: "Parking",
     text: "Parking shows only legal lots, floor restrictions, slot availability, and active parked-session controls.",
     icon: CarFront,
-    tone: "bg-[#e8f5ee] text-[#008540]"
+    tone: "bg-[#e8f5ee] text-[#008540]",
+    side: "right"
   },
   {
     title: "Buses",
     text: "Buses shows the correct male or female route network with live route movement and stop guidance.",
     icon: MapPinned,
-    tone: "bg-[#edf7f2] text-[#0b5b72]"
+    tone: "bg-[#edf7f2] text-[#0b5b72]",
+    side: "left"
   },
   {
     title: "Smart Guidance",
     text: "Smart Guidance keeps helping during the parked session with nearest bus stop and preferred-building advice.",
     icon: Sparkles,
-    tone: "bg-[#eef8f2] text-[#008540]"
+    tone: "bg-[#eef8f2] text-[#008540]",
+    side: "right"
   },
   {
     title: "Rules + Profile",
     text: "Rules explains permit logic while Profile lets the student update category, favorites, and alerts.",
     icon: UserRound,
-    tone: "bg-[#f2fbf6] text-[#0b5b72]"
+    tone: "bg-[#f2fbf6] text-[#0b5b72]",
+    side: "left"
   }
 ];
 
@@ -168,44 +175,47 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="relative px-6 py-6">
-            <div className="pointer-events-none absolute left-10 right-10 top-[78px] hidden h-[2px] bg-[linear-gradient(90deg,rgba(0,133,64,0.12)_0%,rgba(0,133,64,0.45)_20%,rgba(11,91,114,0.28)_50%,rgba(0,133,64,0.45)_80%,rgba(0,133,64,0.12)_100%)] xl:block" />
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-7">
+          <div className="relative px-6 py-8">
+            <div className="pointer-events-none absolute left-1/2 top-0 hidden h-full w-[3px] -translate-x-1/2 bg-[linear-gradient(180deg,rgba(11,91,114,0.05)_0%,rgba(0,133,64,0.45)_18%,rgba(11,91,114,0.28)_50%,rgba(0,133,64,0.45)_82%,rgba(11,91,114,0.05)_100%)] xl:block" />
+            <div className="space-y-5">
               {journeySteps.map((step, index) => {
                 const Icon = step.icon;
+                const isLeft = step.side === "left";
                 const isLast = index === journeySteps.length - 1;
 
                 return (
-                  <div
-                    key={step.title}
-                    className="group relative overflow-hidden rounded-[28px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f8fcfa_100%)] p-5 shadow-[0_14px_40px_rgba(0,62,81,0.06)] transition hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(0,62,81,0.10)]"
-                  >
-                    <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#0b5b72_0%,#008540_100%)] opacity-80" />
-                    <div className="absolute -right-6 -top-6 h-20 w-20 rounded-full bg-[radial-gradient(circle,rgba(0,133,64,0.12)_0%,transparent_72%)]" />
-                    <div className={`relative flex h-14 w-14 items-center justify-center rounded-[20px] ${step.tone} shadow-[0_14px_30px_rgba(0,133,64,0.10)]`}>
-                      <Icon className="h-6 w-6" />
-                    </div>
-                    <div className="mt-4 flex items-center justify-between gap-3">
-                      <p className="text-xl font-semibold text-[#0f172a]">{step.title}</p>
-                      <span className="rounded-full bg-[#eef8f2] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0b5b72]">
-                        Step {index + 1}
-                      </span>
-                    </div>
-                    <p className="mt-3 text-sm leading-7 text-slate-600">{step.text}</p>
-                    {!isLast ? (
-                      <div className="mt-5 flex items-center justify-end xl:hidden">
-                        <div className="flex items-center rounded-full border border-[#dbe9e1] bg-white px-2.5 py-1.5 text-[#008540] shadow-sm">
-                          <ArrowRight className="h-4 w-4" />
+                  <div key={step.title} className="grid gap-3 xl:grid-cols-[1fr_88px_1fr] xl:items-center">
+                    <div className={isLeft ? "" : "xl:order-3"}>
+                      <div className="group relative overflow-hidden rounded-[28px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f8fcfa_100%)] p-5 shadow-[0_14px_40px_rgba(0,62,81,0.06)] transition hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(0,62,81,0.10)]">
+                        <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#0b5b72_0%,#008540_100%)] opacity-80" />
+                        <div className="absolute -right-6 -top-6 h-20 w-20 rounded-full bg-[radial-gradient(circle,rgba(0,133,64,0.12)_0%,transparent_72%)]" />
+                        <div className="flex items-start justify-between gap-4">
+                          <div className={`relative flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] ${step.tone} shadow-[0_14px_30px_rgba(0,133,64,0.10)]`}>
+                            <Icon className="h-6 w-6" />
+                          </div>
+                          <span className="rounded-full bg-[#eef8f2] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0b5b72]">
+                            Step {index + 1}
+                          </span>
                         </div>
+                        <p className="mt-4 text-xl font-semibold text-[#0f172a]">{step.title}</p>
+                        <p className="mt-3 text-sm leading-7 text-slate-600">{step.text}</p>
                       </div>
-                    ) : null}
-                    {!isLast ? (
-                      <div className="pointer-events-none absolute -right-3 top-1/2 hidden -translate-y-1/2 xl:flex">
-                        <div className="flex items-center rounded-full border border-[#dbe9e1] bg-white px-2.5 py-1.5 text-[#008540] shadow-[0_10px_24px_rgba(0,62,81,0.08)]">
-                          <ChevronRight className="h-4 w-4" />
-                        </div>
+                    </div>
+
+                    <div className="relative hidden items-center justify-center xl:flex">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#cfe5d9] bg-white shadow-[0_14px_30px_rgba(0,62,81,0.08)]">
+                        <ArrowDown className="h-5 w-5 text-[#008540]" />
                       </div>
-                    ) : null}
+                      {!isLast ? (
+                        <div className="pointer-events-none absolute left-1/2 top-14 h-10 w-[2px] -translate-x-1/2 bg-[linear-gradient(180deg,rgba(0,133,64,0.4)_0%,rgba(11,91,114,0.12)_100%)]" />
+                      ) : null}
+                    </div>
+
+                    <div className={isLeft ? "xl:order-3" : ""}>
+                      {isLeft ? (
+                        <div className="hidden xl:block" />
+                      ) : null}
+                    </div>
                   </div>
                 );
               })}
