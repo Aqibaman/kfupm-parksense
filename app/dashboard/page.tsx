@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { CarFront, ChevronRight, LogIn, MapPinned, ShieldAlert, Sparkles, UserRound, UserPlus } from "lucide-react";
+import { ArrowRight, CarFront, ChevronRight, LogIn, MapPinned, Route, ShieldAlert, Sparkles, UserRound, UserPlus } from "lucide-react";
 import { CategoryBadge } from "@/components/cards/category-badge";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card } from "@/components/ui/card";
@@ -63,6 +63,24 @@ const journeySteps = [
   }
 ];
 
+const journeyHighlights = [
+  {
+    title: "Permit-aware entry",
+    text: "Registration and login immediately shape the lots, routes, and rules the student sees.",
+    icon: UserPlus
+  },
+  {
+    title: "Live mobility layer",
+    text: "Parking, buses, and guidance stay synchronized while the student moves through campus.",
+    icon: Route
+  },
+  {
+    title: "Safer decisions",
+    text: "Rules, alerts, and profile preferences work together to prevent violations before they happen.",
+    icon: ShieldAlert
+  }
+];
+
 export default function DashboardPage() {
   const { user } = useStudentProfile();
   const snapshot = buildDashboardSnapshot(user);
@@ -104,29 +122,94 @@ export default function DashboardPage() {
         <p className="mt-2 text-sm leading-7 text-slate-600">
           Follow the connected student flow below to understand how registration, login, and the main mobility pages work together.
         </p>
-        <Card className="mt-5 overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)]">
-          <div className="grid gap-4 xl:grid-cols-7">
-            {journeySteps.map((step, index) => {
-              const Icon = step.icon;
-              const isLast = index === journeySteps.length - 1;
-
-              return (
-                <div key={step.title} className="relative rounded-[24px] border border-[#dbe9e1] bg-white p-4 shadow-[0_10px_30px_rgba(0,62,81,0.05)]">
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${step.tone}`}>
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <p className="mt-4 text-lg font-semibold text-[#0f172a]">{step.title}</p>
-                  <p className="mt-2 text-sm leading-7 text-slate-600">{step.text}</p>
-                  {!isLast ? (
-                    <div className="pointer-events-none absolute -right-3 top-1/2 hidden -translate-y-1/2 xl:flex">
-                      <div className="flex items-center rounded-full border border-[#dbe9e1] bg-[#f5faf7] px-2 py-1 text-[#008540] shadow-sm">
-                        <ChevronRight className="h-4 w-4" />
+        <Card className="mt-5 overflow-hidden border-[#cae5d9] bg-[linear-gradient(180deg,#ffffff_0%,#f6fbf8_52%,#eef8f2_100%)] p-0">
+          <div className="border-b border-[#dbe9e1] bg-[radial-gradient(circle_at_top_left,rgba(0,133,64,0.13),transparent_38%),radial-gradient(circle_at_top_right,rgba(11,91,114,0.14),transparent_42%),linear-gradient(135deg,#f8fcfa_0%,#eef8f2_100%)] px-6 py-6">
+            <div className="grid gap-4 xl:grid-cols-[1.25fr_0.75fr]">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.30em] text-[#008540]">Connected student journey</p>
+                <h4 className="mt-3 text-3xl font-semibold tracking-tight text-[#0f172a]">From account setup to confident parking decisions</h4>
+                <p className="mt-3 max-w-3xl text-sm leading-8 text-slate-600">
+                  The dashboard is the student’s command center. It begins with permit setup, then continuously connects parking visibility, route guidance, live alerts, and profile preferences into one experience.
+                </p>
+                <div className="mt-5 flex flex-wrap gap-3">
+                  {journeyHighlights.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <div key={item.title} className="min-w-[220px] flex-1 rounded-[24px] border border-white/80 bg-white/85 px-4 py-4 shadow-[0_16px_35px_rgba(0,62,81,0.06)] backdrop-blur">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#dff6e7_0%,#eef8f2_100%)] text-[#008540]">
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <p className="mt-4 text-base font-semibold text-[#0f172a]">{item.title}</p>
+                        <p className="mt-2 text-sm leading-7 text-slate-600">{item.text}</p>
                       </div>
-                    </div>
-                  ) : null}
+                    );
+                  })}
                 </div>
-              );
-            })}
+              </div>
+
+              <div className="rounded-[28px] border border-white/80 bg-white/85 p-5 shadow-[0_16px_35px_rgba(0,62,81,0.06)] backdrop-blur">
+                <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#0b5b72]">Experience map</p>
+                <div className="mt-5 space-y-3">
+                  {[
+                    "Register permit and preferred buildings",
+                    "Login and unlock category-aware campus view",
+                    "Use dashboard to jump into the right tool",
+                    "Park, ride, and monitor rules without switching systems"
+                  ].map((line, index) => (
+                    <div key={line} className="flex items-start gap-3 rounded-2xl border border-[#dbe9e1] bg-[#f9fcfa] px-4 py-3">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#e8f5ee] text-sm font-semibold text-[#008540]">
+                        {index + 1}
+                      </div>
+                      <p className="text-sm leading-7 text-slate-600">{line}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative px-6 py-6">
+            <div className="pointer-events-none absolute left-10 right-10 top-[78px] hidden h-[2px] bg-[linear-gradient(90deg,rgba(0,133,64,0.12)_0%,rgba(0,133,64,0.45)_20%,rgba(11,91,114,0.28)_50%,rgba(0,133,64,0.45)_80%,rgba(0,133,64,0.12)_100%)] xl:block" />
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-7">
+              {journeySteps.map((step, index) => {
+                const Icon = step.icon;
+                const isLast = index === journeySteps.length - 1;
+
+                return (
+                  <div
+                    key={step.title}
+                    className="group relative overflow-hidden rounded-[28px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f8fcfa_100%)] p-5 shadow-[0_14px_40px_rgba(0,62,81,0.06)] transition hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(0,62,81,0.10)]"
+                  >
+                    <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#0b5b72_0%,#008540_100%)] opacity-80" />
+                    <div className="absolute -right-6 -top-6 h-20 w-20 rounded-full bg-[radial-gradient(circle,rgba(0,133,64,0.12)_0%,transparent_72%)]" />
+                    <div className={`relative flex h-14 w-14 items-center justify-center rounded-[20px] ${step.tone} shadow-[0_14px_30px_rgba(0,133,64,0.10)]`}>
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    <div className="mt-4 flex items-center justify-between gap-3">
+                      <p className="text-xl font-semibold text-[#0f172a]">{step.title}</p>
+                      <span className="rounded-full bg-[#eef8f2] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0b5b72]">
+                        Step {index + 1}
+                      </span>
+                    </div>
+                    <p className="mt-3 text-sm leading-7 text-slate-600">{step.text}</p>
+                    {!isLast ? (
+                      <div className="mt-5 flex items-center justify-end xl:hidden">
+                        <div className="flex items-center rounded-full border border-[#dbe9e1] bg-white px-2.5 py-1.5 text-[#008540] shadow-sm">
+                          <ArrowRight className="h-4 w-4" />
+                        </div>
+                      </div>
+                    ) : null}
+                    {!isLast ? (
+                      <div className="pointer-events-none absolute -right-3 top-1/2 hidden -translate-y-1/2 xl:flex">
+                        <div className="flex items-center rounded-full border border-[#dbe9e1] bg-white px-2.5 py-1.5 text-[#008540] shadow-[0_10px_24px_rgba(0,62,81,0.08)]">
+                          <ChevronRight className="h-4 w-4" />
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </Card>
       </section>
