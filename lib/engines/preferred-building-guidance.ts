@@ -1,5 +1,6 @@
 import { academicBuildings, type AcademicBuilding } from "@/lib/data/academic-buildings";
 import { busStops, type BusStop as SourceBusStop } from "@/lib/data/bus-stops";
+import { LIVE_BUS_ROUTES } from "@/lib/data/live-bus-routes";
 import {
   LOT_ID_ALIASES,
   PARKING_RULES_CONFIG,
@@ -69,11 +70,20 @@ export interface SmartGuidanceRecommendationSection {
 export interface RankedBusStop {
   id: string;
   label: string;
-  routeId: string;
-  routeName: string;
+  routeIds: string[];
+  routeNames: string[];
   coordinates: Coordinate;
   distanceMeters: number;
   distanceLabel: string;
+}
+
+export interface ClosestRouteResult {
+  routeId: string;
+  routeName: string;
+  closestDestinationStopId: string;
+  closestDestinationStopName: string;
+  destinationStopDistanceMeters: number;
+  destinationStopDistanceLabel: string;
 }
 
 export interface ActiveParkingSession {
@@ -115,6 +125,7 @@ export interface ParkedSessionGuidanceResult {
   };
   nearestBusStops: RankedBusStop[];
   nearestBusRouteHint: string | null;
+  bestDestinationRoute: ClosestRouteResult | null;
   preferredBuildingParkingRecommendations: SmartGuidanceRecommendationSection;
   walkingRecommended: boolean;
   ruleAlerts: RuleAlertViewModel[];
@@ -176,8 +187,8 @@ function isCommuterCategory(category: StudentCategory) {
   return category === "non_resident_male" || category === "non_resident_female";
 }
 
-function toRouteHintLabel(buildingName: string, stopNames: string[]) {
-  return `${buildingName} is best served from ${stopNames.join(", ")}.`;
+export function getNetworkForCategory(category: StudentCategory): "male" | "female" {
+  return category.includes("female") ? "female" : "male";
 }
 
 export function normalizeLotId(lotId: string): CanonicalParkingLotId {
@@ -213,6 +224,21 @@ export function formatMeters(meters: number) {
 
 export function getBuildingCoordinates(buildingId: string, buildings = buildingLocations) {
   return buildings.find((building) => building.id === buildingId)?.coordinates ?? null;
+}
+
+export function getBuildingById(buildingId: string | null | undefined, buildings = buildingLocations) {
+  if (!buildingId) return null;
+  return buildings.find((building) => building.id === buildingId) ?? null;
+}
+
+export function getParkingById(lotId: string | null | undefined, candidateLocations = parkingLocations) {
+  if (!lotId) return null;
+  const canonicalId = normalizeLotId(lotId);
+  return (
+    candidateLocations.find((location) => location.id === canonicalId) ??
+    candidateLocations.find((location) => normalizeLotId(location.id) === canonicalId) ??
+    null
+  );
 }
 
 export function getBuildingIdFromLabel(label: string | null | undefined): BuildingId | null {
@@ -256,6 +282,50 @@ export function getPermittedParkingLocations(category: StudentCategory, candidat
     seenCanonicalIds.add(canonicalId);
     return true;
   });
+}
+
+export function getBusStopsForCategory(category: StudentCategory, candidateStops: SourceBusStop[] = busStops) {
+  const network = getNetworkForCategory(category);
+  const stopMap = new Map<string, RankedBusStop>();
+
+  LIVE_BUS_ROUTES.filter((route) => route.network === network).forEach((route) => {
+    route.stops.forEach((stop) => {
+      const existing = stopMap.get(stop.id);
+      if (existing) {
+        if (!existing.routeIds.includes(route.id)) existing.routeIds.push(route.id);
+        if (!existing.routeNames.includes(route.name)) existing.routeNames.push(route.name);
+        return;
+      }
+
+      stopMap.set(stop.id, {
+        id: stop.id,
+        label: stop.name,
+        routeIds: [route.id],
+        routeNames: [route.name],
+        coordinates: stop.coordinates,
+        distanceMeters: 0,
+        distanceLabel: "0 m"
+      });
+    });
+  });
+
+  if (!stopMap.size) {
+    candidateStops
+      .filter((stop) => stop.gender === network)
+      .forEach((stop) => {
+        stopMap.set(stop.id, {
+          id: stop.id,
+          label: stop.name,
+          routeIds: [stop.routeId],
+          routeNames: [stop.routeName],
+          coordinates: stop.coordinates,
+          distanceMeters: 0,
+          distanceLabel: "0 m"
+        });
+      });
+  }
+
+  return [...stopMap.values()];
 }
 
 export function getParkingRestrictionSummary(category: StudentCategory, lotId: string): ParkingRestrictionSummary {
@@ -376,14 +446,12 @@ export function getNearestBusStopsForParkedSession(
   candidateStops: SourceBusStop[] = busStops,
   limit = 3
 ): RankedBusStop[] {
-  const gender = category.includes("female") ? "female" : "male";
-  return candidateStops
-    .filter((stop) => stop.gender === gender)
+  return getBusStopsForCategory(category, candidateStops)
     .map((stop) => ({
       id: stop.id,
-      label: stop.name,
-      routeId: stop.routeId,
-      routeName: stop.routeName,
+      label: stop.label,
+      routeIds: stop.routeIds,
+      routeNames: stop.routeNames,
       coordinates: stop.coordinates,
       distanceMeters: Math.round(haversineDistanceMeters(parkedCoordinates, stop.coordinates)),
       distanceLabel: formatDistanceLabel(haversineDistanceMeters(parkedCoordinates, stop.coordinates))
@@ -392,31 +460,142 @@ export function getNearestBusStopsForParkedSession(
     .slice(0, limit);
 }
 
+export function getRoutesServingStop(stopId: string) {
+  return LIVE_BUS_ROUTES.filter((route) => route.stops.some((stop) => stop.id === stopId));
+}
+
+export function getClosestRouteToPreferredBuilding(
+  category: StudentCategory,
+  preferredBuildingId: string | undefined,
+  candidateStops: SourceBusStop[] = busStops,
+  routes = LIVE_BUS_ROUTES,
+  buildings = buildingLocations
+): ClosestRouteResult | null {
+  const building = getBuildingById(preferredBuildingId, buildings);
+  if (!building) return null;
+
+  const network = getNetworkForCategory(category);
+  const availableStopIds = new Set(getBusStopsForCategory(category, candidateStops).map((stop) => stop.id));
+
+  const candidates = routes
+    .filter((route) => route.network === network)
+    .map((route) => {
+      const scoredStops = route.stops
+        .filter((stop) => availableStopIds.has(stop.id))
+        .map((stop) => ({
+          stop,
+          distanceMeters: haversineDistanceMeters(building.coordinates, stop.coordinates)
+        }))
+        .sort((left, right) => left.distanceMeters - right.distanceMeters);
+
+      const bestStop = scoredStops[0];
+      if (!bestStop) return null;
+
+      return {
+        route,
+        stop: bestStop.stop,
+        distanceMeters: bestStop.distanceMeters
+      };
+    })
+    .filter(Boolean)
+    .sort((left, right) => {
+      if (!left || !right) return 0;
+      return left.distanceMeters - right.distanceMeters || left.route.name.localeCompare(right.route.name);
+    });
+
+  const best = candidates[0];
+  if (!best) return null;
+
+  return {
+    routeId: best.route.id,
+    routeName: best.route.name,
+    closestDestinationStopId: best.stop.id,
+    closestDestinationStopName: best.stop.name,
+    destinationStopDistanceMeters: Math.round(best.distanceMeters),
+    destinationStopDistanceLabel: formatDistanceLabel(best.distanceMeters)
+  };
+}
+
 export function getNearestBusRouteHint(
   category: StudentCategory,
   preferredBuildingId: string | undefined,
   nearestStops: RankedBusStop[],
+  candidateStops: SourceBusStop[] = busStops,
+  routes = LIVE_BUS_ROUTES,
   buildings = buildingLocations
 ) {
   if (!nearestStops.length) return null;
 
-  const building = preferredBuildingId ? buildings.find((entry) => entry.id === preferredBuildingId) : null;
-  const stopNames = nearestStops.map((stop) => stop.label);
+  const building = getBuildingById(preferredBuildingId, buildings);
+  const nearestStop = nearestStops[0];
+  const bestRoute = getClosestRouteToPreferredBuilding(category, preferredBuildingId, candidateStops, routes, buildings);
 
-  if (category.includes("female") && preferredBuildingId === "building_22") {
-    return toRouteHintLabel(building?.name ?? "Building 22", stopNames.filter((name) => ["Building 22 Stop", "Station 312", "Station 314", "Station 319", "Station 310"].includes(name)));
+  if (!building || !bestRoute) {
+    return `${nearestStop.routeNames[0] ?? "The nearest shuttle route"} is closest from ${nearestStop.label}.`;
   }
 
-  if (category.includes("female") && preferredBuildingId === "building_58") {
-    return `${building?.name ?? "Building 58"} is served through ${stopNames.join(", ")} on the female shuttle network.`;
+  const strongMatch = nearestStop.routeIds.includes(bestRoute.routeId);
+  if (strongMatch) {
+    return `${bestRoute.routeName} is the closest route for ${building.name} via ${bestRoute.closestDestinationStopName}.`;
   }
 
-  const nearest = nearestStops[0];
-  return `${nearest.routeName} is the closest route match from ${nearest.label}.`;
+  return `${nearestStop.label} is your nearest stop, and ${bestRoute.routeName} is the best route toward ${building.name} via ${bestRoute.closestDestinationStopName}.`;
 }
 
 export function shouldRecommendWalking(parkedCoordinates: Coordinate, buildingCoordinates: Coordinate, thresholdMeters = 350) {
   return haversineDistanceMeters(parkedCoordinates, buildingCoordinates) <= thresholdMeters;
+}
+
+export function buildPreferredBuildingRecommendationsViewModel(params: {
+  category: StudentCategory;
+  selectedPreferredBuildingId: string | null;
+  parkingLocations?: ParkingLocation[];
+  academicBuildings?: BuildingLocation[];
+}) {
+  return buildPreferredBuildingParkingRecommendations(params);
+}
+
+export function buildActiveTripGuidanceViewModel(params: {
+  activeSession: ActiveParkingSession;
+  category: StudentCategory;
+  preferredBuildingId?: string;
+  parkingLocations?: ParkingLocation[];
+  academicBuildings?: BuildingLocation[];
+  busStops?: SourceBusStop[];
+  now: Date;
+}) {
+  return buildParkedSessionGuidance(params);
+}
+
+export function buildSharedSmartGuidanceViewModel(params: {
+  activeSession?: ActiveParkingSession | null;
+  category: StudentCategory;
+  preferredBuildingId?: string | null;
+  parkingLocations?: ParkingLocation[];
+  academicBuildings?: BuildingLocation[];
+  busStops?: SourceBusStop[];
+  now: Date;
+}) {
+  if (params.activeSession) {
+    return buildParkedSessionGuidance({
+      activeSession: params.activeSession,
+      category: params.category,
+      preferredBuildingId: params.preferredBuildingId ?? undefined,
+      parkingLocations: params.parkingLocations,
+      academicBuildings: params.academicBuildings,
+      busStops: params.busStops,
+      now: params.now
+    });
+  }
+
+  return {
+    preferredBuildingParkingRecommendations: buildPreferredBuildingParkingRecommendations({
+      category: params.category,
+      selectedPreferredBuildingId: params.preferredBuildingId ?? null,
+      parkingLocations: params.parkingLocations,
+      academicBuildings: params.academicBuildings
+    })
+  };
 }
 
 function getCommuterCountdown(now: Date) {
@@ -496,9 +675,12 @@ export function buildParkedSessionGuidance(params: {
     academicBuildings: buildings
   });
   const preferredBuildingCoordinates = preferredBuildingId ? getBuildingCoordinates(preferredBuildingId, buildings) : null;
+  const preferredBuilding = getBuildingById(preferredBuildingId, buildings);
   const walkingRecommended = preferredBuildingCoordinates
     ? shouldRecommendWalking(activeSession.parkedCoordinates, preferredBuildingCoordinates)
     : false;
+  const bestDestinationRoute = getClosestRouteToPreferredBuilding(category, preferredBuildingId, candidateStops, LIVE_BUS_ROUTES, buildings);
+  const nearestBusRouteHint = getNearestBusRouteHint(category, preferredBuildingId, nearestBusStops, candidateStops, LIVE_BUS_ROUTES, buildings);
 
   const ruleAlerts: RuleAlertViewModel[] = [];
   const countdowns: CountdownViewModel[] = [];
@@ -545,7 +727,8 @@ export function buildParkedSessionGuidance(params: {
       slotId: activeSession.slotId
     },
     nearestBusStops,
-    nearestBusRouteHint: getNearestBusRouteHint(category, preferredBuildingId, nearestBusStops, buildings),
+    nearestBusRouteHint,
+    bestDestinationRoute,
     preferredBuildingParkingRecommendations: recommendationSection,
     walkingRecommended,
     ruleAlerts,

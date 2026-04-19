@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ActiveBus, LiveMapBusRoute } from "@/lib/types";
 
 type LeafletModule = typeof import("leaflet");
@@ -29,6 +29,7 @@ export function LiveRouteMap({
   const routeLayerRef = useRef<import("leaflet").LayerGroup | null>(null);
   const stopLayerRef = useRef<import("leaflet").LayerGroup | null>(null);
   const busLayerRef = useRef<import("leaflet").LayerGroup | null>(null);
+  const [mapReady, setMapReady] = useState(false);
 
   const bounds = useMemo(
     () => route.pathPoints.map((point) => [point.coordinates.lat, point.coordinates.lng] as [number, number]),
@@ -71,6 +72,7 @@ export function LiveRouteMap({
       stopLayerRef.current = L.layerGroup().addTo(map);
       busLayerRef.current = L.layerGroup().addTo(map);
       mapRef.current = map;
+      setMapReady(true);
 
       window.setTimeout(() => {
         if (!cancelled) {
@@ -95,7 +97,7 @@ export function LiveRouteMap({
   useEffect(() => {
     const map = mapRef.current;
     const L = leafletRef.current;
-    if (!map || !L || !routeLayerRef.current || !stopLayerRef.current || !busLayerRef.current) return;
+    if (!mapReady || !map || !L || !routeLayerRef.current || !stopLayerRef.current || !busLayerRef.current) return;
 
     routeLayerRef.current.clearLayers();
     stopLayerRef.current.clearLayers();
@@ -143,8 +145,8 @@ export function LiveRouteMap({
 
       marker.addTo(busLayerRef.current!);
     });
-
-  }, [buses, route]);
+    window.requestAnimationFrame(() => map.invalidateSize());
+  }, [buses, mapReady, route]);
 
   useEffect(() => {
     refreshMapViewport();
