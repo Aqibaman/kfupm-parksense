@@ -33,12 +33,14 @@ const iconMap: Record<string, typeof Home> = {
 export function AppShell({
   children,
   title,
+  titleMeta,
   eyebrow,
   description,
   admin = false
 }: {
   children: ReactNode;
   title: string;
+  titleMeta?: ReactNode;
   eyebrow: string;
   description: string;
   admin?: boolean;
@@ -73,6 +75,7 @@ export function AppShell({
             <div className="mt-3 grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">
               <div>
                 <h2 className="text-3xl font-semibold tracking-tight lg:text-4xl">{title}</h2>
+                {titleMeta ? <div className="mt-2 text-sm font-medium text-white/78">{titleMeta}</div> : null}
                 <div className="mt-4 max-w-3xl rounded-[26px] border border-white/14 bg-white/8 px-5 py-4 backdrop-blur">
                   <p className="text-xs font-semibold uppercase tracking-[0.30em] text-[#d8f6e3]">What This Page Helps You Do</p>
                   <p className="mt-3 text-sm leading-7 text-white/84 lg:text-base">{description}</p>

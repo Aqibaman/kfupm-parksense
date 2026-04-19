@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowDown, CarFront, ChevronRight, LogIn, MapPinned, ShieldAlert, Sparkles, UserRound, UserPlus } from "lucide-react";
+import { CarFront, ChevronRight, LogIn, MapPinned, ShieldAlert, Sparkles, UserRound, UserPlus } from "lucide-react";
 import { CategoryBadge } from "@/components/cards/category-badge";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card } from "@/components/ui/card";
@@ -13,7 +13,7 @@ const overviewLinks = [
   { href: "/parking", label: "Parking", helper: "See allowed lots, active space counts, and special-rule lots.", icon: CarFront },
   { href: "/buses", label: "Buses", helper: "Open the live route board and gender-specific shuttle network.", icon: MapPinned },
   { href: "/guidance", label: "Smart Guidance", helper: "See AI recommendations, violation warnings, and next-step alerts in one place.", icon: Sparkles },
-  { href: "/rules", label: "Rules", helper: "Read permit rules, lot restrictions, and special notices before parking.", icon: ShieldAlert },
+  { href: "/rules", label: "Policy Guide", helper: "Read permit rules, lot restrictions, and special notices before parking.", icon: ShieldAlert },
   { href: "/profile", label: "Profile", helper: "Edit account details, permit category, and favorite buildings.", icon: UserRound }
 ];
 
@@ -44,8 +44,13 @@ const dashboardFlow = [
     icon: MapPinned
   },
   {
-    title: "Smart Guidance + Rules",
-    text: "Follow active alerts, guidance, and profile-based rule decisions until the trip is complete.",
+    title: "Smart Guidance",
+    text: "Follow alerts, destination guidance, and permit-aware next steps during the trip.",
+    icon: Sparkles
+  },
+  {
+    title: "Policy Guide + Profile",
+    text: "Review permit rules, then update category and preferred buildings in Profile.",
     icon: ShieldAlert
   }
 ];
@@ -57,6 +62,7 @@ export default function DashboardPage() {
   return (
     <AppShell
       title={`Welcome back, ${snapshot.user.name.split(" ")[0]}`}
+      titleMeta={`Student ID: ${snapshot.user.studentId}`}
       eyebrow="Student Services"
       description="Access parking availability, bus routes, active parking guidance, smart recommendations, and rule-aware decisions from one connected KFUPM mobility dashboard."
     >
@@ -109,40 +115,29 @@ export default function DashboardPage() {
       <section>
         <h3 className="text-2xl font-semibold text-[#111827]">How to use this system</h3>
         <p className="mt-2 text-sm leading-7 text-slate-600">Follow the connected student flow below to understand how the platform works from entry to action.</p>
-        <Card className="mt-5 overflow-hidden border-[#cae5d9] bg-[linear-gradient(180deg,#ffffff_0%,#f6fbf8_52%,#eef8f2_100%)] p-6">
-          <div className="relative space-y-5">
-            <div className="pointer-events-none absolute left-1/2 top-8 hidden h-[calc(100%-4rem)] w-[4px] -translate-x-1/2 rounded-full bg-[linear-gradient(180deg,rgba(11,91,114,0.10)_0%,rgba(0,133,64,0.45)_18%,rgba(11,91,114,0.18)_50%,rgba(0,133,64,0.45)_82%,rgba(11,91,114,0.08)_100%)] lg:block" />
+        <Card className="mt-5 overflow-hidden border-[#cae5d9] bg-[linear-gradient(180deg,#ffffff_0%,#f6fbf8_52%,#eef8f2_100%)] p-5 lg:p-6">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
             {dashboardFlow.map((step, index) => {
               const Icon = step.icon;
               const isLast = index === dashboardFlow.length - 1;
               return (
-                <div
-                  key={step.title}
-                  className={`relative mx-auto max-w-5xl lg:grid lg:grid-cols-2 ${index % 2 === 0 ? "lg:[&>*:first-child]:col-start-1" : "lg:[&>*:first-child]:col-start-2"}`}
-                >
-                  <div className="relative rounded-[30px] border border-[#dbe9e1] bg-white p-6 shadow-[0_18px_42px_rgba(0,62,81,0.06)] lg:max-w-[440px] lg:w-full lg:justify-self-center">
+                <div key={step.title} className="relative">
+                  <div className="relative h-full rounded-[30px] border border-[#dbe9e1] bg-white p-5 shadow-[0_18px_42px_rgba(0,62,81,0.06)]">
                     <div className="absolute inset-x-0 top-0 h-1 rounded-t-[30px] bg-[linear-gradient(90deg,#0b5b72_0%,#008540_100%)]" />
-                    <div
-                      className={`pointer-events-none absolute top-1/2 hidden h-[2px] w-12 -translate-y-1/2 bg-[linear-gradient(90deg,rgba(11,91,114,0.2)_0%,rgba(0,133,64,0.55)_100%)] lg:block ${
-                        index % 2 === 0 ? "right-[-3rem]" : "left-[-3rem] rotate-180"
-                      }`}
-                    />
-                    <div className="flex flex-wrap items-start justify-between gap-4">
-                      <div className="flex h-16 w-16 items-center justify-center rounded-[22px] bg-[linear-gradient(135deg,#dff6e7_0%,#eef8f2_100%)] text-[#008540] shadow-[0_14px_30px_rgba(0,133,64,0.10)]">
-                        <Icon className="h-7 w-7" />
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex h-14 w-14 items-center justify-center rounded-[20px] bg-[linear-gradient(135deg,#dff6e7_0%,#eef8f2_100%)] text-[#008540] shadow-[0_14px_30px_rgba(0,133,64,0.10)]">
+                        <Icon className="h-6 w-6" />
                       </div>
-                      <span className="rounded-full bg-[#eef8f2] px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#0b5b72]">
+                      <span className="shrink-0 rounded-full bg-[#eef8f2] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#0b5b72]">
                         Step {index + 1}
                       </span>
                     </div>
-                    <h4 className="mt-5 text-3xl font-semibold text-[#0f172a]">{step.title}</h4>
-                    <p className="mt-3 max-w-2xl text-sm leading-8 text-slate-600">{step.text}</p>
+                    <h4 className="mt-4 text-[1.35rem] font-semibold leading-8 text-[#0f172a]">{step.title}</h4>
+                    <p className="mt-3 text-sm leading-7 text-slate-600">{step.text}</p>
                   </div>
                   {!isLast ? (
-                    <div className="flex justify-center py-2 lg:col-span-2">
-                      <div className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#dbe9e1] bg-white text-[#008540] shadow-[0_10px_24px_rgba(0,62,81,0.08)]">
-                        <ArrowDown className="h-5 w-5" />
-                      </div>
+                    <div className="pointer-events-none absolute -right-3 top-1/2 hidden h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-[#dbe9e1] bg-white text-[#008540] shadow-[0_10px_24px_rgba(0,62,81,0.08)] xl:flex">
+                      <ChevronRight className="h-4 w-4" />
                     </div>
                   ) : null}
                 </div>
