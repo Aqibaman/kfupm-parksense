@@ -1,74 +1,130 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { BusNetworkMap } from "@/components/cards/bus-network-map";
-import { LiveBusStatusCard } from "@/components/cards/live-bus-status-card";
-import { RouteTimeline } from "@/components/cards/route-timeline";
 import { CategoryBadge } from "@/components/cards/category-badge";
+import { ActiveBusesPanel } from "@/components/cards/active-buses-panel";
+import { LiveRouteMap } from "@/components/cards/live-route-map";
+import { MapLegend } from "@/components/cards/map-legend";
+import { RouteSelector } from "@/components/cards/route-selector";
+import { RouteSummaryCard } from "@/components/cards/route-summary-card";
+import { RouteTimetableCard } from "@/components/cards/route-timetable-card";
 import { AppShell } from "@/components/layout/app-shell";
-import { InfoPanel, SectionGrid } from "@/components/layout/sections";
+import { Card, CardTitle } from "@/components/ui/card";
 import { useStudentProfile } from "@/components/providers/student-profile-provider";
-import { buses, busRoutes, busStops } from "@/lib/data/kfupm-data";
-import { buildLiveRouteStates } from "@/lib/services/live-bus-routing";
+import { LIVE_BUS_ROUTES } from "@/lib/data/live-bus-routes";
+import {
+  buildBusSimulationState,
+  formatRouteServiceStatus,
+  getRouteById,
+  getRouteNetworkForCategory,
+  getRoutesForNetwork,
+  initializeBusesForRoute,
+  tickBusSimulation
+} from "@/lib/services/bus-route-simulation";
+import type { ActiveBus } from "@/lib/types";
+
+const storageKey = "parkwise-selected-bus-route";
 
 export default function BusesPage() {
   const { user } = useStudentProfile();
-  const [now, setNow] = useState(() => Date.now());
-  const networkType = user.gender === "male" ? "male" : "female";
-  const filteredRoutes = busRoutes.filter((route) => route.networkType === networkType);
-  const filteredBuses = buses.filter((bus) => bus.networkType === networkType);
-  const relevantStops = busStops.filter((stop) => filteredRoutes.some((route) => route.stopIds.includes(stop.id)));
-  const routeStates = useMemo(() => buildLiveRouteStates(filteredRoutes, relevantStops, filteredBuses, now), [filteredRoutes, filteredBuses, relevantStops, now]);
-  const liveBuses = routeStates.flatMap((routeState) =>
-    routeState.buses.map((bus) => ({
-      bus,
-      route: routeState.route,
-      currentStop: routeState.stops.find((stop) => stop.id === bus.currentStopId) ?? routeState.stops[0],
-      nextStop: routeState.stops.find((stop) => stop.id === bus.nextStopId) ?? routeState.stops[0]
-    }))
-  );
+  const network = getRouteNetworkForCategory(user.userCategory);
+  const routes = useMemo(() => getRoutesForNetwork(network), [network]);
+  const [selectedRouteId, setSelectedRouteId] = useState(() => routes[0]?.id ?? LIVE_BUS_ROUTES[0]?.id ?? "");
+  const [activeBuses, setActiveBuses] = useState<ActiveBus[]>([]);
+  const [now, setNow] = useState(() => new Date());
 
   useEffect(() => {
-    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    if (typeof window === "undefined") return;
+    const stored = window.localStorage.getItem(`${storageKey}-${network}`);
+    const nextRouteId = stored && routes.some((route) => route.id === stored) ? stored : routes[0]?.id ?? "";
+    setSelectedRouteId(nextRouteId);
+  }, [network, routes]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !selectedRouteId) return;
+    window.localStorage.setItem(`${storageKey}-${network}`, selectedRouteId);
+  }, [network, selectedRouteId]);
+
+  const selectedRoute = useMemo(() => getRouteById(selectedRouteId) ?? routes[0], [routes, selectedRouteId]);
+
+  useEffect(() => {
+    if (!selectedRoute) return;
+    setActiveBuses(initializeBusesForRoute(selectedRoute));
+    setNow(new Date());
+  }, [selectedRoute]);
+
+  useEffect(() => {
+    if (!selectedRoute) return;
+    const timer = window.setInterval(() => {
+      const nextNow = new Date();
+      setNow(nextNow);
+      setActiveBuses((current) => tickBusSimulation(selectedRoute, current.length ? current : initializeBusesForRoute(selectedRoute), 1000, nextNow));
+    }, 1000);
+
     return () => window.clearInterval(timer);
-  }, []);
+  }, [selectedRoute]);
+
+  const simulationState = useMemo(
+    () => (selectedRoute ? buildBusSimulationState(selectedRoute, activeBuses, now) : null),
+    [activeBuses, now, selectedRoute]
+  );
+
+  if (!selectedRoute || !simulationState) {
+    return (
+      <AppShell
+        title="Bus Tracking and Route Assistance"
+        eyebrow="Transit Layer"
+        description="Follow the live university shuttle network using a route-aware map, real stop positions, and moving buses."
+      >
+        <Card>
+          <CardTitle title="No route available" subtitle="Bus route data could not be loaded for the current network." />
+        </Card>
+      </AppShell>
+    );
+  }
+
+  const serviceStatus = formatRouteServiceStatus(selectedRoute, now);
 
   return (
     <AppShell
       title="Bus Tracking and Route Assistance"
       eyebrow="Transit Layer"
-      description="Students only see the bus network relevant to their category. Male students get the male route map, female students get the female route map, with Building 64 transfer guidance kept visible."
+      description="Select the live route for your network, follow buses on a free real map, and track active service timing for each campus shuttle."
     >
       <div className="flex flex-wrap items-center gap-3">
         <CategoryBadge category={user.userCategory} />
         <span className="rounded-full border border-[#dbe9e1] bg-[#f8fbf9] px-4 py-2 text-sm font-medium text-slate-700">
-          Showing the {networkType} network only
+          Showing the {network} network only
         </span>
       </div>
 
-      <BusNetworkMap networkLabel={networkType === "male" ? "Male" : "Female"} routeStates={routeStates} />
+      <RouteSelector routes={routes} selectedRouteId={selectedRoute.id} onSelect={setSelectedRouteId} />
 
-      <SectionGrid cols="xl:grid-cols-[1fr_1fr]">
-        {liveBuses.map(({ bus, route, currentStop, nextStop }) => (
-          <LiveBusStatusCard key={bus.id} bus={bus} route={route} currentStop={currentStop} nextStop={nextStop} />
-        ))}
-      </SectionGrid>
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.45fr)_380px]">
+        <Card className="bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)] p-4 md:p-5">
+          <CardTitle
+            title="Live bus route map"
+            subtitle="This view uses a free OpenStreetMap base with real route stops and continuously moving buses for the selected service."
+          />
+          <div className="rounded-[28px] bg-[linear-gradient(180deg,#f7fbf8_0%,#ffffff_100%)] p-3 md:p-4">
+            <LiveRouteMap route={selectedRoute} buses={simulationState.buses} />
+          </div>
+          <div className="mt-4">
+            <MapLegend />
+          </div>
+        </Card>
 
-      <div className="grid gap-4 xl:grid-cols-2">
-        {routeStates.map((routeState) => (
-          <RouteTimeline key={routeState.route.id} routeState={routeState} />
-        ))}
+        <div className="space-y-5">
+          <RouteSummaryCard
+            route={selectedRoute}
+            activeBusCount={simulationState.buses.length}
+            serviceStatus={serviceStatus}
+            nextStopSummaries={simulationState.nextStopSummary}
+          />
+          <ActiveBusesPanel buses={simulationState.buses} />
+          <RouteTimetableCard route={selectedRoute} />
+        </div>
       </div>
-
-      <InfoPanel
-        title="Where do I go after parking?"
-        subtitle="Quick transfer guidance from lots into the shuttle network."
-        items={[
-          { label: "Lot 64 nearest stop", value: networkType === "male" ? "Station 316 for M3 or M4" : "Station 316 then F8 connector" },
-          { label: "Housing-side transfer", value: networkType === "male" ? "Stations 301 to 306" : "Parking 900 and Station 404" },
-          { label: "If walking is faster", value: "The recommendation engine can suggest walking instead of a shuttle transfer" }
-        ]}
-      />
     </AppShell>
   );
 }

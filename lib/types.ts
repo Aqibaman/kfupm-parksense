@@ -169,3 +169,64 @@ export interface ChallengeMetric {
   label: string;
   value: number;
 }
+
+export type RouteNetwork = "male" | "female";
+
+export interface RouteStop {
+  id: string;
+  name: string;
+  coordinates: { lat: number; lng: number };
+  order: number;
+}
+
+export interface RouteServiceWindow {
+  start: string;
+  end: string;
+}
+
+export interface RouteSchedule {
+  serviceWindow: RouteServiceWindow;
+  specialTimetable?: Array<{
+    label: string;
+    departure: string;
+    return?: string;
+  }>;
+}
+
+export interface LiveMapBusRoute {
+  id: string;
+  code: string;
+  network: RouteNetwork;
+  name: string;
+  timingLabel: string;
+  stops: RouteStop[];
+  schedule: RouteSchedule;
+  serviceNote?: string;
+  defaultBusNumbers: string[];
+  segmentTravelSeconds: number;
+  dwellSeconds: number;
+}
+
+export interface ActiveBus {
+  id: string;
+  busNumber: string;
+  routeId: string;
+  segmentIndex: number;
+  progress: number;
+  direction: 1 | -1;
+  status: "running" | "boarding" | "layover" | "inactive";
+  currentCoordinates: { lat: number; lng: number };
+  nextStopId?: string;
+  currentStopId?: string;
+  nextStopName?: string;
+  currentStopName?: string;
+  phaseSeconds: number;
+}
+
+export interface BusSimulationState {
+  routeId: string;
+  buses: ActiveBus[];
+  inService: boolean;
+  lastUpdatedIso: string;
+  nextStopSummary: string[];
+}

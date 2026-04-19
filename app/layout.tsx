@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "leaflet/dist/leaflet.css";
 import "./generated.css";
 import { ParkingSessionProvider } from "@/components/providers/parking-session-provider";
 import { StudentProfileProvider } from "@/components/providers/student-profile-provider";

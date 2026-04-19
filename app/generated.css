@@ -775,6 +775,10 @@ video {
   height: 316px;
 }
 
+.h-\[380px\] {
+  height: 380px;
+}
+
 .h-\[92px\] {
   height: 92px;
 }
@@ -894,6 +898,10 @@ video {
 
 .min-w-0 {
   min-width: 0px;
+}
+
+.min-w-\[180px\] {
+  min-width: 180px;
 }
 
 .min-w-full {
@@ -1170,6 +1178,11 @@ video {
   border-color: rgb(0 133 64 / 0.2);
 }
 
+.border-\[\#0b5b72\] {
+  --tw-border-opacity: 1;
+  border-color: rgb(11 91 114 / var(--tw-border-opacity));
+}
+
 .border-\[\#0d5f74\] {
   --tw-border-opacity: 1;
   border-color: rgb(13 95 116 / var(--tw-border-opacity));
@@ -1210,6 +1223,11 @@ video {
 .border-\[\#cde8dd\] {
   --tw-border-opacity: 1;
   border-color: rgb(205 232 221 / var(--tw-border-opacity));
+}
+
+.border-\[\#cfe3d8\] {
+  --tw-border-opacity: 1;
+  border-color: rgb(207 227 216 / var(--tw-border-opacity));
 }
 
 .border-\[\#cfe4d8\] {
@@ -1411,6 +1429,11 @@ video {
   background-color: rgb(237 247 242 / var(--tw-bg-opacity));
 }
 
+.bg-\[\#eef3f5\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(238 243 245 / var(--tw-bg-opacity));
+}
+
 .bg-\[\#eef8f2\] {
   --tw-bg-opacity: 1;
   background-color: rgb(238 248 242 / var(--tw-bg-opacity));
@@ -1434,6 +1457,11 @@ video {
 .bg-\[\#f5effb\] {
   --tw-bg-opacity: 1;
   background-color: rgb(245 239 251 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#f7fbf8\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(247 251 248 / var(--tw-bg-opacity));
 }
 
 .bg-\[\#f8fbf9\] {
@@ -1474,6 +1502,11 @@ video {
 .bg-\[\#fff4dc\] {
   --tw-bg-opacity: 1;
   background-color: rgb(255 244 220 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#fff4e7\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 244 231 / var(--tw-bg-opacity));
 }
 
 .bg-\[\#fff5db\] {
@@ -1633,6 +1666,10 @@ video {
 
 .bg-\[linear-gradient\(180deg\2c \#f3faf6_0\%\2c \#ffffff_100\%\)\] {
   background-image: linear-gradient(180deg,#f3faf6 0%,#ffffff 100%);
+}
+
+.bg-\[linear-gradient\(180deg\2c \#f7fbf8_0\%\2c \#ffffff_100\%\)\] {
+  background-image: linear-gradient(180deg,#f7fbf8 0%,#ffffff 100%);
 }
 
 .bg-\[linear-gradient\(180deg\2c \#ffffff_0\%\2c \#f6fbf8_100\%\)\] {
@@ -1839,6 +1876,10 @@ video {
 .py-8 {
   padding-top: 2rem;
   padding-bottom: 2rem;
+}
+
+.pb-1 {
+  padding-bottom: 0.25rem;
 }
 
 .pb-2 {
@@ -2228,6 +2269,12 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.shadow-\[0_12px_24px_rgba\(0\2c 62\2c 81\2c 0\.04\)\] {
+  --tw-shadow: 0 12px 24px rgba(0,62,81,0.04);
+  --tw-shadow-colored: 0 12px 24px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
 .shadow-\[0_12px_24px_rgba\(0\2c 62\2c 81\2c 0\.18\)\] {
   --tw-shadow: 0 12px 24px rgba(0,62,81,0.18);
   --tw-shadow-colored: 0 12px 24px var(--tw-shadow-color);
@@ -2300,9 +2347,21 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.shadow-\[0_18px_40px_rgba\(0\2c 62\2c 81\2c 0\.16\)\] {
+  --tw-shadow: 0 18px 40px rgba(0,62,81,0.16);
+  --tw-shadow-colored: 0 18px 40px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
 .shadow-\[0_18px_42px_rgba\(0\2c 62\2c 81\2c 0\.06\)\] {
   --tw-shadow: 0 18px 42px rgba(0,62,81,0.06);
   --tw-shadow-colored: 0 18px 42px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.shadow-\[0_18px_50px_rgba\(0\2c 62\2c 81\2c 0\.06\)\] {
+  --tw-shadow: 0 18px 50px rgba(0,62,81,0.06);
+  --tw-shadow-colored: 0 18px 50px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
@@ -2554,6 +2613,60 @@ textarea {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.parkwise-route-map {
+  overflow: hidden;
+}
+
+.parkwise-route-map .leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 10px;
+  margin: 0 10px 10px 0;
+  padding: 2px 8px;
+}
+
+.parkwise-route-map .leaflet-control-zoom a {
+  color: #003e51;
+}
+
+.parkwise-map-icon-wrapper {
+  background: transparent;
+  border: none;
+}
+
+.parkwise-stop-icon {
+  display: flex;
+  height: 42px;
+  width: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 2px solid #8cc8a2;
+  background: #eff8f3;
+  box-shadow: 0 8px 18px rgba(0, 62, 81, 0.08);
+  color: #003e51;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.parkwise-bus-icon {
+  display: flex;
+  height: 40px;
+  width: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #0b5b72 0%, #008540 100%);
+  box-shadow: 0 10px 22px rgba(0, 62, 81, 0.2);
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.parkwise-map-popup {
+  font-family: var(--font-body), sans-serif;
+  line-height: 1.6;
+  color: #334155;
+}
+
 .hover\:-translate-y-0:hover {
   --tw-translate-y: -0px;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
@@ -2723,6 +2836,10 @@ textarea {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .sm\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .sm\:grid-cols-8 {
     grid-template-columns: repeat(8, minmax(0, 1fr));
   }
@@ -2782,6 +2899,10 @@ textarea {
 }
 
 @media (min-width: 768px) {
+  .md\:h-\[520px\] {
+    height: 520px;
+  }
+
   .md\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2792,6 +2913,10 @@ textarea {
 
   .md\:grid-cols-4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .md\:p-4 {
+    padding: 1rem;
   }
 
   .md\:p-5 {
@@ -2954,6 +3079,10 @@ textarea {
 
   .xl\:grid-cols-\[320px_1fr\] {
     grid-template-columns: 320px 1fr;
+  }
+
+  .xl\:grid-cols-\[minmax\(0\2c 1\.45fr\)_380px\] {
+    grid-template-columns: minmax(0,1.45fr) 380px;
   }
 }
 
