@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { CarFront, ChevronRight, LogIn, MapPinned, ShieldAlert, Sparkles, UserRound, UserPlus } from "lucide-react";
+import { CarFront, ChevronRight, LogIn, MapPinned, ShieldAlert, Sparkles, SquareArrowOutUpRight, UserRound, UserPlus } from "lucide-react";
 import { CategoryBadge } from "@/components/cards/category-badge";
 import { AppShell } from "@/components/layout/app-shell";
 import { Card } from "@/components/ui/card";
 import { SectionGrid } from "@/components/layout/sections";
+import { useParkingSession } from "@/components/providers/parking-session-provider";
 import { useStudentProfile } from "@/components/providers/student-profile-provider";
+import { parkingLocations } from "@/lib/data/parking-locations";
+import { normalizeLotId } from "@/lib/engines/preferred-building-guidance";
 import { buildDashboardSnapshot } from "@/lib/services/query";
 
 const overviewLinks = [
@@ -62,7 +65,11 @@ const dashboardFlow = [
 
 export default function DashboardPage() {
   const { user } = useStudentProfile();
+  const { activeSession, parkingPageData, now, stopSession } = useParkingSession();
   const snapshot = buildDashboardSnapshot(user);
+  const activeLotName = activeSession
+    ? parkingLocations.find((lot) => normalizeLotId(lot.id) === normalizeLotId(activeSession.canonicalLotId))?.name ?? activeSession.lotId
+    : null;
 
   return (
     <AppShell
@@ -88,6 +95,53 @@ export default function DashboardPage() {
           </div>
         </div>
       </section>
+
+      {activeSession && parkingPageData ? (
+        <section>
+          <SectionGrid cols="md:grid-cols-2 xl:grid-cols-5">
+            <div className="rounded-[28px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)] p-5 shadow-[0_18px_50px_rgba(0,62,81,0.07)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#008540]">Parking lot</p>
+              <h4 className="mt-4 text-2xl font-semibold text-[#0f172a]">{activeLotName}</h4>
+              <p className="mt-3 text-sm leading-7 text-slate-600">Current active lot for your parked session.</p>
+            </div>
+            <div className="rounded-[28px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)] p-5 shadow-[0_18px_50px_rgba(0,62,81,0.07)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#008540]">Reserved slot</p>
+              <h4 className="mt-4 text-2xl font-semibold text-[#0f172a]">{activeSession.slotId}</h4>
+              <p className="mt-3 text-sm leading-7 text-slate-600">{activeSession.floorKey ?? "Ground / open area"} selected for the active session.</p>
+            </div>
+            <div className="rounded-[28px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)] p-5 shadow-[0_18px_50px_rgba(0,62,81,0.07)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#008540]">Time parked</p>
+              <h4 className="mt-4 text-2xl font-semibold text-[#003E51]">{formatElapsed(activeSession.parkedAt, now)}</h4>
+              <p className="mt-3 text-sm leading-7 text-slate-600">This timer stays live until you click I left.</p>
+            </div>
+            <div className="rounded-[28px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)] p-5 shadow-[0_18px_50px_rgba(0,62,81,0.07)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#008540]">Leave by</p>
+              <h4 className="mt-4 text-2xl font-semibold text-[#008540]">{parkingPageData.ruleResult.leaveByTime ?? "No time limit"}</h4>
+              <p className="mt-3 text-sm leading-7 text-slate-600">
+                {parkingPageData.ruleResult.permitStatus === "unauthorized" ? "This parked session needs attention." : "Use this deadline to leave on time and avoid a violation."}
+              </p>
+            </div>
+            <div className="rounded-[28px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)] p-5 shadow-[0_18px_50px_rgba(0,62,81,0.07)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#008540]">Permit status</p>
+              <h4 className="mt-4 text-2xl font-semibold text-[#0f172a]">
+                {parkingPageData.ruleResult.permitStatus === "allowed"
+                  ? "Allowed"
+                  : parkingPageData.ruleResult.permitStatus === "restricted"
+                    ? "Restricted"
+                    : "Unauthorized"}
+              </h4>
+              <button
+                type="button"
+                onClick={stopSession}
+                className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#0b5b72] px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_36px_rgba(0,62,81,0.16)] transition hover:bg-[#08495b]"
+              >
+                <SquareArrowOutUpRight className="h-4 w-4" />
+                I left
+              </button>
+            </div>
+          </SectionGrid>
+        </section>
+      ) : null}
 
       <section>
         <h3 className="text-2xl font-semibold text-[#111827]">Overview tiles</h3>
@@ -152,4 +206,13 @@ export default function DashboardPage() {
       </section>
     </AppShell>
   );
+}
+
+function formatElapsed(startedAt: string, now: Date) {
+  const elapsed = Math.max(now.getTime() - new Date(startedAt).getTime(), 0);
+  const totalSeconds = Math.floor(elapsed / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return [hours, minutes, seconds].map((value) => String(value).padStart(2, "0")).join(":");
 }
