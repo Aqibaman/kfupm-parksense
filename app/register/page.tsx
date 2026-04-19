@@ -70,7 +70,7 @@ export default function RegisterPage() {
         <section className="p-2 lg:px-4 lg:py-2">
           <BrandLogo compact />
           <p className="mt-6 text-sm uppercase tracking-[0.32em] text-[#008540]">Registration</p>
-          <h2 className="mt-4 text-4xl font-semibold tracking-tight text-black">Create your KFUPM ParkSense profile</h2>
+            <h2 className="mt-4 text-4xl font-semibold tracking-tight text-black">Create your KFUPM ParkWise profile</h2>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-600">
             The selected permit controls your lot eligibility, special rules, bus network, and dashboard colors across the application.
           </p>

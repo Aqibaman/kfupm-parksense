@@ -4,7 +4,7 @@ import { ParkingSessionProvider } from "@/components/providers/parking-session-p
 import { StudentProfileProvider } from "@/components/providers/student-profile-provider";
 
 export const metadata: Metadata = {
-  title: "KFUPM ParkSense",
+  title: "KFUPM ParkWise",
   description: "An IoT-enabled smart parking, bus guidance, and rule-aware mobility dashboard for KFUPM."
 };
 

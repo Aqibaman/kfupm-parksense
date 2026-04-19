@@ -1958,6 +1958,10 @@ video {
   text-transform: capitalize;
 }
 
+.leading-4 {
+  line-height: 1rem;
+}
+
 .leading-7 {
   line-height: 1.75rem;
 }
@@ -2836,6 +2840,11 @@ textarea {
   .lg\:text-base {
     font-size: 1rem;
     line-height: 1.5rem;
+  }
+
+  .lg\:text-xs {
+    font-size: 0.75rem;
+    line-height: 1rem;
   }
 }
 

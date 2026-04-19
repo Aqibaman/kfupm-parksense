@@ -27,7 +27,7 @@ export default function LoginPage() {
           <p className="mt-10 text-sm uppercase tracking-[0.38em] text-[#d6f7e2]">Student Login</p>
           <h1 className="mt-4 text-5xl font-semibold tracking-tight lg:text-6xl">ParkWise - KFUPM Mobility App</h1>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-white/85">
-            Enter KFUPM ParkSense to explore category-based parking access, bus route guidance, live session monitoring, and compliance alerts in one premium university mobility platform.
+              Enter KFUPM ParkWise to explore category-based parking access, bus route guidance, live session monitoring, and compliance alerts in one premium university mobility platform.
           </p>
           <div className="mt-8 grid grid-cols-4 gap-3">
             {permitShowcase.map((item) => (
@@ -70,7 +70,7 @@ export default function LoginPage() {
                 href="/dashboard"
                 className="inline-flex w-full items-center justify-center rounded-[22px] bg-[#007a4d] px-5 py-4 text-sm font-semibold text-white shadow-[0_20px_50px_rgba(0,133,64,0.22)] transition hover:bg-[#006c44]"
               >
-                Login to KFUPM ParkSense
+              Login to KFUPM ParkWise
               </Link>
             </form>
             <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-sm">

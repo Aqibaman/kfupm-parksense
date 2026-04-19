@@ -14,7 +14,7 @@ function formatDuration(ms: number) {
 
 export function ParkingSessionStatusCard({ session, lot }: { session: ParkingSession; lot: ParkingLot }) {
   const [now, setNow] = useState(() => Date.now());
-  const storageKey = `kfupm-parksense-session-${session.id}`;
+const storageKey = `kfupm-parkwise-session-${session.id}`;
   const [parkedAt, setParkedAt] = useState<number | null>(null);
   const [leftAt, setLeftAt] = useState<number | null>(null);
 

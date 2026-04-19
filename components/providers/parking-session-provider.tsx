@@ -37,7 +37,7 @@ type ParkingSessionContextValue = {
 };
 
 const ParkingSessionContext = createContext<ParkingSessionContextValue | null>(null);
-const storageKey = "kfupm-parksense-active-session";
+const storageKey = "kfupm-parkwise-active-session";
 
 function readStoredSession() {
   if (typeof window === "undefined") return null;

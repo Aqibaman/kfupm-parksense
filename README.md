@@ -1,6 +1,6 @@
-# KFUPM ParkSense
+# KFUPM ParkWise
 
-KFUPM ParkSense is a production-style responsive web application for the KFUPM Mobility Solutions Challenge. It uses the shared English report as the main domain source for permit categories, prohibited lots, Building 64 special rules, commuter curfew logic, bus route summaries, challenge evidence, and violation analytics.
+KFUPM ParkWise is a production-style responsive web application for the KFUPM Mobility Solutions Challenge. It uses the shared English report as the main domain source for permit categories, prohibited lots, Building 64 special rules, commuter curfew logic, bus route summaries, challenge evidence, and violation analytics.
 
 ## Stack
 

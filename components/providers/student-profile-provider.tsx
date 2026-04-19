@@ -12,7 +12,7 @@ type StudentProfileContextValue = {
 };
 
 const StudentProfileContext = createContext<StudentProfileContextValue | null>(null);
-const storageKey = "kfupm-parksense-student";
+const storageKey = "kfupm-parkwise-student";
 
 function getTemplateUser(category: UserCategory) {
   return users.find((user) => user.userCategory === category && user.role === "student") ?? users[1];

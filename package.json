@@ -1,5 +1,5 @@
 {
-  "name": "kfupm-parksense",
+  "name": "kfupm-parkwise",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,7 +11,7 @@
     "start": "next start",
     "lint": "next lint"
   },
-  "description": "KFUPM ParkSense - IoT-enabled smart parking, bus guidance, and rule-aware mobility dashboard for KFUPM.",
+  "description": "KFUPM ParkWise - IoT-enabled smart parking, bus guidance, and rule-aware mobility dashboard for KFUPM.",
   "dependencies": {
     "clsx": "^2.1.1",
     "lucide-react": "^0.511.0",

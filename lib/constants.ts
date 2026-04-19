@@ -1,6 +1,6 @@
 import type { UserCategory } from "@/lib/types";
 
-export const appName = "KFUPM ParkSense";
+export const appName = "KFUPM ParkWise";
 export const appDescription = "An IoT-enabled smart parking, bus guidance, and rule-aware mobility dashboard for KFUPM.";
 
 export const categoryMeta: Record<

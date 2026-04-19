@@ -9,7 +9,7 @@ export default function HowItWorksPage() {
     <AppShell
       title="How It Works"
       eyebrow="Product Story"
-      description="ParkSense combines parking policy, slot sensing, bus routing, and pre-violation alerts into one campus mobility workflow."
+      description="ParkWise combines parking policy, slot sensing, bus routing, and pre-violation alerts into one campus mobility workflow."
     >
       <Card>
         <CardTitle title="End-to-end journey" />
