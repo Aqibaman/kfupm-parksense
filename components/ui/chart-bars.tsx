@@ -18,12 +18,12 @@ export function ChartBars({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <CardTitle title={title} subtitle={subtitle} />
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-[#cfe5da] bg-[#f5fbf7] px-4 py-3">
+          <div className="rounded-2xl border border-[#cfe5da] bg-[#f2fbf5] px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#008540]">Busiest period</p>
             <p className="mt-2 text-lg font-semibold text-[#003E51]">{peak.label}</p>
             <p className="text-sm text-slate-500">{peak.value}% occupied</p>
           </div>
-          <div className="rounded-2xl border border-[#d9e8e0] bg-white px-4 py-3">
+          <div className="rounded-2xl border border-[#cfe5da] bg-[#f2fbf5] px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#0d5f74]">Daily average</p>
             <p className="mt-2 text-lg font-semibold text-[#003E51]">{average}%</p>
             <p className="text-sm text-slate-500">Typical lot pressure</p>
@@ -31,8 +31,8 @@ export function ChartBars({
         </div>
       </div>
       <div className="mt-2 rounded-[28px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f7fcf9_100%)] p-5">
-        <div className="relative rounded-[24px] border border-[#e3efe8] bg-[radial-gradient(circle_at_top,#f4fbf7_0%,#ffffff_60%,#ffffff_100%)] p-5">
-          <div className="pointer-events-none absolute inset-x-5 top-5 bottom-[4.5rem]">
+        <div className="relative rounded-[24px] border border-[#e3efe8] bg-[radial-gradient(circle_at_top,#f4fbf7_0%,#ffffff_60%,#ffffff_100%)] px-5 pb-7 pt-5">
+          <div className="pointer-events-none absolute inset-x-5 top-5 bottom-[5.75rem]">
             {[0, 25, 50, 75, 100].map((tick, index) => (
               <div key={tick} className="absolute left-0 right-0" style={{ top: `${index * 25}%` }}>
                 <div className="border-t border-dashed border-[#dcebe3]" />
@@ -44,7 +44,7 @@ export function ChartBars({
               style={{ top: `${100 - average}%` }}
             />
           </div>
-          <div className="grid h-[280px] grid-cols-5 items-end gap-4 pt-6">
+          <div className="grid h-[316px] grid-cols-5 items-end gap-4 pt-6">
             {items.map((item) => {
               const isPeak = item.label === peak.label;
 
@@ -65,9 +65,9 @@ export function ChartBars({
                       style={{ height: `${Math.max(item.value, 8)}%` }}
                     />
                   </div>
-                  <div className="mt-4 text-center">
+                  <div className="mt-4 min-h-[52px] text-center">
                     <p className="text-sm font-semibold text-[#003E51]">{item.label}</p>
-                    <p className="mt-1 text-xs text-slate-500">Occupancy</p>
+                    <p className="mt-1 text-xs leading-5 text-slate-500">Occupancy</p>
                   </div>
                 </div>
               );

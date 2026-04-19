@@ -122,22 +122,22 @@ export default function ParkingLotDetailPage() {
               </span>
             </div>
           </div>
-          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+          <div className="mt-4 grid gap-3 md:grid-cols-2 2xl:grid-cols-4">
+            <div className="rounded-2xl border border-[#dbe9e1] bg-[#f2fbf5] p-4">
               <p className="text-sm text-slate-500">Allowed for current user</p>
-              <p className="mt-2 text-base font-semibold text-slate-900">{lotAccess.allowed ? "Yes" : "No"}</p>
+              <p className="mt-2 break-words text-base font-semibold leading-7 text-slate-900">{lotAccess.allowed ? "Yes" : "No"}</p>
             </div>
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div className="rounded-2xl border border-[#dbe9e1] bg-[#f2fbf5] p-4">
               <p className="text-sm text-slate-500">Nearest bus stop</p>
-              <p className="mt-2 text-base font-semibold text-slate-900">{nearestStop?.stopName ?? "Pending mapping"}</p>
+              <p className="mt-2 break-words text-base font-semibold leading-7 text-slate-900">{nearestStop?.stopName ?? "Pending mapping"}</p>
             </div>
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div className="rounded-2xl border border-[#dbe9e1] bg-[#f2fbf5] p-4">
               <p className="text-sm text-slate-500">Primary rule</p>
-              <p className="mt-2 text-base font-semibold text-slate-900">{lotAccess.primaryRule}</p>
+              <p className="mt-2 break-words text-base font-semibold leading-7 text-slate-900">{lotAccess.primaryRule}</p>
             </div>
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <div className="rounded-2xl border border-[#dbe9e1] bg-[#f2fbf5] p-4">
               <p className="text-sm text-slate-500">Allowed floors/areas</p>
-              <p className="mt-2 text-base font-semibold text-slate-900">
+              <p className="mt-2 break-words text-base font-semibold leading-7 text-slate-900">
                 {lotAccess.allowedAreasOrFloors.length ? lotAccess.allowedAreasOrFloors.join(", ") : "General lot access"}
               </p>
             </div>
