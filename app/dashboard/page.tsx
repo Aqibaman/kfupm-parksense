@@ -133,7 +133,7 @@ export default function DashboardPage() {
               <button
                 type="button"
                 onClick={stopSession}
-                className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#0b5b72] px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_36px_rgba(0,62,81,0.16)] transition hover:bg-[#08495b]"
+                className="mt-4 inline-flex items-center gap-2 rounded-full bg-[#d94b5a] px-4 py-3 text-sm font-semibold text-white shadow-[0_16px_36px_rgba(217,75,90,0.18)] transition hover:bg-[#c73b4a]"
               >
                 <SquareArrowOutUpRight className="h-4 w-4" />
                 I left

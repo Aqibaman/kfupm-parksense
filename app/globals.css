@@ -64,6 +64,7 @@ textarea {
 
 .parkwise-route-map {
   overflow: hidden;
+  touch-action: pan-x pan-y;
 }
 
 .parkwise-route-map .leaflet-control-attribution {
@@ -75,6 +76,10 @@ textarea {
 
 .parkwise-route-map .leaflet-control-zoom a {
   color: #003e51;
+}
+
+.parkwise-route-map .leaflet-container {
+  touch-action: pan-x pan-y;
 }
 
 .parkwise-map-icon-wrapper {
@@ -114,4 +119,23 @@ textarea {
   font-family: var(--font-body), sans-serif;
   line-height: 1.6;
   color: #334155;
+}
+
+@media (max-width: 640px) {
+  .parkwise-route-map .leaflet-control-zoom {
+    margin-top: 12px;
+    margin-left: 12px;
+  }
+
+  .parkwise-route-map .leaflet-control-zoom a {
+    width: 38px;
+    height: 38px;
+    line-height: 38px;
+    font-size: 22px;
+  }
+
+  .parkwise-route-map .leaflet-control-attribution {
+    font-size: 10px;
+    margin: 0 8px 8px 0;
+  }
 }

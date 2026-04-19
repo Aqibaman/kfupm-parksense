@@ -767,16 +767,16 @@ video {
   height: 210px;
 }
 
-.h-\[260px\] {
-  height: 260px;
-}
-
 .h-\[2px\] {
   height: 2px;
 }
 
 .h-\[316px\] {
   height: 316px;
+}
+
+.h-\[320px\] {
+  height: 320px;
 }
 
 .h-\[92px\] {
@@ -1396,6 +1396,11 @@ video {
 .bg-\[\#d8efe4\] {
   --tw-bg-opacity: 1;
   background-color: rgb(216 239 228 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#d94b5a\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(217 75 90 / var(--tw-bg-opacity));
 }
 
 .bg-\[\#e8f0f6\] {
@@ -2329,6 +2334,12 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.shadow-\[0_16px_36px_rgba\(217\2c 75\2c 90\2c 0\.18\)\] {
+  --tw-shadow: 0 16px 36px rgba(217,75,90,0.18);
+  --tw-shadow-colored: 0 16px 36px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
 .shadow-\[0_16px_38px_rgba\(0\2c 62\2c 81\2c 0\.06\)\] {
   --tw-shadow: 0 16px 38px rgba(0,62,81,0.06);
   --tw-shadow-colored: 0 16px 38px var(--tw-shadow-color);
@@ -2615,6 +2626,7 @@ textarea {
 
 .parkwise-route-map {
   overflow: hidden;
+  touch-action: pan-x pan-y;
 }
 
 .parkwise-route-map .leaflet-control-attribution {
@@ -2626,6 +2638,10 @@ textarea {
 
 .parkwise-route-map .leaflet-control-zoom a {
   color: #003e51;
+}
+
+.parkwise-route-map .leaflet-container {
+  touch-action: pan-x pan-y;
 }
 
 .parkwise-map-icon-wrapper {
@@ -2665,6 +2681,25 @@ textarea {
   font-family: var(--font-body), sans-serif;
   line-height: 1.6;
   color: #334155;
+}
+
+@media (max-width: 640px) {
+  .parkwise-route-map .leaflet-control-zoom {
+    margin-top: 12px;
+    margin-left: 12px;
+  }
+
+  .parkwise-route-map .leaflet-control-zoom a {
+    width: 38px;
+    height: 38px;
+    line-height: 38px;
+    font-size: 22px;
+  }
+
+  .parkwise-route-map .leaflet-control-attribution {
+    font-size: 10px;
+    margin: 0 8px 8px 0;
+  }
 }
 
 .hover\:-translate-y-0:hover {
@@ -2711,6 +2746,11 @@ textarea {
 .hover\:bg-\[\#0a7742\]:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(10 119 66 / var(--tw-bg-opacity));
+}
+
+.hover\:bg-\[\#c73b4a\]:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(199 59 74 / var(--tw-bg-opacity));
 }
 
 .hover\:bg-\[\#d8efe4\]:hover {
@@ -2820,8 +2860,8 @@ textarea {
     height: 3rem;
   }
 
-  .sm\:h-\[320px\] {
-    height: 320px;
+  .sm\:h-\[360px\] {
+    height: 360px;
   }
 
   .sm\:w-10 {
@@ -2912,8 +2952,8 @@ textarea {
 }
 
 @media (min-width: 768px) {
-  .md\:h-\[360px\] {
-    height: 360px;
+  .md\:h-\[400px\] {
+    height: 400px;
   }
 
   .md\:grid-cols-2 {

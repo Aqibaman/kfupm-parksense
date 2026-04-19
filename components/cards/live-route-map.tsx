@@ -47,7 +47,10 @@ export function LiveRouteMap({
       leafletRef.current = L;
       const map = L.map(mapElementRef.current, {
         zoomControl: true,
-        scrollWheelZoom: true
+        scrollWheelZoom: true,
+        touchZoom: true,
+        doubleClickZoom: true,
+        boxZoom: false
       });
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -125,15 +128,19 @@ export function LiveRouteMap({
       marker.addTo(busLayerRef.current!);
     });
 
-    if (bounds.length) {
-      map.fitBounds(bounds, { padding: [28, 28] });
-    }
-  }, [bounds, buses, route]);
+  }, [buses, route]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !bounds.length) return;
+
+    map.fitBounds(bounds, { padding: [24, 24] });
+  }, [bounds, route.id]);
 
   return (
     <div
       ref={mapElementRef}
-      className="parkwise-route-map h-[260px] w-full max-w-full rounded-[24px] border border-[#dbe9e1] sm:h-[320px] md:h-[360px] lg:h-[420px] xl:h-[520px]"
+      className="parkwise-route-map h-[320px] w-full max-w-full rounded-[24px] border border-[#dbe9e1] sm:h-[360px] md:h-[400px] lg:h-[420px] xl:h-[520px]"
     />
   );
 }
