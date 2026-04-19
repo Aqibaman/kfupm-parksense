@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, BusFront, CarFront, Cpu, Gauge, Home, Map, ShieldCheck, Sparkles } from "lucide-react";
+import { Bell, BusFront, CarFront, CircleUserRound, Cpu, Gauge, Home, Map, ShieldCheck, Sparkles } from "lucide-react";
 import { adminNavigation, appName, mainNavigation } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
@@ -17,7 +17,7 @@ const iconMap: Record<string, typeof Home> = {
   "Smart Guidance": Sparkles,
   Rules: ShieldCheck,
   "Policy Guide": ShieldCheck,
-  Profile: Gauge,
+  Profile: CircleUserRound,
   Overview: Home,
   Sensors: Cpu,
   Lots: Map,
@@ -111,14 +111,24 @@ function SidebarLink({
     <Link
       href={href}
       className={cn(
-        "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition",
+        "flex items-center justify-between gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition",
         active ? "text-white" : "text-white/84 hover:text-white",
         compact && "py-2.5 text-[13px]"
       )}
-      style={active ? { background: "linear-gradient(135deg, #0b4362 0%, color-mix(in srgb, var(--category-primary) 38%, #0b6e56 62%) 100%)", boxShadow: "0 18px 40px rgba(0, 62, 81, 0.16)" } : { backgroundColor: "transparent" }}
+      style={
+        active
+          ? {
+              background: "linear-gradient(135deg, #0b4362 0%, color-mix(in srgb, var(--category-primary) 38%, #0b6e56 62%) 100%)",
+              boxShadow: "0 10px 24px rgba(0, 62, 81, 0.12), inset 0 1px 0 rgba(255,255,255,0.08)"
+            }
+          : { backgroundColor: "transparent" }
+      }
     >
-      <Icon className="h-4 w-4" />
-      {label}
+      <span className="flex items-center gap-3">
+        <Icon className="h-4 w-4" />
+        {label}
+      </span>
+      {active ? <span className="h-3 w-3 rounded-full bg-[#59f0d0] shadow-[0_0_14px_rgba(89,240,208,0.32)]" /> : null}
     </Link>
   );
 }
