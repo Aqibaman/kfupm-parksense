@@ -132,6 +132,11 @@ export interface ParkedSessionGuidanceResult {
   countdowns: CountdownViewModel[];
 }
 
+export interface SharedSmartGuidanceViewModel {
+  preferredBuildingParkingRecommendations: SmartGuidanceRecommendationSection;
+  parkedSessionGuidance: ParkedSessionGuidanceResult | null;
+}
+
 export const buildingLocations: BuildingLocation[] = academicBuildings;
 export const parkingLocations: ParkingLocation[] = sourceParkingLocations;
 
@@ -185,6 +190,32 @@ function formatDistanceLabel(distanceMeters: number) {
 
 function isCommuterCategory(category: StudentCategory) {
   return category === "non_resident_male" || category === "non_resident_female";
+}
+
+function getCampusSafeParkedCoordinates(
+  activeSession: ActiveParkingSession,
+  candidateParkingLocations = parkingLocations
+) {
+  const parkedLot = getParkingById(activeSession.canonicalLotId, candidateParkingLocations);
+  const fallbackCoordinates = parkedLot?.coordinates ?? null;
+
+  if (!fallbackCoordinates) {
+    return activeSession.parkedCoordinates;
+  }
+
+  const candidateCoordinates = activeSession.parkedCoordinates;
+  const invalidCandidate =
+    !Number.isFinite(candidateCoordinates.lat) ||
+    !Number.isFinite(candidateCoordinates.lng) ||
+    (candidateCoordinates.lat === 0 && candidateCoordinates.lng === 0);
+
+  if (invalidCandidate) {
+    return fallbackCoordinates;
+  }
+
+  return haversineDistanceMeters(candidateCoordinates, fallbackCoordinates) <= 1200
+    ? candidateCoordinates
+    : fallbackCoordinates;
 }
 
 export function getNetworkForCategory(category: StudentCategory): "male" | "female" {
@@ -575,9 +606,9 @@ export function buildSharedSmartGuidanceViewModel(params: {
   academicBuildings?: BuildingLocation[];
   busStops?: SourceBusStop[];
   now: Date;
-}) {
+}): SharedSmartGuidanceViewModel {
   if (params.activeSession) {
-    return buildParkedSessionGuidance({
+    const parkedSessionGuidance = buildParkedSessionGuidance({
       activeSession: params.activeSession,
       category: params.category,
       preferredBuildingId: params.preferredBuildingId ?? undefined,
@@ -586,6 +617,11 @@ export function buildSharedSmartGuidanceViewModel(params: {
       busStops: params.busStops,
       now: params.now
     });
+
+    return {
+      preferredBuildingParkingRecommendations: parkedSessionGuidance.preferredBuildingParkingRecommendations,
+      parkedSessionGuidance
+    };
   }
 
   return {
@@ -594,7 +630,8 @@ export function buildSharedSmartGuidanceViewModel(params: {
       selectedPreferredBuildingId: params.preferredBuildingId ?? null,
       parkingLocations: params.parkingLocations,
       academicBuildings: params.academicBuildings
-    })
+    }),
+    parkedSessionGuidance: null
   };
 }
 
@@ -667,7 +704,8 @@ export function buildParkedSessionGuidance(params: {
   } = params;
 
   const parkedLot = candidateParkingLocations.find((location) => normalizeLotId(location.id) === normalizeLotId(activeSession.canonicalLotId)) ?? null;
-  const nearestBusStops = getNearestBusStopsForParkedSession(category, activeSession.parkedCoordinates, candidateStops, 3);
+  const resolvedParkedCoordinates = getCampusSafeParkedCoordinates(activeSession, candidateParkingLocations);
+  const nearestBusStops = getNearestBusStopsForParkedSession(category, resolvedParkedCoordinates, candidateStops, 3);
   const recommendationSection = buildPreferredBuildingParkingRecommendations({
     category,
     selectedPreferredBuildingId: preferredBuildingId ?? null,
@@ -677,7 +715,7 @@ export function buildParkedSessionGuidance(params: {
   const preferredBuildingCoordinates = preferredBuildingId ? getBuildingCoordinates(preferredBuildingId, buildings) : null;
   const preferredBuilding = getBuildingById(preferredBuildingId, buildings);
   const walkingRecommended = preferredBuildingCoordinates
-    ? shouldRecommendWalking(activeSession.parkedCoordinates, preferredBuildingCoordinates)
+    ? shouldRecommendWalking(resolvedParkedCoordinates, preferredBuildingCoordinates)
     : false;
   const bestDestinationRoute = getClosestRouteToPreferredBuilding(category, preferredBuildingId, candidateStops, LIVE_BUS_ROUTES, buildings);
   const nearestBusRouteHint = getNearestBusRouteHint(category, preferredBuildingId, nearestBusStops, candidateStops, LIVE_BUS_ROUTES, buildings);

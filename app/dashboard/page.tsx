@@ -76,20 +76,12 @@ export default function DashboardPage() {
       title={`Welcome back, ${snapshot.user.name.split(" ")[0]}`}
       titleMeta={`Student ID: ${snapshot.user.studentId}`}
       eyebrow="Student Services"
-      description="ParkWise brings your parking decisions, shuttle routes, permit guidance, and next-step actions into one connected KFUPM mobility workspace, so you can move through campus with more clarity and fewer violations."
+      description="ParkWise brings parking, buses, permit guidance, and next-step support into one connected KFUPM mobility workspace so students can move through campus with less friction, fewer violations, and better daily decisions."
     >
       <section className="rounded-[28px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)] p-5 shadow-[0_18px_50px_rgba(0,62,81,0.07)]">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.30em] text-[#0b5b72]">ParkWise overview</p>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
-              ParkWise helps you see where you can park, which shuttle network fits your route, and what permit rules matter before a restriction becomes a violation.
-            </p>
-          </div>
-          <div className="space-y-3 rounded-[24px] border border-[#dbe9e1] bg-[#f8fbf9] px-4 py-4">
-            <CategoryBadge category={snapshot.user.userCategory} />
-            <p className="text-sm text-slate-600">Preferred buildings: {snapshot.user.favoriteBuildings.join(", ") || "Not selected yet"}</p>
-          </div>
+        <div className="space-y-3 rounded-[24px] border border-[#dbe9e1] bg-[#f8fbf9] px-4 py-4">
+          <CategoryBadge category={snapshot.user.userCategory} />
+          <p className="text-sm text-slate-600">Preferred buildings: {snapshot.user.favoriteBuildings.join(", ") || "Not selected yet"}</p>
         </div>
       </section>
 

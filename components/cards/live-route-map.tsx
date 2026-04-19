@@ -30,6 +30,7 @@ export function LiveRouteMap({
   const stopLayerRef = useRef<import("leaflet").LayerGroup | null>(null);
   const busLayerRef = useRef<import("leaflet").LayerGroup | null>(null);
   const [mapReady, setMapReady] = useState(false);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
 
   const bounds = useMemo(
     () => route.pathPoints.map((point) => [point.coordinates.lat, point.coordinates.lng] as [number, number]),
@@ -66,7 +67,11 @@ export function LiveRouteMap({
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(map);
+      }).addTo(map).on("load", () => {
+        if (!cancelled) {
+          refreshMapViewport();
+        }
+      });
 
       routeLayerRef.current = L.layerGroup().addTo(map);
       stopLayerRef.current = L.layerGroup().addTo(map);
@@ -74,17 +79,24 @@ export function LiveRouteMap({
       mapRef.current = map;
       setMapReady(true);
 
-      window.setTimeout(() => {
-        if (!cancelled) {
-          refreshMapViewport();
-        }
-      }, 80);
+      resizeObserverRef.current = new ResizeObserver(() => refreshMapViewport());
+      resizeObserverRef.current.observe(mapElementRef.current);
+
+      [50, 180, 450].forEach((delay) => {
+        window.setTimeout(() => {
+          if (!cancelled) {
+            refreshMapViewport();
+          }
+        }, delay);
+      });
     }
 
     initializeMap();
 
     return () => {
       cancelled = true;
+      resizeObserverRef.current?.disconnect();
+      resizeObserverRef.current = null;
       mapRef.current?.remove();
       mapRef.current = null;
       routeLayerRef.current = null;
@@ -145,7 +157,9 @@ export function LiveRouteMap({
 
       marker.addTo(busLayerRef.current!);
     });
-    window.requestAnimationFrame(() => map.invalidateSize());
+    window.requestAnimationFrame(() => {
+      map.invalidateSize();
+    });
   }, [buses, mapReady, route]);
 
   useEffect(() => {
