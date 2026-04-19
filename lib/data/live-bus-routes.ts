@@ -21,33 +21,8 @@ function stopPoint(routeStop: RouteStop): RoutePathPoint {
   return pathPoint(routeStop.coordinates.lat, routeStop.coordinates.lng, routeStop.id, routeStop.name);
 }
 
-function roadPath(stops: RouteStop[], mode: "lat-first" | "lng-first" = "lng-first") {
-  const points: RoutePathPoint[] = [];
-
-  stops.forEach((currentStop, index) => {
-    if (index === 0) {
-      points.push(stopPoint(currentStop));
-      return;
-    }
-
-    const previousStop = stops[index - 1];
-    const corner =
-      mode === "lng-first"
-        ? pathPoint(previousStop.coordinates.lat, currentStop.coordinates.lng)
-        : pathPoint(currentStop.coordinates.lat, previousStop.coordinates.lng);
-
-    const lastPoint = points[points.length - 1];
-    if (
-      lastPoint.coordinates.lat !== corner.coordinates.lat ||
-      lastPoint.coordinates.lng !== corner.coordinates.lng
-    ) {
-      points.push(corner);
-    }
-
-    points.push(stopPoint(currentStop));
-  });
-
-  return points;
+function pathChain(...items: Array<RouteStop | RoutePathPoint>) {
+  return items.map((item) => ("id" in item ? stopPoint(item) : item));
 }
 
 // Route geometry and timing labels sourced from the organizer files:
@@ -157,6 +132,178 @@ const femaleRoute8Stops = [
   stop("dhahran_techno_valley", "Dhahran Techno Valley", 26.3031563, 50.1568302, 4)
 ];
 
+const maleRoute2Path = pathChain(
+  maleRoute2Stops[0],
+  pathPoint(26.31395, 50.14245),
+  pathPoint(26.31355, 50.1412),
+  pathPoint(26.31318, 50.14015),
+  maleRoute2Stops[1],
+  pathPoint(26.31318, 50.14165),
+  pathPoint(26.31355, 50.14495),
+  pathPoint(26.31395, 50.14725),
+  pathPoint(26.31403, 50.1482),
+  maleRoute2Stops[2]
+);
+
+const maleRoute3Path = pathChain(
+  maleRoute3Stops[0],
+  pathPoint(26.30935, 50.1405),
+  pathPoint(26.30958, 50.14395),
+  pathPoint(26.30955, 50.1479),
+  pathPoint(26.30895, 50.15165),
+  pathPoint(26.30755, 50.15455),
+  pathPoint(26.30545, 50.15635),
+  maleRoute3Stops[1]
+);
+
+const maleRoute4Path = pathChain(
+  maleRoute4Stops[0],
+  pathPoint(26.30935, 50.14055),
+  pathPoint(26.30955, 50.1441),
+  pathPoint(26.3094, 50.14825),
+  pathPoint(26.30865, 50.15245),
+  pathPoint(26.30685, 50.15545),
+  pathPoint(26.3042, 50.1562),
+  maleRoute4Stops[1]
+);
+
+const femaleRoute1Path = pathChain(
+  femaleRoute1Stops[0],
+  pathPoint(26.3027, 50.14855),
+  pathPoint(26.3022, 50.1512),
+  femaleRoute1Stops[1],
+  pathPoint(26.30215, 50.1524),
+  pathPoint(26.30315, 50.15095),
+  femaleRoute1Stops[2]
+);
+
+const femaleRoute2Path = pathChain(
+  femaleRoute2Stops[0],
+  pathPoint(26.30285, 50.14835),
+  femaleRoute2Stops[1],
+  pathPoint(26.30555, 50.14895),
+  pathPoint(26.30745, 50.14535),
+  femaleRoute2Stops[2],
+  pathPoint(26.3072, 50.1449),
+  pathPoint(26.3065, 50.14595),
+  femaleRoute2Stops[3],
+  pathPoint(26.3072, 50.14735),
+  pathPoint(26.30995, 50.14895),
+  femaleRoute2Stops[4],
+  pathPoint(26.31435, 50.1491),
+  femaleRoute2Stops[5],
+  pathPoint(26.31495, 50.1491),
+  femaleRoute2Stops[6],
+  pathPoint(26.31225, 50.14875),
+  femaleRoute2Stops[7],
+  pathPoint(26.3092, 50.14585),
+  femaleRoute2Stops[8],
+  pathPoint(26.3066, 50.1461),
+  femaleRoute2Stops[9],
+  pathPoint(26.30585, 50.14725),
+  femaleRoute2Stops[10],
+  pathPoint(26.3041, 50.1477),
+  femaleRoute2Stops[11]
+);
+
+const femaleRoute3Path = pathChain(
+  femaleRoute3Stops[0],
+  pathPoint(26.30325, 50.15265),
+  pathPoint(26.30595, 50.14995),
+  pathPoint(26.30735, 50.14555),
+  femaleRoute3Stops[1],
+  pathPoint(26.3066, 50.1461),
+  femaleRoute3Stops[2],
+  pathPoint(26.3072, 50.14735),
+  pathPoint(26.30995, 50.14895),
+  femaleRoute3Stops[3],
+  pathPoint(26.31435, 50.1491),
+  femaleRoute3Stops[4],
+  pathPoint(26.31495, 50.1491),
+  femaleRoute3Stops[5],
+  pathPoint(26.31225, 50.14875),
+  femaleRoute3Stops[6],
+  pathPoint(26.3092, 50.14585),
+  femaleRoute3Stops[7],
+  pathPoint(26.3066, 50.1461),
+  femaleRoute3Stops[8],
+  pathPoint(26.30585, 50.14725),
+  femaleRoute3Stops[9],
+  pathPoint(26.30405, 50.15045),
+  femaleRoute3Stops[10]
+);
+
+const femaleRoute4Path = pathChain(
+  femaleRoute4Stops[0],
+  pathPoint(26.3124, 50.14825),
+  pathPoint(26.3144, 50.14865),
+  femaleRoute4Stops[1],
+  pathPoint(26.31495, 50.14915),
+  femaleRoute4Stops[2]
+);
+
+const femaleRoute5Path = pathChain(
+  femaleRoute5Stops[0],
+  pathPoint(26.3142, 50.14915),
+  femaleRoute5Stops[1],
+  pathPoint(26.31495, 50.14915),
+  femaleRoute5Stops[2],
+  pathPoint(26.31225, 50.14875),
+  femaleRoute5Stops[3],
+  pathPoint(26.30895, 50.14745),
+  femaleRoute5Stops[4],
+  pathPoint(26.3074, 50.14515),
+  femaleRoute5Stops[5],
+  pathPoint(26.3065, 50.14615),
+  femaleRoute5Stops[6],
+  pathPoint(26.30595, 50.14725),
+  femaleRoute5Stops[7]
+);
+
+const femaleRoute6Path = pathChain(
+  femaleRoute6Stops[0],
+  pathPoint(26.3092, 50.14595),
+  femaleRoute6Stops[1],
+  pathPoint(26.3066, 50.14615),
+  femaleRoute6Stops[2],
+  pathPoint(26.30585, 50.14725),
+  femaleRoute6Stops[3],
+  pathPoint(26.30375, 50.14705),
+  femaleRoute6Stops[4],
+  pathPoint(26.30715, 50.14745),
+  pathPoint(26.31135, 50.14795),
+  pathPoint(26.3141, 50.14815),
+  femaleRoute6Stops[5],
+  pathPoint(26.31055, 50.14785),
+  pathPoint(26.30625, 50.14735),
+  femaleRoute6Stops[6]
+);
+
+const femaleRoute7Path = pathChain(
+  femaleRoute7Stops[0],
+  pathPoint(26.30935, 50.14055),
+  pathPoint(26.30955, 50.1441),
+  pathPoint(26.3094, 50.14825),
+  pathPoint(26.30865, 50.15245),
+  pathPoint(26.30685, 50.15545),
+  pathPoint(26.3042, 50.1562),
+  femaleRoute7Stops[1]
+);
+
+const femaleRoute8Path = pathChain(
+  femaleRoute8Stops[0],
+  pathPoint(26.30945, 50.14125),
+  pathPoint(26.31045, 50.14595),
+  pathPoint(26.31185, 50.14875),
+  femaleRoute8Stops[1],
+  pathPoint(26.31235, 50.14855),
+  femaleRoute8Stops[2],
+  pathPoint(26.30955, 50.14925),
+  pathPoint(26.30785, 50.1518),
+  pathPoint(26.30615, 50.15425),
+  femaleRoute8Stops[3]
+);
+
 export const LIVE_BUS_ROUTES: LiveMapBusRoute[] = [
   {
     id: "male_route_1",
@@ -187,8 +334,8 @@ export const LIVE_BUS_ROUTES: LiveMapBusRoute[] = [
     schedule: { serviceWindow: { start: "06:30", end: "17:30" } },
     serviceNote: "Main daytime shuttle loop across the academic core.",
     defaultBusNumbers: ["738", "739", "740", "741"],
-    segmentTravelSeconds: 40,
-    dwellSeconds: 12
+    segmentTravelSeconds: 28,
+    dwellSeconds: 10
   },
   {
     id: "male_route_2",
@@ -197,12 +344,12 @@ export const LIVE_BUS_ROUTES: LiveMapBusRoute[] = [
     name: "Male Route 2",
     timingLabel: "6:30 AM to 5:30 PM",
     stops: maleRoute2Stops,
-    pathPoints: roadPath(maleRoute2Stops, "lat-first"),
+    pathPoints: maleRoute2Path,
     schedule: { serviceWindow: { start: "06:30", end: "17:30" } },
     serviceNote: "North academic shuttle with a shorter campus cycle.",
     defaultBusNumbers: ["742", "743", "744"],
-    segmentTravelSeconds: 45,
-    dwellSeconds: 12
+    segmentTravelSeconds: 30,
+    dwellSeconds: 10
   },
   {
     id: "male_route_3",
@@ -211,7 +358,7 @@ export const LIVE_BUS_ROUTES: LiveMapBusRoute[] = [
     name: "Male Route 3",
     timingLabel: "8:00 AM to 4:00 PM",
     stops: maleRoute3Stops,
-    pathPoints: roadPath(maleRoute3Stops, "lng-first"),
+    pathPoints: maleRoute3Path,
     schedule: {
       serviceWindow: { start: "08:00", end: "16:00" },
       specialTimetable: [
@@ -227,8 +374,8 @@ export const LIVE_BUS_ROUTES: LiveMapBusRoute[] = [
     },
     serviceNote: "Special Dhahran Techno Valley service with scheduled departures.",
     defaultBusNumbers: ["745", "746", "747"],
-    segmentTravelSeconds: 85,
-    dwellSeconds: 16
+    segmentTravelSeconds: 54,
+    dwellSeconds: 12
   },
   {
     id: "male_route_4",
@@ -237,12 +384,12 @@ export const LIVE_BUS_ROUTES: LiveMapBusRoute[] = [
     name: "Male Route 4",
     timingLabel: "8:00 AM to 4:00 PM",
     stops: maleRoute4Stops,
-    pathPoints: roadPath(maleRoute4Stops, "lng-first"),
+    pathPoints: maleRoute4Path,
     schedule: { serviceWindow: { start: "08:00", end: "16:00" } },
     serviceNote: "Parking B.424 connector for scheduled daytime transfers.",
     defaultBusNumbers: ["748", "749", "750"],
-    segmentTravelSeconds: 82,
-    dwellSeconds: 16
+    segmentTravelSeconds: 52,
+    dwellSeconds: 12
   },
   {
     id: "female_route_1",
@@ -251,12 +398,12 @@ export const LIVE_BUS_ROUTES: LiveMapBusRoute[] = [
     name: "Female Route 1",
     timingLabel: "6:30 AM to 5:30 PM",
     stops: femaleRoute1Stops,
-    pathPoints: roadPath(femaleRoute1Stops, "lat-first"),
+    pathPoints: femaleRoute1Path,
     schedule: { serviceWindow: { start: "06:30", end: "17:30" } },
     serviceNote: "Short shuttle between parking hubs and Bus Stop 27.",
     defaultBusNumbers: ["751", "752", "753"],
-    segmentTravelSeconds: 40,
-    dwellSeconds: 12
+    segmentTravelSeconds: 28,
+    dwellSeconds: 10
   },
   {
     id: "female_route_2",
@@ -265,12 +412,12 @@ export const LIVE_BUS_ROUTES: LiveMapBusRoute[] = [
     name: "Female Route 2",
     timingLabel: "6:30 AM to 5:30 PM",
     stops: femaleRoute2Stops,
-    pathPoints: roadPath(femaleRoute2Stops, "lng-first"),
+    pathPoints: femaleRoute2Path,
     schedule: { serviceWindow: { start: "06:30", end: "17:30" } },
     serviceNote: "Main daytime female loop serving Building 22 and Building 58.",
     defaultBusNumbers: ["754", "755", "756", "757"],
-    segmentTravelSeconds: 42,
-    dwellSeconds: 12
+    segmentTravelSeconds: 30,
+    dwellSeconds: 10
   },
   {
     id: "female_route_3",
@@ -279,12 +426,12 @@ export const LIVE_BUS_ROUTES: LiveMapBusRoute[] = [
     name: "Female Route 3",
     timingLabel: "6:30 AM to 5:30 PM",
     stops: femaleRoute3Stops,
-    pathPoints: roadPath(femaleRoute3Stops, "lng-first"),
+    pathPoints: femaleRoute3Path,
     schedule: { serviceWindow: { start: "06:30", end: "17:30" } },
     serviceNote: "Parking 404 origin variant for the daytime female academic loop.",
     defaultBusNumbers: ["758", "759", "760"],
-    segmentTravelSeconds: 44,
-    dwellSeconds: 12
+    segmentTravelSeconds: 30,
+    dwellSeconds: 10
   },
   {
     id: "female_route_4",
@@ -293,12 +440,12 @@ export const LIVE_BUS_ROUTES: LiveMapBusRoute[] = [
     name: "Female Route 4",
     timingLabel: "6:30 AM to 5:30 PM",
     stops: femaleRoute4Stops,
-    pathPoints: roadPath(femaleRoute4Stops, "lat-first"),
+    pathPoints: femaleRoute4Path,
     schedule: { serviceWindow: { start: "06:30", end: "17:30" } },
     serviceNote: "Compact Building 58 shuttle branch.",
     defaultBusNumbers: ["761", "762", "763"],
-    segmentTravelSeconds: 40,
-    dwellSeconds: 12
+    segmentTravelSeconds: 28,
+    dwellSeconds: 10
   },
   {
     id: "female_route_5",
@@ -307,12 +454,12 @@ export const LIVE_BUS_ROUTES: LiveMapBusRoute[] = [
     name: "Female Route 5",
     timingLabel: "6:30 AM to 5:30 PM",
     stops: femaleRoute5Stops,
-    pathPoints: roadPath(femaleRoute5Stops, "lng-first"),
+    pathPoints: femaleRoute5Path,
     schedule: { serviceWindow: { start: "06:30", end: "17:30" } },
     serviceNote: "Secondary daytime loop serving Building 58, Building 22, and Station 314.",
     defaultBusNumbers: ["764", "765", "766"],
-    segmentTravelSeconds: 40,
-    dwellSeconds: 12
+    segmentTravelSeconds: 30,
+    dwellSeconds: 10
   },
   {
     id: "female_route_6",
@@ -321,12 +468,12 @@ export const LIVE_BUS_ROUTES: LiveMapBusRoute[] = [
     name: "Female Route 6",
     timingLabel: "2:30 PM to 9:30 PM",
     stops: femaleRoute6Stops,
-    pathPoints: roadPath(femaleRoute6Stops, "lng-first"),
+    pathPoints: femaleRoute6Path,
     schedule: { serviceWindow: { start: "14:30", end: "21:30" } },
     serviceNote: "Evening service linking Station 310, central stops, Square, Restaurant, and Parking 900.",
     defaultBusNumbers: ["767", "768", "769"],
-    segmentTravelSeconds: 44,
-    dwellSeconds: 14
+    segmentTravelSeconds: 32,
+    dwellSeconds: 10
   },
   {
     id: "female_route_7",
@@ -335,12 +482,12 @@ export const LIVE_BUS_ROUTES: LiveMapBusRoute[] = [
     name: "Female Route 7",
     timingLabel: "8:00 AM to 4:00 PM",
     stops: femaleRoute7Stops,
-    pathPoints: roadPath(femaleRoute7Stops, "lng-first"),
+    pathPoints: femaleRoute7Path,
     schedule: { serviceWindow: { start: "08:00", end: "16:00" } },
     serviceNote: "Parking B.424 connector for female students during the daytime schedule.",
     defaultBusNumbers: ["770", "771", "772"],
-    segmentTravelSeconds: 82,
-    dwellSeconds: 16
+    segmentTravelSeconds: 52,
+    dwellSeconds: 12
   },
   {
     id: "female_route_8",
@@ -349,7 +496,7 @@ export const LIVE_BUS_ROUTES: LiveMapBusRoute[] = [
     name: "Female Route 8",
     timingLabel: "8:00 AM to 4:00 PM",
     stops: femaleRoute8Stops,
-    pathPoints: roadPath(femaleRoute8Stops, "lng-first"),
+    pathPoints: femaleRoute8Path,
     schedule: {
       serviceWindow: { start: "08:00", end: "16:00" },
       specialTimetable: [
@@ -365,8 +512,8 @@ export const LIVE_BUS_ROUTES: LiveMapBusRoute[] = [
     },
     serviceNote: "Dhahran Techno Valley service via Station 319 and Station 310.",
     defaultBusNumbers: ["773", "774", "775"],
-    segmentTravelSeconds: 84,
-    dwellSeconds: 16
+    segmentTravelSeconds: 54,
+    dwellSeconds: 12
   }
 ];
 

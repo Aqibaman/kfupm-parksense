@@ -17,7 +17,7 @@ export function RouteSummaryCard({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#008540]">{route.code}</p>
-          <h3 className="mt-2 text-2xl font-semibold text-[#0f172a]">{route.name}</h3>
+          <h3 className="mt-2 text-xl font-semibold text-[#0f172a] sm:text-2xl">{route.name}</h3>
           <p className="mt-2 text-sm text-slate-500">{route.timingLabel}</p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -34,7 +34,7 @@ export function RouteSummaryCard({
       </div>
       <div className="mt-4 space-y-2">
         {nextStopSummaries.slice(0, 3).map((summary) => (
-          <div key={summary} className="rounded-2xl border border-[#dbe9e1] bg-white px-4 py-3 text-sm text-slate-600">
+          <div key={summary} className="rounded-2xl border border-[#dbe9e1] bg-white px-3 py-3 text-sm text-slate-600 sm:px-4">
             {summary}
           </div>
         ))}

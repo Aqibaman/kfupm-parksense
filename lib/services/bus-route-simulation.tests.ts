@@ -15,7 +15,9 @@ function assert(condition: boolean, message: string) {
 
 export function runBusRouteSimulationTests() {
   const maleRoute1 = LIVE_BUS_ROUTE_MAP.male_route_1;
+  const maleRoute2 = LIVE_BUS_ROUTE_MAP.male_route_2;
   const femaleRoute6 = LIVE_BUS_ROUTE_MAP.female_route_6;
+  const femaleRoute2 = LIVE_BUS_ROUTE_MAP.female_route_2;
   const maleRoute3 = LIVE_BUS_ROUTE_MAP.male_route_3;
 
   assert(getRouteNetworkForCategory("resident-male") === "male", "Male categories should resolve to male route network.");
@@ -23,6 +25,8 @@ export function runBusRouteSimulationTests() {
 
   const maleRoute1Segments = getRouteSegments(maleRoute1);
   assert(maleRoute1Segments.length > maleRoute1.stops.length - 1, "Shuttle routes should include both forward and reverse segments.");
+  assert(maleRoute2.pathPoints.length > maleRoute2.stops.length, "Male Route 2 should use extra road waypoints rather than straight stop-to-stop lines.");
+  assert(femaleRoute2.pathPoints.length > femaleRoute2.stops.length, "Female Route 2 should use extra road waypoints rather than straight stop-to-stop lines.");
 
   const initialBuses = initializeBusesForRoute(maleRoute1, 4);
   assert(initialBuses.length === 4, "Male Route 1 should initialize four active buses.");

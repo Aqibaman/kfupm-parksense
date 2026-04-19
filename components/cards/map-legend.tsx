@@ -4,7 +4,7 @@ export function MapLegend() {
   return (
     <div className="rounded-[24px] border border-[#dbe9e1] bg-white p-4">
       <CardTitle title="Map legend" subtitle="Understand the markers used on the live route map." />
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 md:grid-cols-3">
         <div className="flex items-center gap-3 rounded-2xl bg-[#f7fbf8] px-3 py-3">
           <span className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#8cc8a2] bg-[#eff8f3] text-xs font-semibold text-[#003E51]">
             301

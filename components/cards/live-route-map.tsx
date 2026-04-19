@@ -130,5 +130,10 @@ export function LiveRouteMap({
     }
   }, [bounds, buses, route]);
 
-  return <div ref={mapElementRef} className="parkwise-route-map h-[380px] rounded-[28px] border border-[#dbe9e1] md:h-[520px]" />;
+  return (
+    <div
+      ref={mapElementRef}
+      className="parkwise-route-map h-[300px] rounded-[24px] border border-[#dbe9e1] sm:h-[360px] lg:h-[420px] xl:h-[520px]"
+    />
+  );
 }

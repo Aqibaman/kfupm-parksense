@@ -100,13 +100,13 @@ export default function BusesPage() {
 
       <RouteSelector routes={routes} selectedRouteId={selectedRoute.id} onSelect={setSelectedRouteId} />
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.45fr)_380px]">
-        <Card className="bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)] p-4 md:p-5">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(300px,360px)] xl:grid-cols-[minmax(0,1.45fr)_380px]">
+        <Card className="bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)] p-3 sm:p-4 md:p-5">
           <CardTitle
             title="Live bus route map"
             subtitle="This view uses a free OpenStreetMap base with real route stops and continuously moving buses for the selected service."
           />
-          <div className="rounded-[28px] bg-[linear-gradient(180deg,#f7fbf8_0%,#ffffff_100%)] p-3 md:p-4">
+          <div className="rounded-[24px] bg-[linear-gradient(180deg,#f7fbf8_0%,#ffffff_100%)] p-2 sm:p-3 md:p-4">
             <LiveRouteMap route={selectedRoute} buses={simulationState.buses} />
           </div>
           <div className="mt-4">
@@ -114,7 +114,7 @@ export default function BusesPage() {
           </div>
         </Card>
 
-        <div className="space-y-5">
+        <div className="space-y-4 md:space-y-5">
           <RouteSummaryCard
             route={selectedRoute}
             activeBusCount={simulationState.buses.length}

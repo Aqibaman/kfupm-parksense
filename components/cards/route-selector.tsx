@@ -22,7 +22,7 @@ export function RouteSelector({
           {routes.length} routes
         </span>
       </div>
-      <div className="mt-4 flex gap-3 overflow-x-auto pb-1">
+      <div className="mt-4 flex gap-3 overflow-x-auto pb-1 lg:grid lg:grid-cols-2 xl:flex xl:flex-nowrap">
         {routes.map((route) => {
           const active = route.id === selectedRouteId;
           return (
@@ -30,7 +30,7 @@ export function RouteSelector({
               key={route.id}
               type="button"
               onClick={() => onSelect(route.id)}
-              className={`min-w-[180px] rounded-[22px] border px-4 py-3 text-left transition ${
+              className={`min-w-[160px] rounded-[22px] border px-3 py-3 text-left transition sm:min-w-[180px] sm:px-4 lg:min-w-0 ${
                 active
                   ? "border-[#0b5b72] bg-[linear-gradient(135deg,#0b5b72_0%,#008540_100%)] text-white shadow-[0_18px_40px_rgba(0,62,81,0.16)]"
                   : "border-[#dbe9e1] bg-[#f9fcfa] text-[#0f172a] hover:border-[#8ac4a1]"
