@@ -1583,6 +1583,10 @@ video {
   background-color: rgb(255 255 255 / 0.7);
 }
 
+.bg-white\/80 {
+  background-color: rgb(255 255 255 / 0.8);
+}
+
 .bg-\[linear-gradient\(135deg\2c \#0b4362_0\%\2c \#0a5e59_54\%\2c \#0b7a5c_100\%\)\] {
   background-image: linear-gradient(135deg,#0b4362 0%,#0a5e59 54%,#0b7a5c 100%);
 }
@@ -1911,6 +1915,10 @@ video {
 
 .text-\[18px\] {
   font-size: 18px;
+}
+
+.text-\[9px\] {
+  font-size: 9px;
 }
 
 .text-base {
@@ -2687,6 +2695,14 @@ textarea {
 }
 
 @media (min-width: 640px) {
+  .sm\:flex {
+    display: flex;
+  }
+
+  .sm\:hidden {
+    display: none;
+  }
+
   .sm\:h-12 {
     height: 3rem;
   }

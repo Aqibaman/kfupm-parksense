@@ -42,7 +42,40 @@ export function BusNetworkMap({
             </div>
 
             <div className="mt-5 -mx-1 overflow-x-auto px-1 pb-2">
-              <div className="flex w-max min-w-full items-center gap-2 rounded-[24px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f7fcf9_100%)] px-3 py-4 sm:gap-3 sm:px-4 sm:py-5">
+              <div className="grid grid-cols-3 gap-3 rounded-[24px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f7fcf9_100%)] px-3 py-4 sm:hidden">
+                {routeState.stops.map((stop, index) => {
+                  const busesAtStop = routeState.buses.filter((bus) => bus.stage === "boarding" && bus.currentStopId === stop.id);
+                  const busesApproaching = routeState.buses.filter((bus) => bus.stage !== "boarding" && bus.nextStopId === stop.id);
+
+                  return (
+                    <div key={stop.id} className="rounded-2xl border border-[#dbe9e1] bg-white/80 px-2 py-3 text-center">
+                      <div className="mb-2 flex min-h-[28px] flex-wrap items-center justify-center gap-1">
+                        {busesAtStop.map((bus) => (
+                          <span key={bus.id} className="inline-flex items-center justify-center rounded-full bg-[#007a4d] px-2 py-1 text-white">
+                            <BusFront className="h-3 w-3" />
+                          </span>
+                        ))}
+                        {busesApproaching.map((bus) => (
+                          <span key={bus.id} className="inline-flex items-center justify-center rounded-full bg-[#0d5f74] px-2 py-1 text-white">
+                            <BusFront className="h-3 w-3" />
+                          </span>
+                        ))}
+                      </div>
+                      <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full border-2 border-[#8cc8a2] bg-[#eff8f3] text-xs font-semibold text-[#003E51]">
+                        {stop.stopCode}
+                      </div>
+                      <p className="mt-2 text-[10px] font-medium leading-4 text-slate-600">{stop.stopName}</p>
+                      {index === routeState.stops.length - 1 ? (
+                        <span className="mt-2 inline-flex whitespace-nowrap rounded-full border border-[#dbe9e1] bg-[#f8fbf9] px-2 py-1 text-[9px] font-semibold text-[#007a4d]">
+                          ↺ Restart
+                        </span>
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="hidden w-max min-w-full items-center gap-2 rounded-[24px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f7fcf9_100%)] px-3 py-4 sm:flex sm:gap-3 sm:px-4 sm:py-5">
                 {routeState.stops.map((stop, index) => {
                   const busesAtStop = routeState.buses.filter((bus) => bus.stage === "boarding" && bus.currentStopId === stop.id);
                   const busesApproaching = routeState.buses.filter((bus) => bus.stage !== "boarding" && bus.nextStopId === stop.id);
