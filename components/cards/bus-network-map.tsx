@@ -1,3 +1,4 @@
+import { BusFront } from "lucide-react";
 import { Card, CardTitle, StatPill } from "@/components/ui/card";
 import type { LiveRouteState } from "@/lib/services/live-bus-routing";
 
@@ -51,13 +52,13 @@ export function BusNetworkMap({
                       <div className="relative flex flex-col items-center">
                         <div className="mb-2 flex min-h-[28px] flex-wrap items-center justify-center gap-1">
                           {busesAtStop.map((bus) => (
-                            <span key={bus.id} className="rounded-full bg-[#007a4d] px-2 py-1 text-[11px] font-semibold text-white">
-                              {bus.busCode}
+                            <span key={bus.id} className="inline-flex items-center justify-center rounded-full bg-[#007a4d] px-2.5 py-1.5 text-white">
+                              <BusFront className="h-3.5 w-3.5" />
                             </span>
                           ))}
                           {busesApproaching.map((bus) => (
-                            <span key={bus.id} className="rounded-full bg-[#0d5f74] px-2 py-1 text-[11px] font-semibold text-white">
-                              {bus.busCode}
+                            <span key={bus.id} className="inline-flex items-center justify-center rounded-full bg-[#0d5f74] px-2.5 py-1.5 text-white">
+                              <BusFront className="h-3.5 w-3.5" />
                             </span>
                           ))}
                         </div>
@@ -72,8 +73,8 @@ export function BusNetworkMap({
                           {routeState.buses
                             .filter((bus) => bus.stage !== "boarding" && bus.currentStopId === stop.id)
                             .map((bus) => (
-                              <span key={bus.id} className="rounded-full border border-[#0d5f74]/20 bg-[#eaf5f7] px-2 py-1 text-[11px] font-semibold text-[#0d5f74]">
-                                {bus.busCode}
+                              <span key={bus.id} className="inline-flex items-center justify-center rounded-full border border-[#0d5f74]/20 bg-[#eaf5f7] px-2.5 py-1.5 text-[#0d5f74]">
+                                <BusFront className="h-3.5 w-3.5" />
                               </span>
                             ))}
                         </div>
