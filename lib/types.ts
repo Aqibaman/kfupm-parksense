@@ -179,6 +179,12 @@ export interface RouteStop {
   order: number;
 }
 
+export interface RoutePathPoint {
+  coordinates: { lat: number; lng: number };
+  stopId?: string;
+  stopName?: string;
+}
+
 export interface RouteServiceWindow {
   start: string;
   end: string;
@@ -200,6 +206,7 @@ export interface LiveMapBusRoute {
   name: string;
   timingLabel: string;
   stops: RouteStop[];
+  pathPoints: RoutePathPoint[];
   schedule: RouteSchedule;
   serviceNote?: string;
   defaultBusNumbers: string[];

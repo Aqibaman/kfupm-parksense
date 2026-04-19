@@ -21,7 +21,7 @@ export function runBusRouteSimulationTests() {
   assert(getRouteNetworkForCategory("resident-male") === "male", "Male categories should resolve to male route network.");
   assert(getRouteNetworkForCategory("resident-female") === "female", "Female categories should resolve to female route network.");
 
-  const maleRoute1Segments = getRouteSegments(maleRoute1.stops);
+  const maleRoute1Segments = getRouteSegments(maleRoute1);
   assert(maleRoute1Segments.length > maleRoute1.stops.length - 1, "Shuttle routes should include both forward and reverse segments.");
 
   const initialBuses = initializeBusesForRoute(maleRoute1, 4);

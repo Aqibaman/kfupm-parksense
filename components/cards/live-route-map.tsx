@@ -30,7 +30,10 @@ export function LiveRouteMap({
   const stopLayerRef = useRef<import("leaflet").LayerGroup | null>(null);
   const busLayerRef = useRef<import("leaflet").LayerGroup | null>(null);
 
-  const bounds = useMemo(() => route.stops.map((stop) => [stop.coordinates.lat, stop.coordinates.lng] as [number, number]), [route]);
+  const bounds = useMemo(
+    () => route.pathPoints.map((point) => [point.coordinates.lat, point.coordinates.lng] as [number, number]),
+    [route]
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -80,7 +83,7 @@ export function LiveRouteMap({
     busLayerRef.current.clearLayers();
 
     const polyline = L.polyline(
-      route.stops.map((stop) => [stop.coordinates.lat, stop.coordinates.lng] as [number, number]),
+      route.pathPoints.map((point) => [point.coordinates.lat, point.coordinates.lng] as [number, number]),
       {
         color: "#0b5b72",
         weight: 5,
