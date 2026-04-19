@@ -3,17 +3,17 @@ import Link from "next/link";
 import { BrandLogo } from "@/components/layout/brand-logo";
 
 const highlights = [
-  "Live parking and slot guidance in one place",
-  "Male and female bus routes matched to student access",
-  "Rule-aware warnings before parking violations happen",
-  "Competition-ready KFUPM mobility demo experience"
+  "Find legal parking faster and reduce time spent searching for a space",
+  "Prevent parking violations with permit-aware rules and timely warnings",
+  "Reduce unnecessary driving on campus and support lower carbon emissions",
+  "Enjoy campus life more with smoother parking, bus access, and trip planning"
 ];
 
 const permitShowcase = [
-  { src: "/permits/resident-male.png", alt: "Resident male permit" },
-  { src: "/permits/non-resident-male.png", alt: "Non-resident male permit" },
-  { src: "/permits/resident-female.png", alt: "Resident female permit" },
-  { src: "/permits/non-resident-female.png", alt: "Non-resident female permit" }
+  { src: "/permits/resident-male.png", alt: "Resident male permit", label: "Resident Male" },
+  { src: "/permits/non-resident-male.png", alt: "Non-resident male permit", label: "Non-Resident Male" },
+  { src: "/permits/resident-female.png", alt: "Resident female permit", label: "Resident Female" },
+  { src: "/permits/non-resident-female.png", alt: "Non-resident female permit", label: "Non-Resident Female" }
 ];
 
 export default function LoginPage() {
@@ -25,14 +25,15 @@ export default function LoginPage() {
             <BrandLogo compact />
           </div>
           <p className="mt-10 text-sm uppercase tracking-[0.38em] text-[#d6f7e2]">Student Login</p>
-          <h1 className="mt-4 text-5xl font-semibold tracking-tight lg:text-6xl">Access your dashboard</h1>
+          <h1 className="mt-4 text-5xl font-semibold tracking-tight lg:text-6xl">ParkWise - KFUPM Mobility App</h1>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-white/85">
-            Enter the KFUPM ParkSense demo to explore category-based parking access, bus route guidance, live session monitoring, and compliance alerts in one premium university dashboard.
+            Enter KFUPM ParkSense to explore category-based parking access, bus route guidance, live session monitoring, and compliance alerts in one premium university mobility platform.
           </p>
           <div className="mt-8 grid grid-cols-4 gap-3">
             {permitShowcase.map((item) => (
               <div key={item.alt} className="rounded-[24px] border border-white/20 bg-white/8 p-2 backdrop-blur">
                 <Image src={item.src} alt={item.alt} width={92} height={116} className="mx-auto h-[92px] w-[76px] object-contain" />
+                <p className="mt-2 text-center text-[11px] font-medium leading-4 text-white/88 lg:text-xs">{item.label}</p>
               </div>
             ))}
           </div>
@@ -48,9 +49,9 @@ export default function LoginPage() {
         <section className="bg-white p-8 lg:p-12">
           <div className="mx-auto max-w-md">
             <p className="text-sm uppercase tracking-[0.34em] text-[#008540]">Student Login</p>
-            <h2 className="mt-4 text-4xl font-semibold tracking-tight text-black">Access your dashboard</h2>
+            <h2 className="mt-4 text-4xl font-semibold tracking-tight text-black">ParkWise - KFUPM Mobility App</h2>
             <p className="mt-4 text-base leading-7 text-slate-600">
-              Use the mock student sign-in below to enter the demo and explore the connected KFUPM mobility experience.
+              Use the student sign-in below to enter the connected KFUPM mobility experience and continue with your permit-aware parking journey.
             </p>
             <form className="mt-10 space-y-5">
               <div>
