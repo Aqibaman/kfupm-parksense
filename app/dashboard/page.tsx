@@ -116,27 +116,26 @@ export default function DashboardPage() {
         <h3 className="text-2xl font-semibold text-[#111827]">How to use this system</h3>
         <p className="mt-2 text-sm leading-7 text-slate-600">Follow the connected student flow below to understand how the platform works from entry to action.</p>
         <Card className="mt-5 overflow-hidden border-[#cae5d9] bg-[linear-gradient(180deg,#ffffff_0%,#f6fbf8_52%,#eef8f2_100%)] p-5 lg:p-6">
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {dashboardFlow.map((step, index) => {
               const Icon = step.icon;
-              const isLast = index === dashboardFlow.length - 1;
               return (
                 <div key={step.title} className="relative">
-                  <div className="relative h-full rounded-[30px] border border-[#dbe9e1] bg-white p-5 shadow-[0_18px_42px_rgba(0,62,81,0.06)]">
+                  <div className="relative h-full rounded-[30px] border border-[#dbe9e1] bg-white px-5 py-4 shadow-[0_18px_42px_rgba(0,62,81,0.06)]">
                     <div className="absolute inset-x-0 top-0 h-1 rounded-t-[30px] bg-[linear-gradient(90deg,#0b5b72_0%,#008540_100%)]" />
                     <div className="flex items-start justify-between gap-3">
-                      <div className="flex h-14 w-14 items-center justify-center rounded-[20px] bg-[linear-gradient(135deg,#dff6e7_0%,#eef8f2_100%)] text-[#008540] shadow-[0_14px_30px_rgba(0,133,64,0.10)]">
-                        <Icon className="h-6 w-6" />
+                      <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-[linear-gradient(135deg,#dff6e7_0%,#eef8f2_100%)] text-[#008540] shadow-[0_14px_30px_rgba(0,133,64,0.10)]">
+                        <Icon className="h-5 w-5" />
                       </div>
                       <span className="shrink-0 rounded-full bg-[#eef8f2] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#0b5b72]">
                         Step {index + 1}
                       </span>
                     </div>
-                    <h4 className="mt-4 text-[1.35rem] font-semibold leading-8 text-[#0f172a]">{step.title}</h4>
-                    <p className="mt-3 text-sm leading-7 text-slate-600">{step.text}</p>
+                    <h4 className="mt-4 text-[1.15rem] font-semibold leading-7 text-[#0f172a]">{step.title}</h4>
+                    <p className="mt-2 text-[13px] leading-6 text-slate-600">{step.text}</p>
                   </div>
-                  {!isLast ? (
-                    <div className="pointer-events-none absolute -right-3 top-1/2 hidden h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-[#dbe9e1] bg-white text-[#008540] shadow-[0_10px_24px_rgba(0,62,81,0.08)] xl:flex">
+                  {index !== dashboardFlow.length - 1 ? (
+                    <div className="pointer-events-none absolute -right-2 top-1/2 hidden h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-[#dbe9e1] bg-white text-[#008540] shadow-[0_10px_24px_rgba(0,62,81,0.08)] xl:flex">
                       <ChevronRight className="h-4 w-4" />
                     </div>
                   ) : null}
