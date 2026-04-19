@@ -9,7 +9,7 @@ export function ActiveBusesPanel({ buses }: { buses: ActiveBus[] }) {
         <div className="space-y-3">
           {buses.map((bus) => (
             <div key={bus.id} className="min-w-0 rounded-[24px] border border-[#dbe9e1] bg-white p-4 shadow-[0_12px_24px_rgba(0,62,81,0.04)]">
-              <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                 <p className="text-lg font-semibold text-[#0f172a] sm:text-xl">{bus.busNumber}</p>
                 <span
                   className={`rounded-full px-3 py-1 text-xs font-semibold ${

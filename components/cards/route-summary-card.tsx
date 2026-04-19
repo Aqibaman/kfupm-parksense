@@ -14,7 +14,7 @@ export function RouteSummaryCard({
 }) {
   return (
     <Card className="min-w-0 bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)]">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#008540]">{route.code}</p>
           <h3 className="mt-2 text-xl font-semibold text-[#0f172a] sm:text-2xl">{route.name}</h3>

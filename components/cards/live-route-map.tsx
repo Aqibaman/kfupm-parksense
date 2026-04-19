@@ -133,7 +133,7 @@ export function LiveRouteMap({
   return (
     <div
       ref={mapElementRef}
-      className="parkwise-route-map h-[300px] rounded-[24px] border border-[#dbe9e1] sm:h-[360px] lg:h-[420px] xl:h-[520px]"
+      className="parkwise-route-map h-[260px] w-full max-w-full rounded-[24px] border border-[#dbe9e1] sm:h-[320px] md:h-[360px] lg:h-[420px] xl:h-[520px]"
     />
   );
 }

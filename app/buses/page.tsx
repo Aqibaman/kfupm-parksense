@@ -91,7 +91,7 @@ export default function BusesPage() {
       eyebrow="Transit Layer"
       description="Select the live route for your network, follow buses on a free real map, and track active service timing for each campus shuttle."
     >
-      <div className="min-w-0 space-y-4 overflow-x-hidden md:space-y-5">
+      <div className="min-w-0 max-w-full space-y-4 overflow-x-hidden md:space-y-5">
         <div className="flex flex-wrap items-center gap-3">
           <CategoryBadge category={user.userCategory} />
           <span className="rounded-full border border-[#dbe9e1] bg-[#f8fbf9] px-4 py-2 text-sm font-medium text-slate-700">
@@ -101,7 +101,7 @@ export default function BusesPage() {
 
         <RouteSelector routes={routes} selectedRouteId={selectedRoute.id} onSelect={setSelectedRouteId} />
 
-        <div className="grid min-w-0 gap-4 md:gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(300px,360px)] xl:grid-cols-[minmax(0,1.45fr)_380px]">
+        <div className="grid min-w-0 max-w-full grid-cols-1 gap-4 md:gap-5 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,360px)] 2xl:grid-cols-[minmax(0,1.45fr)_380px]">
           <Card className="min-w-0 bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)] p-3 sm:p-4 md:p-5">
             <CardTitle
               title="Live bus route map"
@@ -115,7 +115,7 @@ export default function BusesPage() {
             </div>
           </Card>
 
-          <div className="min-w-0 space-y-4 md:space-y-5">
+          <div className="min-w-0 max-w-full space-y-4 md:space-y-5">
             <RouteSummaryCard
               route={selectedRoute}
               activeBusCount={simulationState.buses.length}
