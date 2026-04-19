@@ -35,6 +35,16 @@ export function LiveRouteMap({
     [route]
   );
 
+  function refreshMapViewport() {
+    const map = mapRef.current;
+    if (!map || !bounds.length) return;
+
+    window.requestAnimationFrame(() => {
+      map.invalidateSize();
+      map.fitBounds(bounds, { padding: [24, 24] });
+    });
+  }
+
   useEffect(() => {
     let cancelled = false;
 
@@ -61,6 +71,12 @@ export function LiveRouteMap({
       stopLayerRef.current = L.layerGroup().addTo(map);
       busLayerRef.current = L.layerGroup().addTo(map);
       mapRef.current = map;
+
+      window.setTimeout(() => {
+        if (!cancelled) {
+          refreshMapViewport();
+        }
+      }, 80);
     }
 
     initializeMap();
@@ -131,10 +147,7 @@ export function LiveRouteMap({
   }, [buses, route]);
 
   useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !bounds.length) return;
-
-    map.fitBounds(bounds, { padding: [24, 24] });
+    refreshMapViewport();
   }, [bounds, route.id]);
 
   return (

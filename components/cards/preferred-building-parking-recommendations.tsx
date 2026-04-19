@@ -42,7 +42,7 @@ export function PreferredBuildingParkingRecommendations({
           {section.emptyState === "no_building" ? (
             <EmptyRecommendationState
               title="Select a preferred building to see the nearest permitted parking options."
-              description="Choose a destination building and this panel will rank the parking lots you are allowed to use from closest to furthest."
+              description="Choose a destination building here, or add preferred buildings in Profile first, and ParkWise will rank the parking lots you are allowed to use from closest to furthest."
             />
           ) : null}
           {section.emptyState === "unknown_building" ? (

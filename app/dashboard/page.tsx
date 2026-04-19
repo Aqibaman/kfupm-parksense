@@ -76,22 +76,19 @@ export default function DashboardPage() {
       title={`Welcome back, ${snapshot.user.name.split(" ")[0]}`}
       titleMeta={`Student ID: ${snapshot.user.studentId}`}
       eyebrow="Student Services"
-      description="Access parking availability, bus routes, active parking guidance, smart recommendations, and rule-aware decisions from one connected KFUPM mobility dashboard."
+      description="ParkWise brings your parking decisions, shuttle routes, permit guidance, and next-step actions into one connected KFUPM mobility workspace, so you can move through campus with more clarity and fewer violations."
     >
-      <section className="rounded-[32px] bg-[linear-gradient(135deg,#0b4362_0%,#0a5f5a_52%,#0b7b5b_100%)] px-6 py-6 text-white shadow-[0_30px_90px_rgba(0,62,81,0.18)]">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+      <section className="rounded-[28px] border border-[#dbe9e1] bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)] p-5 shadow-[0_18px_50px_rgba(0,62,81,0.07)]">
+        <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <span className="inline-flex rounded-full bg-white px-4 py-1 text-xs font-semibold uppercase tracking-[0.34em] text-[#0b6f58]">
-              Student Services
-            </span>
-            <h2 className="mt-4 text-4xl font-semibold tracking-tight">Mobility overview for today</h2>
-            <p className="mt-3 max-w-3xl text-base leading-8 text-white/85">
-              This dashboard brings together the next decisions you need to make right now: where you can park, which route fits your trip, what rules apply to you, and where to go next in the platform.
+            <p className="text-xs font-semibold uppercase tracking-[0.30em] text-[#0b5b72]">ParkWise overview</p>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
+              ParkWise helps you see where you can park, which shuttle network fits your route, and what permit rules matter before a restriction becomes a violation.
             </p>
           </div>
-          <div className="space-y-3 rounded-[28px] border border-white/15 bg-white/8 p-4 backdrop-blur">
+          <div className="space-y-3 rounded-[24px] border border-[#dbe9e1] bg-[#f8fbf9] px-4 py-4">
             <CategoryBadge category={snapshot.user.userCategory} />
-            <p className="text-sm text-white/80">Preferred buildings: {snapshot.user.favoriteBuildings.join(", ") || "Not selected yet"}</p>
+            <p className="text-sm text-slate-600">Preferred buildings: {snapshot.user.favoriteBuildings.join(", ") || "Not selected yet"}</p>
           </div>
         </div>
       </section>

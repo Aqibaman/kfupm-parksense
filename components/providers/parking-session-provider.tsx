@@ -21,6 +21,8 @@ import {
   type ParkingModalData,
   type UserParkingSession
 } from "@/lib/engines/parking-session";
+import { haversineDistanceMeters, normalizeLotId } from "@/lib/engines/preferred-building-guidance";
+import { parkingLocations } from "@/lib/data/parking-locations";
 import type { FloorKey } from "@/lib/engines/lot-detail";
 
 type ParkingSessionContextValue = {
@@ -51,6 +53,10 @@ function readStoredSession() {
   }
 }
 
+function getLotFallbackCoordinates(lotId: string): Coordinates | null {
+  return parkingLocations.find((lot) => normalizeLotId(lot.id) === normalizeLotId(lotId))?.coordinates ?? null;
+}
+
 function requestCurrentPosition(): Promise<Coordinates | null> {
   return new Promise((resolve) => {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
@@ -71,6 +77,15 @@ function requestCurrentPosition(): Promise<Coordinates | null> {
   });
 }
 
+function resolveSessionCoordinates(captured: Coordinates | null, fallback: Coordinates | null) {
+  if (!captured) return fallback ?? null;
+  if (!fallback) return captured;
+
+  // If the browser-reported position is far from the selected lot, keep the lot
+  // coordinates as the source of truth for parking guidance.
+  return haversineDistanceMeters(captured, fallback) <= 1200 ? captured : fallback;
+}
+
 export function ParkingSessionProvider({ children }: { children: ReactNode }) {
   const { user } = useStudentProfile();
   const [activeSession, setActiveSession] = useState<UserParkingSession | null>(null);
@@ -81,7 +96,11 @@ export function ParkingSessionProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const stored = readStoredSession();
     if (stored?.userId === user.id && stored.isActive) {
-      setActiveSession(stored);
+      const fallbackCoordinates = getLotFallbackCoordinates(stored.lotId);
+      setActiveSession({
+        ...stored,
+        parkedCoordinates: resolveSessionCoordinates(stored.parkedCoordinates, fallbackCoordinates) ?? stored.parkedCoordinates
+      });
     }
   }, [user.id]);
 
@@ -116,8 +135,14 @@ export function ParkingSessionProvider({ children }: { children: ReactNode }) {
       startSession: async ({ lotId, floorKey, slotId, fallbackCoordinates }) => {
         setLocationState("capturing");
         const coordinates = await requestCurrentPosition();
-        const finalCoordinates = coordinates ?? fallbackCoordinates ?? null;
-        setLocationState(coordinates ? "captured" : fallbackCoordinates ? "fallback" : "denied");
+        const finalCoordinates = resolveSessionCoordinates(coordinates, fallbackCoordinates ?? null);
+        setLocationState(
+          coordinates && finalCoordinates === coordinates
+            ? "captured"
+            : fallbackCoordinates
+              ? "fallback"
+              : "denied"
+        );
         const session = startParkingSession(buildSessionInputFromUser(user, lotId, floorKey, slotId, finalCoordinates));
         setActiveSession(session);
         setNow(new Date());

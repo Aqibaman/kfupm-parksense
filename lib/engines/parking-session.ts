@@ -422,10 +422,30 @@ export function buildSmartGuidance(
   const preferredGuidance = buildPreferredBuildingParkingRecommendations({
     category: session.category,
     selectedPreferredBuildingId: session.preferredDestinationBuildingId || null,
-    parkingLocations: parkingLocations as GuidanceParkingLocation[],
+    parkingLocations: parkingLotLocations.map((location) => ({
+      id: location.id,
+      canonicalId: location.canonicalLotId,
+      name: location.name,
+      coordinates: location.coordinates,
+      type: location.canonicalLotId.startsWith("parking_") ? "numbered_lot" : "named_location",
+      categoryPresence: [],
+      zone: undefined
+    })) as GuidanceParkingLocation[],
     academicBuildings: buildings
   });
-  const nearestBusStops = getNearestBusStopsForParkedSession(session.category, session.parkedCoordinates, busStops, 3).map((stop) => ({
+  const nearestBusStops = getNearestBusStopsForParkedSession(
+    session.category,
+    session.parkedCoordinates,
+    stops.map((stop) => ({
+      id: stop.id,
+      name: stop.label,
+      gender: stop.routeId.startsWith("female_") ? "female" : "male",
+      routeId: stop.routeId,
+      routeName: stop.routeName,
+      coordinates: stop.coordinates
+    })),
+    3
+  ).map((stop) => ({
     id: stop.id,
     label: stop.label,
     routeId: stop.routeId,
@@ -441,6 +461,10 @@ export function buildSmartGuidance(
     ? haversineDistanceMeters(session.parkedCoordinates, preferredBuilding.coordinates) <= 350
     : false;
   const routeHint = nearestBusStop ? `${nearestBusStop.routeName} is the closest route from ${nearestBusStop.label}.` : null;
+  const destinationDistanceMeters = preferredBuilding
+    ? Math.round(haversineDistanceMeters(session.parkedCoordinates, preferredBuilding.coordinates))
+    : null;
+  const parkedLotName = getLotName(session.lotId);
 
   return {
     nearestBusStop,
@@ -457,15 +481,15 @@ export function buildSmartGuidance(
       : null,
     walkingRecommended,
     summaryLines: [
-      `You parked at ${getLotName(session.lotId)}.`,
+      `You parked at ${parkedLotName}.`,
       nearestBusStop
-        ? `Nearest bus stop from your parked location: ${nearestBusStop.label} (${nearestBusStop.distanceLabel ?? ""}).`
+        ? `Nearest bus stop from your parked lot: ${nearestBusStop.label} (${nearestBusStop.distanceLabel ?? ""}).`
         : "Bus-stop guidance will appear once a parking location is available.",
-      nearestPermittedParking
-        ? `For ${preferredGuidance.buildingName ?? "your preferred building"}, the nearest permitted parking is ${nearestPermittedParking.lotName}.`
-        : "Preferred-building parking recommendations are ready once a destination is mapped.",
-      walkingRecommended
-        ? "Walking directly is short enough, so you may not need the shuttle."
+      preferredGuidance.buildingName && nearestPermittedParking
+        ? `For ${preferredGuidance.buildingName}, the nearest permitted parking is ${nearestPermittedParking.lotName} (${nearestPermittedParking.distanceLabel}).`
+        : "Add a preferred building in Profile so ParkWise can suggest the best permitted parking for your destination.",
+      walkingRecommended && preferredGuidance.buildingName && destinationDistanceMeters !== null
+        ? `Walking directly to ${preferredGuidance.buildingName} is about ${Math.round(destinationDistanceMeters)} m, so walking may be faster than using the bus.`
         : routeHint ?? "Use the nearest shuttle stop guidance for the next leg."
     ]
   };
