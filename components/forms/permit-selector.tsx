@@ -35,31 +35,25 @@ export function PermitSelector({
               type="button"
               onClick={() => onChange?.(key)}
               className={cn(
-                "group flex min-h-[360px] flex-col rounded-[28px] border bg-white p-5 text-center shadow-[0_14px_40px_rgba(0,62,81,0.06)] transition hover:-translate-y-0.5",
+                "group flex min-h-[156px] flex-col items-center justify-center rounded-[24px] border bg-white/8 p-3 text-center backdrop-blur transition hover:-translate-y-0.5",
                 active && "ring-2 ring-[#003E51] ring-offset-2"
               )}
               style={{
-                borderColor: active ? "#003E51" : meta.border,
-                background: active ? "linear-gradient(180deg,#ffffff 0%, color-mix(in srgb, var(--category-soft) 55%, white 45%) 100%)" : "linear-gradient(180deg,#ffffff 0%, #fcfefe 100%)"
+                borderColor: active ? "#003E51" : "rgba(255,255,255,0.22)",
+                background: active
+                  ? "linear-gradient(180deg, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0.1) 100%)"
+                  : "rgba(255,255,255,0.08)",
+                boxShadow: active ? "0 18px 40px rgba(0,62,81,0.12)" : "none"
               }}
             >
-              <div className="mx-auto rounded-[28px] bg-white p-3 shadow-[0_14px_32px_rgba(0,62,81,0.10)]">
-                <div className="rounded-[22px] bg-[#0d4f77] p-2">
-                  <Image
-                    src={categoryImageMap[key]}
-                    alt={meta.label}
-                    width={96}
-                    height={120}
-                    className="h-[104px] w-[84px] object-contain"
-                  />
-                </div>
-              </div>
-              <p className="mt-6 text-sm uppercase tracking-[0.32em] opacity-65">{meta.shortLabel}</p>
-              <div className="mt-5 flex flex-1 items-center justify-center">
-                <p className="max-w-[12ch] text-[18px] font-semibold leading-[1.9]" style={{ color: meta.text }}>
-                  {meta.label}
-                </p>
-              </div>
+              <Image
+                src={categoryImageMap[key]}
+                alt={meta.label}
+                width={92}
+                height={116}
+                className="mx-auto h-[92px] w-[76px] object-contain"
+              />
+              <p className="mt-2 text-center text-[11px] font-medium leading-4 text-[#003E51] lg:text-xs">{meta.label}</p>
             </button>
           );
         }
