@@ -49,9 +49,14 @@ const dashboardFlow = [
     icon: Sparkles
   },
   {
-    title: "Policy Guide + Profile",
-    text: "Review permit rules, then update category and preferred buildings in Profile.",
+    title: "Policy Guide",
+    text: "Review permit rules, lot restrictions, and key notices before parking.",
     icon: ShieldAlert
+  },
+  {
+    title: "Profile",
+    text: "Update category, preferred buildings, and account details in one place.",
+    icon: UserRound
   }
 ];
 
