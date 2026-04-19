@@ -50,7 +50,7 @@ export function AppShell({
   useStudentProfile();
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#edf6f1_0%,#ffffff_38%,#f4faf6_100%)] pb-20 lg:pb-0">
+    <div className="min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#edf6f1_0%,#ffffff_38%,#f4faf6_100%)] pb-20 lg:pb-0">
       <div className="mx-auto grid min-h-screen max-w-[1440px] gap-6 px-4 py-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-6">
         <aside className="hidden rounded-[32px] border border-white/10 bg-[linear-gradient(180deg,#0b6e56_0%,#08755c_44%,#05684b_100%)] p-5 text-white shadow-[0_30px_120px_rgba(0,62,81,0.18)] lg:block">
           <div className="rounded-3xl border border-white/15 bg-[linear-gradient(180deg,rgba(11,79,108,0.92)_0%,rgba(10,109,91,0.9)_100%)] p-5 text-white">
@@ -69,7 +69,7 @@ export function AppShell({
             ))}
           </nav>
         </aside>
-        <main className="space-y-6">
+        <main className="min-w-0 space-y-6 overflow-x-hidden">
           <section className="rounded-[32px] border border-white/20 bg-[linear-gradient(135deg,#0b4362_0%,#0a5e59_54%,#0b7a5c_100%)] px-5 py-6 text-white shadow-[0_24px_80px_rgba(0,62,81,0.12)] lg:px-7">
             <p className="text-xs uppercase tracking-[0.32em] text-[#d8f6e3]">{eyebrow}</p>
             <div className="mt-3 grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">

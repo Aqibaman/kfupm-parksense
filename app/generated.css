@@ -900,10 +900,6 @@ video {
   min-width: 0px;
 }
 
-.min-w-\[160px\] {
-  min-width: 160px;
-}
-
 .min-w-full {
   min-width: 100%;
 }
@@ -1081,6 +1077,10 @@ video {
 
 .overflow-x-auto {
   overflow-x: auto;
+}
+
+.overflow-x-hidden {
+  overflow-x: hidden;
 }
 
 .whitespace-nowrap {
@@ -1876,10 +1876,6 @@ video {
 .py-8 {
   padding-top: 2rem;
   padding-bottom: 2rem;
-}
-
-.pb-1 {
-  padding-bottom: 0.25rem;
 }
 
 .pb-2 {
@@ -2832,10 +2828,6 @@ textarea {
     width: 3rem;
   }
 
-  .sm\:min-w-\[180px\] {
-    min-width: 180px;
-  }
-
   .sm\:max-w-none {
     max-width: none;
   }
@@ -2928,6 +2920,10 @@ textarea {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
+  .md\:gap-5 {
+    gap: 1.25rem;
+  }
+
   .md\:space-y-5 > :not([hidden]) ~ :not([hidden]) {
     --tw-space-y-reverse: 0;
     margin-top: calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));
@@ -2948,10 +2944,6 @@ textarea {
     display: block;
   }
 
-  .lg\:grid {
-    display: grid;
-  }
-
   .lg\:hidden {
     display: none;
   }
@@ -2960,16 +2952,8 @@ textarea {
     height: 420px;
   }
 
-  .lg\:min-w-0 {
-    min-width: 0px;
-  }
-
   .lg\:grid-cols-10 {
     grid-template-columns: repeat(10, minmax(0, 1fr));
-  }
-
-  .lg\:grid-cols-2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .lg\:grid-cols-\[0\.95fr_1\.05fr\] {
@@ -3078,6 +3062,10 @@ textarea {
 
   .xl\:h-\[520px\] {
     height: 520px;
+  }
+
+  .xl\:min-w-\[180px\] {
+    min-width: 180px;
   }
 
   .xl\:grid-cols-12 {

@@ -91,38 +91,40 @@ export default function BusesPage() {
       eyebrow="Transit Layer"
       description="Select the live route for your network, follow buses on a free real map, and track active service timing for each campus shuttle."
     >
-      <div className="flex flex-wrap items-center gap-3">
-        <CategoryBadge category={user.userCategory} />
-        <span className="rounded-full border border-[#dbe9e1] bg-[#f8fbf9] px-4 py-2 text-sm font-medium text-slate-700">
-          Showing the {network} network only
-        </span>
-      </div>
+      <div className="min-w-0 space-y-4 overflow-x-hidden md:space-y-5">
+        <div className="flex flex-wrap items-center gap-3">
+          <CategoryBadge category={user.userCategory} />
+          <span className="rounded-full border border-[#dbe9e1] bg-[#f8fbf9] px-4 py-2 text-sm font-medium text-slate-700">
+            Showing the {network} network only
+          </span>
+        </div>
 
-      <RouteSelector routes={routes} selectedRouteId={selectedRoute.id} onSelect={setSelectedRouteId} />
+        <RouteSelector routes={routes} selectedRouteId={selectedRoute.id} onSelect={setSelectedRouteId} />
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(300px,360px)] xl:grid-cols-[minmax(0,1.45fr)_380px]">
-        <Card className="bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)] p-3 sm:p-4 md:p-5">
-          <CardTitle
-            title="Live bus route map"
-            subtitle="This view uses a free OpenStreetMap base with real route stops and continuously moving buses for the selected service."
-          />
-          <div className="rounded-[24px] bg-[linear-gradient(180deg,#f7fbf8_0%,#ffffff_100%)] p-2 sm:p-3 md:p-4">
-            <LiveRouteMap route={selectedRoute} buses={simulationState.buses} />
+        <div className="grid min-w-0 gap-4 md:gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(300px,360px)] xl:grid-cols-[minmax(0,1.45fr)_380px]">
+          <Card className="min-w-0 bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)] p-3 sm:p-4 md:p-5">
+            <CardTitle
+              title="Live bus route map"
+              subtitle="This view uses a free OpenStreetMap base with real route stops and continuously moving buses for the selected service."
+            />
+            <div className="min-w-0 rounded-[24px] bg-[linear-gradient(180deg,#f7fbf8_0%,#ffffff_100%)] p-2 sm:p-3 md:p-4">
+              <LiveRouteMap route={selectedRoute} buses={simulationState.buses} />
+            </div>
+            <div className="mt-4">
+              <MapLegend />
+            </div>
+          </Card>
+
+          <div className="min-w-0 space-y-4 md:space-y-5">
+            <RouteSummaryCard
+              route={selectedRoute}
+              activeBusCount={simulationState.buses.length}
+              serviceStatus={serviceStatus}
+              nextStopSummaries={simulationState.nextStopSummary}
+            />
+            <ActiveBusesPanel buses={simulationState.buses} />
+            <RouteTimetableCard route={selectedRoute} />
           </div>
-          <div className="mt-4">
-            <MapLegend />
-          </div>
-        </Card>
-
-        <div className="space-y-4 md:space-y-5">
-          <RouteSummaryCard
-            route={selectedRoute}
-            activeBusCount={simulationState.buses.length}
-            serviceStatus={serviceStatus}
-            nextStopSummaries={simulationState.nextStopSummary}
-          />
-          <ActiveBusesPanel buses={simulationState.buses} />
-          <RouteTimetableCard route={selectedRoute} />
         </div>
       </div>
     </AppShell>

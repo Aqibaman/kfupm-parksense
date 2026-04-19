@@ -13,7 +13,7 @@ export function RouteSummaryCard({
   nextStopSummaries: string[];
 }) {
   return (
-    <Card className="bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)]">
+    <Card className="min-w-0 bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)]">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#008540]">{route.code}</p>
@@ -27,14 +27,14 @@ export function RouteSummaryCard({
           </span>
         </div>
       </div>
-      <p className="mt-4 text-sm leading-7 text-slate-600">{route.serviceNote}</p>
+      <p className="mt-4 break-words text-sm leading-7 text-slate-600">{route.serviceNote}</p>
       <div className="mt-4 rounded-[22px] border border-[#dbe9e1] bg-[#f9fcfa] p-4">
         <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#0b5b72]">Service status</p>
         <p className="mt-2 text-sm font-medium text-[#0f172a]">{serviceStatus.label}</p>
       </div>
       <div className="mt-4 space-y-2">
         {nextStopSummaries.slice(0, 3).map((summary) => (
-          <div key={summary} className="rounded-2xl border border-[#dbe9e1] bg-white px-3 py-3 text-sm text-slate-600 sm:px-4">
+          <div key={summary} className="break-words rounded-2xl border border-[#dbe9e1] bg-white px-3 py-3 text-sm text-slate-600 sm:px-4">
             {summary}
           </div>
         ))}

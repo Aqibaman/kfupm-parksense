@@ -3,12 +3,12 @@ import type { ActiveBus } from "@/lib/types";
 
 export function ActiveBusesPanel({ buses }: { buses: ActiveBus[] }) {
   return (
-    <Card className="bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)]">
+    <Card className="min-w-0 bg-[linear-gradient(180deg,#ffffff_0%,#f7fbf8_100%)]">
       <CardTitle title="Running buses" subtitle="Current buses visible on the selected route." />
       {buses.length ? (
         <div className="space-y-3">
           {buses.map((bus) => (
-            <div key={bus.id} className="rounded-[24px] border border-[#dbe9e1] bg-white p-4 shadow-[0_12px_24px_rgba(0,62,81,0.04)]">
+            <div key={bus.id} className="min-w-0 rounded-[24px] border border-[#dbe9e1] bg-white p-4 shadow-[0_12px_24px_rgba(0,62,81,0.04)]">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <p className="text-lg font-semibold text-[#0f172a] sm:text-xl">{bus.busNumber}</p>
                 <span
@@ -23,14 +23,14 @@ export function ActiveBusesPanel({ buses }: { buses: ActiveBus[] }) {
                   {bus.status === "boarding" ? "Boarding" : bus.status === "inactive" ? "Not in service" : "Running"}
                 </span>
               </div>
-              <p className="mt-3 text-sm leading-7 text-slate-600">
+              <p className="mt-3 break-words text-sm leading-7 text-slate-600">
                 {bus.status === "boarding"
                   ? `Currently waiting at ${bus.currentStopName ?? "the current stop"}`
                   : bus.status === "inactive"
                     ? "This route is currently outside its service window."
                     : `Moving between stations toward ${bus.nextStopName ?? "the next stop"}`}
               </p>
-              <p className="mt-2 text-sm text-slate-500">
+              <p className="mt-2 break-words text-sm text-slate-500">
                 {bus.status === "boarding"
                   ? `Boarding at ${bus.currentStopName ?? "the stop"}`
                   : `Next stop: ${bus.nextStopName ?? "Not available"}`}
