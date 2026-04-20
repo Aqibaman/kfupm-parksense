@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Bell, BusFront, CarFront, CircleUserRound, Cpu, Gauge, Home, Map, ShieldCheck, Sparkles } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Bell, BusFront, CarFront, CircleUserRound, Cpu, Gauge, Home, LogOut, Map, ShieldCheck, Sparkles } from "lucide-react";
 import { adminNavigation, appName, mainNavigation } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
@@ -46,8 +46,9 @@ export function AppShell({
   admin?: boolean;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const primaryItems = admin ? adminNavigation : mainNavigation;
-  useStudentProfile();
+  const { signOut } = useStudentProfile();
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[linear-gradient(180deg,#edf6f1_0%,#ffffff_38%,#f4faf6_100%)] pb-20 lg:pb-0">
@@ -74,8 +75,23 @@ export function AppShell({
             <p className="text-xs uppercase tracking-[0.32em] text-[#d8f6e3]">{eyebrow}</p>
             <div className="mt-3 grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">
               <div>
-                <h2 className="text-3xl font-semibold tracking-tight lg:text-4xl">{title}</h2>
-                {titleMeta ? <div className="mt-2 text-sm font-medium text-white/78">{titleMeta}</div> : null}
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h2 className="text-3xl font-semibold tracking-tight lg:text-4xl">{title}</h2>
+                    {titleMeta ? <div className="mt-2 text-sm font-medium text-white/78">{titleMeta}</div> : null}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      signOut();
+                      router.push("/login");
+                    }}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/8 px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_28px_rgba(0,62,81,0.14)] backdrop-blur transition hover:bg-white/12"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </button>
+                </div>
                 <div className="mt-4 max-w-3xl rounded-[26px] border border-white/14 bg-white/8 px-5 py-4 backdrop-blur">
                   <p className="text-xs font-semibold uppercase tracking-[0.30em] text-[#d8f6e3]">What This Page Helps You Do</p>
                   <p className="mt-3 text-sm leading-7 text-white/84 lg:text-base">{description}</p>

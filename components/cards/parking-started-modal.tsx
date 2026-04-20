@@ -62,9 +62,6 @@ export function ParkingStartedModal({
               </div>
             </div>
             <div className="mt-4 flex flex-wrap gap-3">
-              <Link href="/notifications" className="inline-flex rounded-full bg-[#003E51] px-4 py-2 text-sm font-semibold text-white">
-                Go to Alerts page
-              </Link>
               <Link href="/guidance" className="inline-flex rounded-full bg-[#008540] px-4 py-2 text-sm font-semibold text-white">
                 Go to Smart Guidance
               </Link>

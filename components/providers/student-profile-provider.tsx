@@ -9,6 +9,7 @@ type StudentProfileContextValue = {
   user: User;
   selectCategory: (category: UserCategory) => void;
   updateUser: (updates: Partial<User>) => void;
+  signOut: () => void;
 };
 
 const StudentProfileContext = createContext<StudentProfileContextValue | null>(null);
@@ -70,6 +71,24 @@ export function StudentProfileProvider({ children }: { children: ReactNode }) {
       },
       updateUser: (updates) => {
         setUser((current) => ({ ...current, ...updates }));
+      },
+      signOut: () => {
+        if (typeof window !== "undefined") {
+          const keysToRemove: string[] = [];
+
+          for (let index = 0; index < window.localStorage.length; index += 1) {
+            const key = window.localStorage.key(index);
+            if (!key) continue;
+
+            if (key.startsWith("kfupm-parkwise-") || key.startsWith("parkwise-selected-bus-route")) {
+              keysToRemove.push(key);
+            }
+          }
+
+          keysToRemove.forEach((key) => window.localStorage.removeItem(key));
+        }
+
+        setUser(users[1]);
       }
     }),
     [user]
