@@ -97,9 +97,6 @@ export function AppShell({
                   <p className="mt-3 text-sm leading-7 text-white/84 lg:text-base">{description}</p>
                 </div>
               </div>
-              <div className="rounded-[26px] border border-white/14 bg-white/8 px-5 py-4 text-sm leading-7 text-white/82 backdrop-blur">
-                Each screen is connected to the same permit rules, parking data, bus network logic, and mobility guidance used across the platform.
-              </div>
             </div>
           </section>
           {children}
