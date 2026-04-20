@@ -912,6 +912,10 @@ video {
   max-width: 48rem;
 }
 
+.max-w-4xl {
+  max-width: 56rem;
+}
+
 .max-w-5xl {
   max-width: 64rem;
 }
@@ -3005,14 +3009,6 @@ textarea {
 
   .lg\:grid-cols-\[280px_minmax\(0\2c 1fr\)\] {
     grid-template-columns: 280px minmax(0,1fr);
-  }
-
-  .lg\:grid-cols-\[minmax\(0\2c 1fr\)_320px\] {
-    grid-template-columns: minmax(0,1fr) 320px;
-  }
-
-  .lg\:items-end {
-    align-items: flex-end;
   }
 
   .lg\:p-12 {

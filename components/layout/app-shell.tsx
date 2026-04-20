@@ -73,7 +73,7 @@ export function AppShell({
         <main className="min-w-0 space-y-6 overflow-x-hidden">
           <section className="rounded-[32px] border border-white/20 bg-[linear-gradient(135deg,#0b4362_0%,#0a5e59_54%,#0b7a5c_100%)] px-5 py-6 text-white shadow-[0_24px_80px_rgba(0,62,81,0.12)] lg:px-7">
             <p className="text-xs uppercase tracking-[0.32em] text-[#d8f6e3]">{eyebrow}</p>
-            <div className="mt-3 grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">
+            <div className="mt-3">
               <div>
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
@@ -92,7 +92,7 @@ export function AppShell({
                     Logout
                   </button>
                 </div>
-                <div className="mt-4 max-w-3xl rounded-[26px] border border-white/14 bg-white/8 px-5 py-4 backdrop-blur">
+                <div className="mt-4 w-full max-w-4xl rounded-[26px] border border-white/14 bg-white/8 px-5 py-4 backdrop-blur">
                   <p className="text-xs font-semibold uppercase tracking-[0.30em] text-[#d8f6e3]">What This Page Helps You Do</p>
                   <p className="mt-3 text-sm leading-7 text-white/84 lg:text-base">{description}</p>
                 </div>
